@@ -11,8 +11,6 @@ import org.jgap.FitnessFunction;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.entity.Component;
-import phd.mrs.entity.Device;
-import phd.mrs.utils.Config;
 import phd.mrs.ga.DeviceGene;
 
 /**
@@ -33,14 +31,14 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
         Double value = 0d;
         Set<Component> comps = new HashSet<Component>();
 
-        Double staticPrice = 0d;
+        Double investmentCosts = 0d;
 
         Gene[] genes = a_subject.getGenes();
 
         for (Gene gene : genes) {
             DeviceGene dev = (DeviceGene) gene;
             if (dev.getInstances() > 0) {
-                staticPrice += dev.getDevice().getStaticPrice() * dev.getInstances();
+                investmentCosts += dev.getDevice().getInvestmentCosts() * dev.getInstances();
                 for (Component comp : dev.getDevice().getComponents()) {
                     comps.add(comp);
                 }
@@ -51,7 +49,7 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
             return (1d * comps.size()) / (1d * systemComponents.size()) * 100;
         }
 
-        value = 10000000d - staticPrice;
+        value = 10000000d - investmentCosts;
 
         return value;
     }

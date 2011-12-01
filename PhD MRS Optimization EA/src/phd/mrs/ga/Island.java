@@ -71,7 +71,7 @@ public class Island extends Thread {
         for (Gene gene : solution.getGenes()) {
             DeviceGene dev = (DeviceGene) gene;
             if (dev.getInstances() > 0) {
-                System.out.println(dev.getInstances() + " x "+dev.getDevice().getStaticPrice());
+                System.out.println(dev.getInstances() + " x "+dev.getDevice().getInvestmentCosts());
                 dev.getDevice().print();
             }
         }

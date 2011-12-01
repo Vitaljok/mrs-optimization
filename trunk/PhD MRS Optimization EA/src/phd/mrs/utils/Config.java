@@ -16,9 +16,9 @@ public class Config {
     public static Integer GENERATIONS_STEP = 100;
     
     /**
-     * Static price of component (absolute). 
+     * Investment costs of component (absolute). 
      */
-    public static String propStatcPrice = "staticPrice";
+    public static String propInvestmentCosts = "investmentCosts";
     
     /**
      * Complexity of of component (relative). Increases design price of device. 

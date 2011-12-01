@@ -59,7 +59,7 @@ public class Device implements Serializable {
     }
     
     @Transient
-    CachedProperty<Double> staticPrice = new CachedProperty<Double>() {
+    CachedProperty<Double> investmentCots = new CachedProperty<Double>() {
 
         @Override
         protected Double calculateValue() {
@@ -69,9 +69,9 @@ public class Device implements Serializable {
 
             // sum of components
             for (Component comp : getComponents()) {
-                Double compPrice = Double.valueOf(comp.getProperties().getProperty(Config.propStatcPrice));
+                Double compPrice = Double.valueOf(comp.getProperties().getProperty(Config.propInvestmentCosts));
                 if (compPrice == null) {
-                    throw new RuntimeException(MessageFormat.format("Component '{0}' does not have '{1}' property!", comp.getName(), Config.propStatcPrice));
+                    throw new RuntimeException(MessageFormat.format("Component '{0}' does not have '{1}' property!", comp.getName(), Config.propInvestmentCosts));
                 }
 
                 maxComplexity = Math.max(maxComplexity, Double.valueOf(comp.getProperties().getProperty(Config.propComplexity, "1.0")));
@@ -89,8 +89,8 @@ public class Device implements Serializable {
         }
     };
 
-    public Double getStaticPrice() {
-        return this.staticPrice.getValue();
+    public Double getInvestmentCosts() {
+        return this.investmentCots.getValue();
     }
 
     @Override

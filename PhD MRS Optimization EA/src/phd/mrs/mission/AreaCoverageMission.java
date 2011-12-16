@@ -14,22 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs.utils;
+package phd.mrs.mission;
+
+import java.util.Properties;
 
 /**
  *
  * @author Vitaljok
  */
-public abstract class CachedProperty<T> {
+public class AreaCoverageMission extends AbstractMission{
 
-    T value;
-
-    protected abstract T calculateValue();
-
-    public T getValue() {
-        if (this.value == null) {
-            this.value = calculateValue();
-        }
-        return value;
+    
+    
+    public AreaCoverageMission(Properties properties) {
+        super(properties);
     }
+
+    @Override
+    public Double getTime() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
 }

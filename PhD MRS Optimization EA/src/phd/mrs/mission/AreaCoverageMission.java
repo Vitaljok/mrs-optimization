@@ -16,23 +16,113 @@
  */
 package phd.mrs.mission;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import phd.mrs.entity.Component;
+import phd.mrs.entity.Device;
+import phd.mrs.utils.CachedProperty;
+import phd.mrs.utils.Config;
 
 /**
  *
  * @author Vitaljok
  */
-public class AreaCoverageMission extends AbstractMission{
+public class AreaCoverageMission extends AbstractMission {
 
-    
-    
-    public AreaCoverageMission(Properties properties) {
+    List<Component> locomotionComponents = new ArrayList<Component>();
+    List<Component> navigationComponents = new ArrayList<Component>();
+    Map<Device, Integer> solution;
+    Integer sizeX;
+    Integer sizeY;
+    CachedProperty<Double> locomotionPrice = new CachedProperty<Double>() {
+
+        @Override
+        protected Double calculateValue() {
+            Double price = 0d;
+            if (locomotionComponents.isEmpty()) {
+                throw new RuntimeException("Locomotion components are not defined!");
+            }
+            for (Component comp : locomotionComponents) {
+                price += comp.getDoubleProperty(Config.Prop.operatingCosts);
+            }
+            return price;
+        }
+    };
+    CachedProperty<Double> navigationPrice = new CachedProperty<Double>() {
+
+        @Override
+        protected Double calculateValue() {
+            Double price = 0d;
+            if (navigationComponents.isEmpty()) {
+                throw new RuntimeException("Navigation components are not defined!");
+            }
+            for (Component comp : navigationComponents) {
+                price += comp.getDoubleProperty(Config.Prop.operatingCosts);
+            }
+            return price;
+        }
+    };
+
+    public AreaCoverageMission(Properties properties, Map<Device, Integer> solution) {
         super(properties);
+        try {
+            sizeX = Integer.valueOf(properties.getProperty(Config.Prop.missionSizeX));
+        } catch (Exception ex) {
+            throw new RuntimeException(
+                    MessageFormat.format("AreaCoverageMission does not have valid \"{0}\" property!",
+                    Config.Prop.missionSizeX));
+        }
+
+        try {
+            sizeY = Integer.valueOf(properties.getProperty(Config.Prop.missionSizeY));
+        } catch (Exception ex) {
+            throw new RuntimeException(
+                    MessageFormat.format("AreaCoverageMission does not have valid \"{0}\" property!",
+                    Config.Prop.missionSizeY));
+        }
+
+        this.solution = solution;
+    }
+
+    public List<Component> getLocomotionComponents() {
+        return locomotionComponents;
+    }
+
+    public List<Component> getNavigationComponents() {
+        return navigationComponents;
+    }
+
+    public Map<Device, Integer> getSolution() {
+        return solution;
+    }
+
+    public void setSolution(Map<Device, Integer> solution) {
+        this.solution = solution;
+    }
+
+    public void process() {
+        Double costs = 0d;
+        Integer ops = sizeX * sizeY;
+        Integer devs = 0;
+
+        for (Device dev : solution.keySet()) {
+            if (dev.getComponents().containsAll(locomotionComponents)) {
+                devs += solution.get(dev);
+            }
+        }
+        
+        // now I have ops * price formula. 
+        // TODO: implement advanced time assignment model for different devices
+        costs = Math.ceil(1.0d * ops / devs) * locomotionPrice.getValue() * devs;        
+
+        System.out.println("Operating costs: " + costs+"\t"+devs);
     }
 
     @Override
     public Double getTime() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }

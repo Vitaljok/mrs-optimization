@@ -17,10 +17,7 @@
 package phd.mrs.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.MessageFormat;
 import java.util.Properties;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,7 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToMany;
+import phd.mrs.utils.Config;
 
 /**
  *
@@ -50,10 +47,11 @@ public class Component implements Serializable {
     @ManyToOne
     private Component parent;
     @ElementCollection
-    @MapKeyColumn(name="name")
-    @Column(name="value")
-    @CollectionTable(name="component_properties", joinColumns=@JoinColumn(name="component_id"))
-    Properties properties = new Properties(); 
+    @MapKeyColumn(name = "name")
+    @Column(name = "value")
+    @CollectionTable(name = "component_properties", joinColumns =
+    @JoinColumn(name = "component_id"))
+    Properties properties = new Properties();
 
     protected Component() {
     }
@@ -67,6 +65,26 @@ public class Component implements Serializable {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    public Double getDoubleProperty(String key) {
+
+        try {
+            return Double.valueOf(this.getProperties().getProperty(Config.Prop.investmentCosts));
+        } catch (Exception ex) {
+            throw new RuntimeException(
+                    MessageFormat.format("Component \"{0}\" does not have valid \"{1}\" property!",
+                    this.getCode(),
+                    key));
+        }
+    }
+
+    public Double getDoubleProperty(String key, Double defaultValue) {
+        try {
+            return this.getDoubleProperty(key);
+        } catch (Exception ex) {
+            return defaultValue;
+        }
     }
 
     public Long getId() {

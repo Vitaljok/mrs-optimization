@@ -63,37 +63,31 @@ public class Device implements Serializable {
     }
 
     public void print() {
-        System.out.println("Device #" + this.id + "\t"+ components);
+        System.out.println("Device #" + this.id + "\t" + components);
     }
-    
     @Transient
     CachedProperty<Double> investmentCots = new CachedProperty<Double>() {
 
         @Override
         protected Double calculateValue() {
-            Double price = 0d;
+            Double costs = 0d;
 
             Double maxComplexity = 0d;
 
             // sum of components
             for (Component comp : getComponents()) {
-                Double compPrice = Double.valueOf(comp.getProperties().getProperty(Config.propInvestmentCosts));
-                if (compPrice == null) {
-                    throw new RuntimeException(MessageFormat.format("Component '{0}' does not have '{1}' property!", comp.getName(), Config.propInvestmentCosts));
-                }
-
-                maxComplexity = Math.max(maxComplexity, Double.valueOf(comp.getProperties().getProperty(Config.propComplexity, "1.0")));
-
-                price += compPrice;
+                Double compPrice = comp.getDoubleProperty(Config.Prop.investmentCosts);
+                maxComplexity = Math.max(maxComplexity, comp.getDoubleProperty(Config.Prop.complexity, 1.0));
+                costs += compPrice;
             }
 
             // producion coefficient
-            price *= Config.C_DEVICE_PRODUCTION_LIN * Math.exp(Config.C_DEVICE_PRODUCTION_EXP * getComponents().size());
+            costs *= Config.Coef.deviceProductionLin * Math.exp(Config.Coef.deviceProductionExp * getComponents().size());
 
             // complexity coefficient
-            price *= maxComplexity;
+            costs *= maxComplexity;
 
-            return price;
+            return costs;
         }
     };
 

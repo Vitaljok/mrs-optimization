@@ -27,31 +27,57 @@ public class Config {
     public static Integer POPULATION_SIZE = 100;
     public static Integer GENERATIONS_LIMIT = 500;
     public static Integer GENERATIONS_STEP = 100;
-    /**
-     * Family of the component.
-     */
-    public static String propCompFamily = "family";
-    /**
-     * Investment costs of component (absolute). 
-     */
-    public static String propInvestmentCosts = "investmentCosts";
-    /**
-     * Investment costs of component (absolute). 
-     */
-    public static String propRunningCosts = "runningCosts";
-    /**
-     * Complexity of of component (relative). Increases design price of device. 
-     * Default value is 1.0
-     */
-    public static String propComplexity = "complexity";
-    /**
-     * Exponential coefficient in device production price calculation.
-     * price coefficient = c_lin * EXP(c_exp * price);
-     */
-    public static Double C_DEVICE_PRODUCTION_EXP = 0.05d;
-    /**
-     * Linear coefficient in device production price calculation.
-     * price coefficient = c_lin * EXP(c_exp * price);
-     */
-    public static Double C_DEVICE_PRODUCTION_LIN = 1.0d;
+
+    static public class Coef {
+
+        /**
+         * Exponential coefficient in device production price calculation.
+         * price coefficient = c_lin * EXP(c_exp * price);
+         */
+        public static Double deviceProductionExp = 0.05d;
+        /**
+         * Linear coefficient in device production price calculation.
+         * price coefficient = c_lin * EXP(c_exp * price);
+         */
+        public static Double deviceProductionLin = 1.0d;
+        /**
+         * Exponential coefficient in device operating price calculation.
+         * price coefficient = c_lin * EXP(c_exp * price);
+         */
+        public static Double deviceOperatingExp = 0.05d;
+        /**
+         * Linear coefficient in device operating price calculation.
+         * price coefficient = c_lin * EXP(c_exp * price);
+         */
+        public static Double deviceOperatingLin = 1.0d;
+    }
+
+    static public class Prop {
+
+        /**
+         * Family of the component.
+         */
+        public static String compFamily = "family";
+        /**
+         * Investment costs of component (absolute). 
+         */
+        public static String investmentCosts = "investmentCosts";
+        /**
+         * Operating costs of component (absolute) per time unit. 
+         */
+        public static String operatingCosts = "operatingCosts";
+        /**
+         * Complexity of of component (relative). Increases design price of device. 
+         * Default value is 1.0
+         */
+        public static String complexity = "complexity";
+        /**
+         * Mission size on X axis.
+         */
+        public static String missionSizeX = "missionSizeX";
+        /**
+         * Mission size on Y axis.
+         */
+        public static String missionSizeY = "missionSizeY";
+    }
 }

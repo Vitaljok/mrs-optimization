@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import phd.mrs.entity.Component;
-import phd.mrs.entity.Device;
+import phd.mrs.entity.Agent;
 import phd.mrs.utils.CachedProperty;
 import phd.mrs.utils.Config;
 
@@ -34,7 +34,7 @@ public class AreaCoverageMission extends AbstractMission {
 
     List<Component> locomotionComponents = new ArrayList<Component>();
     List<Component> navigationComponents = new ArrayList<Component>();
-    Map<Device, Integer> solution;
+    Map<Agent, Integer> solution;
     Integer sizeX;
     Integer sizeY;
     CachedProperty<Double> locomotionPrice = new CachedProperty<Double>() {
@@ -66,7 +66,7 @@ public class AreaCoverageMission extends AbstractMission {
         }
     };
 
-    public AreaCoverageMission(Properties properties, Map<Device, Integer> solution) {
+    public AreaCoverageMission(Properties properties, Map<Agent, Integer> solution) {
         super(properties);
         try {
             sizeX = Integer.valueOf(properties.getProperty(Config.Prop.missionSizeX));
@@ -95,11 +95,11 @@ public class AreaCoverageMission extends AbstractMission {
         return navigationComponents;
     }
 
-    public Map<Device, Integer> getSolution() {
+    public Map<Agent, Integer> getSolution() {
         return solution;
     }
 
-    public void setSolution(Map<Device, Integer> solution) {
+    public void setSolution(Map<Agent, Integer> solution) {
         this.solution = solution;
     }
 
@@ -108,7 +108,7 @@ public class AreaCoverageMission extends AbstractMission {
         Integer ops = sizeX * sizeY;
         Integer devs = 0;
 
-        for (Device dev : solution.keySet()) {
+        for (Agent dev : solution.keySet()) {
             if (dev.getComponents().containsAll(locomotionComponents)) {
                 devs += solution.get(dev);
             }

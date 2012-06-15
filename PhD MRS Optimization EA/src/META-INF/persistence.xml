@@ -4,8 +4,8 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>phd.mrs.entity.Project</class>
     <class>phd.mrs.entity.Component</class>
-    <class>phd.mrs.entity.Device</class>
     <class>phd.mrs.entity.Property</class>
+    <class>phd.mrs.entity.Agent</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:53306/phd"/>
       <property name="javax.persistence.jdbc.password" value="robot"/>

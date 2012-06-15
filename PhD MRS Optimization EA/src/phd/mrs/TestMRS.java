@@ -22,9 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.persistence.criteria.CriteriaBuilder.Coalesce;
 import phd.mrs.entity.Component;
-import phd.mrs.entity.Device;
+import phd.mrs.entity.Agent;
 import phd.mrs.entity.Project;
 import phd.mrs.ga.Island;
 import phd.mrs.mission.AreaCoverageMission;
@@ -97,28 +96,28 @@ public class TestMRS {
     }
 
     public void runCosts() {
-        Map<Device, Integer> solution = new HashMap<Device, Integer>();
+        Map<Agent, Integer> solution = new HashMap<Agent, Integer>();
 
         List<Component> comp = project.getComponents();
 
         // universal device
-        Device dev1 = new Device(1l);
-        dev1.getComponents().addAll(comp);
-        solution.put(dev1, 1);
+        Agent agent1 = new Agent(1l);
+        agent1.getComponents().addAll(comp);
+        solution.put(agent1, 1);
         
         // mowing device
-        Device dev2 = new Device(2l);
-        dev2.getComponents().add(comp.get(0));
-        dev2.getComponents().add(comp.get(1));
-        dev2.getComponents().add(comp.get(2));
-        solution.put(dev2, 2);
+        Agent agent2 = new Agent(2l);
+        agent2.getComponents().add(comp.get(0));
+        agent2.getComponents().add(comp.get(1));
+        agent2.getComponents().add(comp.get(2));
+        solution.put(agent2, 2);
         
         // transporting device
-        Device dev3 = new Device(3l);
-        dev3.getComponents().add(comp.get(0));
-        dev3.getComponents().add(comp.get(5));
-        dev3.getComponents().add(comp.get(2));
-        solution.put(dev3, 1);
+        Agent agent3 = new Agent(3l);
+        agent3.getComponents().add(comp.get(0));
+        agent3.getComponents().add(comp.get(5));
+        agent3.getComponents().add(comp.get(2));
+        solution.put(agent3, 1);
         
         Properties missionProperties = new Properties();
         missionProperties.setProperty(Config.Prop.missionSizeX, "6");
@@ -140,6 +139,7 @@ public class TestMRS {
     public static void main(String[] args) {
         TestMRS mrs = new TestMRS();
 
-        mrs.runCosts();
+        //mrs.runCosts();
+        mrs.runGA();
     }
 }

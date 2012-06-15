@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs.ga;
+package phd.mrs.test;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,37 +22,38 @@ import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.IntegerGene;
-import phd.mrs.entity.Device;
 
 /**
  *
  * @author Vitaljok
  */
-public class DeviceGene extends IntegerGene {
+public class MachineGene extends IntegerGene {
 
-    Device device;
+    MachineCell machine;
 
-    public DeviceGene(Configuration a_config, int a_lowerBounds, int a_upperBounds, Device device) throws InvalidConfigurationException {
+    public MachineGene(MachineCell machine, Configuration a_config, int a_lowerBounds, int a_upperBounds) throws InvalidConfigurationException {
         super(a_config, a_lowerBounds, a_upperBounds);
-        this.device = device;
+        this.machine = machine;
     }
 
-    public Device getDevice() {
-        return device;
-    }
-    
-    public Integer getInstances(){
-        return (Integer) this.getAllele();
+    public MachineCell getMachine() {
+        return machine;
     }
 
     @Override
     protected Gene newGeneInternal() {
         try {
-            return new DeviceGene(this.getConfiguration(), this.getLowerBounds(),
-                    this.getUpperBounds(), device);
+            return new MachineGene(machine, this.getConfiguration(), this.getLowerBounds(), this.getUpperBounds());
         } catch (InvalidConfigurationException ex) {
-            Logger.getLogger(DeviceGene.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MachineGene.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "dev"+this.machine.getMachine()+"\twork"+this.machine.getWork()+"\t-> "+(Integer)this.getAllele();
+    }
+    
+    
 }

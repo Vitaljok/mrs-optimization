@@ -22,10 +22,10 @@ package phd.mrs.utils;
  */
 public class Config {
 
-    public static Integer NUM_ISLANDS = 1;
+    public static Integer NUM_ISLANDS = 5;
     public static Integer DEVICE_LIMIT = 10;
-    public static Integer POPULATION_SIZE = 100;
-    public static Integer GENERATIONS_LIMIT = 500;
+    public static Integer POPULATION_SIZE = 200;
+    public static Integer GENERATIONS_LIMIT = 5000;
     public static Integer GENERATIONS_STEP = 100;
 
     static public class Coef {
@@ -34,22 +34,22 @@ public class Config {
          * Exponential coefficient in device production price calculation.
          * price coefficient = c_lin * EXP(c_exp * price);
          */
-        public static Double deviceProductionExp = 0.05d;
+        public static Double agentProductionExp = 0.05d;
         /**
          * Linear coefficient in device production price calculation.
          * price coefficient = c_lin * EXP(c_exp * price);
          */
-        public static Double deviceProductionLin = 1.0d;
+        public static Double agentProductionLin = 1.0d;
         /**
          * Exponential coefficient in device operating price calculation.
          * price coefficient = c_lin * EXP(c_exp * price);
          */
-        public static Double deviceOperatingExp = 0.05d;
+        public static Double agentOperatingExp = 0.05d;
         /**
          * Linear coefficient in device operating price calculation.
          * price coefficient = c_lin * EXP(c_exp * price);
          */
-        public static Double deviceOperatingLin = 1.0d;
+        public static Double agentOperatingLin = 1.0d;
     }
 
     static public class Prop {

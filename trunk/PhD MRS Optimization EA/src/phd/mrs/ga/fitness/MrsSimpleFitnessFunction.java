@@ -23,7 +23,7 @@ import org.jgap.FitnessFunction;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.entity.Component;
-import phd.mrs.ga.DeviceGene;
+import phd.mrs.ga.AgentGene;
 
 /**
  * Calculates fitness value of SolutionChromosome in terms of costs.
@@ -48,10 +48,10 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
         Gene[] genes = a_subject.getGenes();
 
         for (Gene gene : genes) {
-            DeviceGene dev = (DeviceGene) gene;
-            if (dev.getInstances() > 0) {
-                investmentCosts += dev.getDevice().getInvestmentCosts() * dev.getInstances();
-                for (Component comp : dev.getDevice().getComponents()) {
+            AgentGene agent = (AgentGene) gene;
+            if (agent.getInstances() > 0) {
+                investmentCosts += agent.getAgent().getInvestmentCosts() * agent.getInstances();
+                for (Component comp : agent.getAgent().getComponents()) {
                     comps.add(comp);
                 }
             }

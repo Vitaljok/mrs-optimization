@@ -34,7 +34,7 @@ import phd.mrs.utils.Config;
  * @author Vitaljok
  */
 @Entity
-public class Device implements Serializable {
+public class Agent implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,10 +43,10 @@ public class Device implements Serializable {
     @OneToMany
     private List<Component> components = new ArrayList<Component>();
 
-    protected Device() {
+    protected Agent() {
     }
 
-    public Device(Long id) {
+    public Agent(Long id) {
         this.id = id;
     }
 
@@ -82,7 +82,7 @@ public class Device implements Serializable {
             }
 
             // producion coefficient
-            costs *= Config.Coef.deviceProductionLin * Math.exp(Config.Coef.deviceProductionExp * getComponents().size());
+            costs *= Config.Coef.agentProductionLin * Math.exp(Config.Coef.agentProductionExp * getComponents().size());
 
             // complexity coefficient
             costs *= maxComplexity;
@@ -105,10 +105,10 @@ public class Device implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Device)) {
+        if (!(object instanceof Agent)) {
             return false;
         }
-        Device other = (Device) object;
+        Agent other = (Agent) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

@@ -42,7 +42,7 @@ public class Project implements Serializable {
     @OneToMany
     private List<Component> components = new ArrayList<Component>();
     @OneToMany
-    private List<Device> devices = new ArrayList<Device>();
+    private List<Agent> devices = new ArrayList<Agent>();
 
     protected Project() {
     }
@@ -72,7 +72,7 @@ public class Project implements Serializable {
         return components;
     }
 
-    public List<Device> getDevices() {
+    public List<Agent> getDevices() {
         return devices;
     }
 
@@ -84,7 +84,7 @@ public class Project implements Serializable {
             String pattern = String.format("%" + compNum + "s",
                     Integer.toBinaryString(i)).replaceAll("\\s", "0");
 
-            Device device = new Device(i * 1l);
+            Agent device = new Agent(i * 1l);
 
             for (int j = 0; j < compNum; j++) {
                 if (pattern.charAt(compNum - j - 1) == '1') {

@@ -26,7 +26,7 @@ import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
-import phd.mrs.entity.Device;
+import phd.mrs.entity.Agent;
 import phd.mrs.entity.Project;
 import phd.mrs.ga.fitness.MrsSimpleFitnessFunction;
 
@@ -47,12 +47,12 @@ public class Island extends Thread {
 
         this.configuration = new DefaultConfiguration(name, name);
 
-        List<DeviceGene> genes = new ArrayList<DeviceGene>();
-        for (Device dev : project.getDevices()) {
-            genes.add(new DeviceGene(this.configuration, 0, Config.DEVICE_LIMIT, dev));
+        List<AgentGene> genes = new ArrayList<AgentGene>();
+        for (Agent dev : project.getDevices()) {
+            genes.add(new AgentGene(this.configuration, 0, Config.DEVICE_LIMIT, dev));
         }
 
-        Chromosome sampleChromosome = new Chromosome(this.configuration, genes.toArray(new DeviceGene[0]));
+        Chromosome sampleChromosome = new Chromosome(this.configuration, genes.toArray(new AgentGene[0]));
         this.configuration.setSampleChromosome(sampleChromosome);
 
         this.configuration.setFitnessFunction(new MrsSimpleFitnessFunction(project.getComponents()));
@@ -81,10 +81,10 @@ public class Island extends Thread {
         solution.getFitnessValue();
 
         for (Gene gene : solution.getGenes()) {
-            DeviceGene dev = (DeviceGene) gene;
+            AgentGene dev = (AgentGene) gene;
             if (dev.getInstances() > 0) {
-                System.out.println(dev.getInstances() + " x "+dev.getDevice().getInvestmentCosts());
-                dev.getDevice().print();
+                System.out.println(dev.getInstances() + " x "+dev.getAgent().getInvestmentCosts());
+                dev.getAgent().print();
             }
         }
     }

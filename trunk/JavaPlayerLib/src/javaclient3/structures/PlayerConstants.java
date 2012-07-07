@@ -608,9 +608,28 @@ public interface PlayerConstants {
     public final int PLAYER_GRAPHICS3D_MAX_POINTS = 1024;
     // Command subtype: clear the drawing area (send an empty message)
     public final int PLAYER_GRAPHICS3D_CMD_CLEAR  = 1;
-    // Command subtype: draw subitems
-    public final int PLAYER_GRAPHICS2D_CMD_DRAW   = 2;
-
+    // Command subtype: draw items
+    public final int PLAYER_GRAPHICS3D_CMD_DRAW   = 2;
+    // Command subtype: translate coordinate system
+    public final int PLAYER_GRAPHICS3D_CMD_TRANSLATE = 3;
+    // Command subtype: rotate coordinate system
+    public final int PLAYER_GRAPHICS3D_CMD_ROTATE = 4;
+    // Command subtype: push current coordinate system onto stack 
+    public final int PLAYER_GRAPHICS3D_CMD_PUSH = 5;
+    // Command subtype: pop coordinate system from stack to become current
+    public final int PLAYER_GRAPHICS3D_CMD_POP = 6;
+    // Graphics 3D drawing modes
+    public final int PLAYER_GRAPHICS3D_MODE_POINTS = 0;
+    public final int PLAYER_GRAPHICS3D_MODE_LINES = 1;
+    public final int PLAYER_GRAPHICS3D_MODE_LINE_STRIP = 2;
+    public final int PLAYER_GRAPHICS3D_MODE_LINE_LOOP = 3;
+    public final int PLAYER_GRAPHICS3D_MODE_TRIANGLES = 4;
+    public final int PLAYER_GRAPHICS3D_MODE_TRIANGLE_STRIP = 5;
+    public final int PLAYER_GRAPHICS3D_MODE_TRIANGLE_FAN = 6;
+    public final int PLAYER_GRAPHICS3D_MODE_QUADS = 7; 
+    public final int PLAYER_GRAPHICS3D_MODE_QUAD_STRIP = 8;
+    public final int PLAYER_GRAPHICS3D_MODE_POLYGON = 9;
+    
     // Data subtype: Health's data packet
     public final int PLAYER_HEALTH_DATA_STATE = 1;
 

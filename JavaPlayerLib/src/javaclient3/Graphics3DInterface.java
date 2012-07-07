@@ -89,14 +89,15 @@ public class Graphics3DInterface extends PlayerDevice {
     public void draw (PlayerGraphics3dCmdDraw pgcp) {
         try {
             int points = pgcp.getCount ();
-            if (points > 64) points = 64;
-            int size = 4 + 4 + 4 + (points * 24) + 16;
+            if (points > PLAYER_GRAPHICS3D_MAX_POINTS) points = PLAYER_GRAPHICS3D_MAX_POINTS;
+            int size = 4 + 4 + 4 + (points * 24) + 4 * 4;
             sendHeader
-                (PLAYER_MSGTYPE_CMD, PLAYER_GRAPHICS2D_CMD_POINTS, size);
+                (PLAYER_MSGTYPE_CMD, PLAYER_GRAPHICS3D_CMD_DRAW, size);
             XdrBufferEncodingStream xdr = new XdrBufferEncodingStream (size);
             xdr.beginEncoding (null, 0);
             xdr.xdrEncodeInt   (pgcp.getDraw_mode ());
-            xdr.xdrEncodeInt   (points);
+            xdr.xdrEncodeInt   (points); // number of points (variable)
+            xdr.xdrEncodeInt   (points); // number of array elements
             for (int i = 0; i < points; i++) {
                 xdr.xdrEncodeDouble (pgcp.getPoints ()[i].getPx ());
                 xdr.xdrEncodeDouble (pgcp.getPoints ()[i].getPy ());

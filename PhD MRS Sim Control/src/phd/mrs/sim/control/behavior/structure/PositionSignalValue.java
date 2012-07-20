@@ -8,15 +8,15 @@ package phd.mrs.sim.control.behavior.structure;
  *
  * @author Vitaljok
  */
-public class PositionSignal extends BehaviorSignal {
-    private Double speed;
-    private Double course;
+public class PositionSignalValue extends SignalValue{
+    Double speed;
+    Double course;
 
-    public PositionSignal(Double speed, Double course) {
+    public PositionSignalValue(Double speed, Double course) {
         this.speed = speed;
         this.course = course;
     }
-    
+
     public Double getCourse() {
         return course;
     }

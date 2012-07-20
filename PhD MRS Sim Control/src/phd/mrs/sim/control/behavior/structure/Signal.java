@@ -8,6 +8,7 @@ package phd.mrs.sim.control.behavior.structure;
  *
  * @author Vitaljok
  */
-public class RangerSignal extends BehaviorSignal {
-    
+public interface Signal {
+    Boolean isActive();
+    SignalValue getValue();
 }

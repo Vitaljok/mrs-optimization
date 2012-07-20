@@ -4,10 +4,8 @@
  */
 package phd.mrs.sim.control.behavior;
 
-import phd.mrs.sim.control.behavior.util.BehaviorInputNotReady;
-import phd.mrs.sim.control.behavior.util.BehaviorInvalidInputSignal;
-import phd.mrs.sim.control.behavior.structure.BehaviorSignal;
-import phd.mrs.sim.control.behavior.util.BehaviorOutputNotReady;
+import phd.mrs.sim.control.behavior.util.BehaviorInvalidInputSignalException;
+import phd.mrs.sim.control.behavior.structure.Signal;
 
 /**
  *
@@ -15,9 +13,5 @@ import phd.mrs.sim.control.behavior.util.BehaviorOutputNotReady;
  */
 public interface Behavior {
 
-    public Boolean getActive() throws BehaviorOutputNotReady;
-
-    public BehaviorSignal getOutput() throws BehaviorOutputNotReady;
-
-    public void Process() throws BehaviorInputNotReady, BehaviorInvalidInputSignal;
+    public Signal getOutput(Long requestId) throws BehaviorInvalidInputSignalException;
 }

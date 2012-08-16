@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs;
+package phd.mrs.heuristic;
 
-import phd.mrs.utils.Config;
+import phd.mrs.heuristic.utils.Config;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import phd.mrs.entity.Component;
-import phd.mrs.entity.Agent;
-import phd.mrs.entity.Project;
-import phd.mrs.ga.Island;
-import phd.mrs.mission.AreaCoverageMission;
+import phd.mrs.heuristic.entity.Component;
+import phd.mrs.heuristic.entity.Agent;
+import phd.mrs.heuristic.entity.Project;
+import phd.mrs.heuristic.ga.Island;
+import phd.mrs.heuristic.mission.AreaCoverageMission;
 
 /**
  *

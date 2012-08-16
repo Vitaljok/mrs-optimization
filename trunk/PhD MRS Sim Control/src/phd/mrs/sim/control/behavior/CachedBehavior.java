@@ -1,35 +1,36 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Licensed under the Academic Free License version 3.0
  */
 package phd.mrs.sim.control.behavior;
 
 import phd.mrs.sim.control.behavior.structure.Signal;
-import phd.mrs.sim.control.behavior.util.BehaviorInvalidInputSignalException;
 
 /**
  *
  * @author Vitaljok
  */
-public abstract class CachedBehavior implements Behavior {
+public abstract class CachedBehavior<T extends Signal> implements Behavior {
 
-    private Signal cachedOutput;
+    private T cachedOutput;
     private Long previousRequestId = -1l;
+    protected T output;
 
     @Override
-    public Signal getOutput(Long requestId) throws BehaviorInvalidInputSignalException {
+    public T getOutput(Long requestId) {
+        
+//        if (output == null)
+//            throw new IllegalStateException("Initialize protected output variable in derived objects.");
+        
         if (requestId != this.previousRequestId) {
             cachedOutput = null;
         }
 
         if (cachedOutput == null) {
-            System.out.println(this+" - calculated output");
             cachedOutput = getOutputInternal(requestId);
             previousRequestId = requestId;
         }
-        System.out.println(this+" - output");
         return cachedOutput;
     }
 
-    protected abstract Signal getOutputInternal(Long requestId) throws BehaviorInvalidInputSignalException;
+    protected abstract T getOutputInternal(Long requestId);
 }

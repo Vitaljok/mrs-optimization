@@ -18,6 +18,7 @@ public abstract class AbstractPlayerCtrl extends Thread {
 
     protected PlayerClient client;
     private Integer ctrlLoopDelay;
+    private Boolean stopSignal = false;
 
     public AbstractPlayerCtrl(String host, Integer port) {
         super();
@@ -34,12 +35,12 @@ public abstract class AbstractPlayerCtrl extends Thread {
      * Handles processing thread loop.
      */
     @Override
-    public void run() {
+    public final void run() {
         beforeStart();
 
         client.runThreaded(-1, -1);
 
-        while (true) {
+        while (!stopSignal) {
             try {
                 process();
                 Thread.sleep(ctrlLoopDelay);
@@ -51,14 +52,25 @@ public abstract class AbstractPlayerCtrl extends Thread {
                 Thread.currentThread().interrupt();
             }
         }
+        
+        afterEnd();
     }
 
+    /**
+     * Executed after ending main control loop. 
+     */
+    public void afterEnd() {
+    }
+    
     /**
      * Executed before starting main control loop. 
      */
     public void beforeStart() {
     }
 
+    public void sendStopSignal() {
+            this.stopSignal = true;
+    }
     /**
      * Main processing loop 
      */

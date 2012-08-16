@@ -4,7 +4,6 @@
  */
 package phd.mrs.sim.control.behavior;
 
-import phd.mrs.sim.control.behavior.util.BehaviorInvalidInputSignalException;
 import phd.mrs.sim.control.behavior.structure.Signal;
 
 /**
@@ -13,5 +12,5 @@ import phd.mrs.sim.control.behavior.structure.Signal;
  */
 public interface Behavior {
 
-    public Signal getOutput(Long requestId) throws BehaviorInvalidInputSignalException;
+    public Signal getOutput(Long requestId);
 }

@@ -8,11 +8,11 @@ package phd.mrs.sim.control.behavior.structure;
  *
  * @author Vitaljok
  */
-public class Generic2SignalValue<T, E> extends SignalValue {
+public class Generic2Signal<T, E> extends Signal {
     private T value1;
     private E value2;
 
-    public Generic2SignalValue(T value1, E value2) {
+    public Generic2Signal(T value1, E value2) {
         this.value1 = value1;
         this.value2 = value2;
     }

@@ -8,10 +8,10 @@ package phd.mrs.sim.control.behavior.structure;
  *
  * @author Vitaljok
  */
-public class GenericSignalValue<T> extends SignalValue {
+public class GenericSignal<T> extends Signal {
     private T value;
 
-    public GenericSignalValue(T value) {
+    public GenericSignal(T value) {
         this.value = value;
     }
 

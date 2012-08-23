@@ -46,7 +46,7 @@ public class AreaCoverageMission extends AbstractMission {
                 throw new RuntimeException("Locomotion components are not defined!");
             }
             for (Component comp : locomotionComponents) {
-                price += comp.getDoubleProperty(Config.Prop.operatingCosts);
+                price += comp.getDoubleProperty(Config.Prop.operatingPower);
             }
             return price;
         }
@@ -60,7 +60,7 @@ public class AreaCoverageMission extends AbstractMission {
                 throw new RuntimeException("Navigation components are not defined!");
             }
             for (Component comp : navigationComponents) {
-                price += comp.getDoubleProperty(Config.Prop.operatingCosts);
+                price += comp.getDoubleProperty(Config.Prop.operatingPower);
             }
             return price;
         }

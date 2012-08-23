@@ -16,13 +16,12 @@
  */
 package phd.mrs.heuristic.ga;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.IntegerGene;
 import phd.mrs.heuristic.entity.Agent;
+import phd.mrs.heuristic.utils.Debug;
 
 /**
  *
@@ -40,8 +39,8 @@ public class AgentGene extends IntegerGene {
     public Agent getAgent() {
         return agent;
     }
-    
-    public Integer getInstances(){
+
+    public Integer getInstances() {
         return (Integer) this.getAllele();
     }
 
@@ -49,9 +48,10 @@ public class AgentGene extends IntegerGene {
     protected Gene newGeneInternal() {
         try {
             return new AgentGene(this.getConfiguration(), this.getLowerBounds(),
-                    this.getUpperBounds(), agent);
+                    this.getUpperBounds(), this.agent);
         } catch (InvalidConfigurationException ex) {
-            Logger.getLogger(AgentGene.class.getName()).log(Level.SEVERE, null, ex);
+            Debug.log.severe("Error creating new AgentGene");
+            ex.printStackTrace();
             return null;
         }
     }

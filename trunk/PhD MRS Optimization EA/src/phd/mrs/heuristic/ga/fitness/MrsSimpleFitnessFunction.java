@@ -24,6 +24,8 @@ import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.ga.AgentGene;
+import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.utils.Debug;
 
 /**
  * Calculates fitness value of SolutionChromosome in terms of costs.
@@ -37,10 +39,21 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
         this.systemComponents = systemComponents;
     }
 
+    private String getSolutionHash(IChromosome a_subject) {
+        String res = "";
+
+        for (Gene gene : a_subject.getGenes()) {
+            res += Integer.toHexString((Integer) gene.getAllele());
+        }
+
+        return res;
+    }
+
     @Override
     protected double evaluate(IChromosome a_subject) {
 
         Double value = 0d;
+
         Set<Component> comps = new HashSet<Component>();
 
         Double investmentCosts = 0d;
@@ -50,7 +63,7 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
         for (Gene gene : genes) {
             AgentGene agent = (AgentGene) gene;
             if (agent.getInstances() > 0) {
-                investmentCosts += agent.getAgent().getInvestmentCosts() * agent.getInstances();
+                investmentCosts += agent.getAgent().getProductionCosts() * agent.getInstances();
                 for (Component comp : agent.getAgent().getComponents()) {
                     comps.add(comp);
                 }
@@ -59,10 +72,14 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
 
         // check if all components are presented in solution
         if (!comps.containsAll(systemComponents)) {
-            return (1d * comps.size()) / (1d * systemComponents.size()) * 100;
+            Debug.log.info("Found non-complete solution, ignoring: [" + this.getSolutionHash(a_subject) + "]");
+            value = (1d * comps.size()) / (1d * systemComponents.size()) * 100;
         }
 
-        value = 10000000d - investmentCosts;
+        //Debug.log.finest("Calculated value ["+this.getSolutionHash(a_subject) +"] = "+investmentCosts);
+
+        value = Config.INFINITE_COSTS - investmentCosts;
+
 
         return value;
     }

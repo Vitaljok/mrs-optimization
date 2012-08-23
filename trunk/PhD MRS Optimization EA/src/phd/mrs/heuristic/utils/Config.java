@@ -22,34 +22,65 @@ package phd.mrs.heuristic.utils;
  */
 public class Config {
 
-    public static Integer NUM_ISLANDS = 5;
-    public static Integer DEVICE_LIMIT = 10;
-    public static Integer POPULATION_SIZE = 200;
-    public static Integer GENERATIONS_LIMIT = 5000;
-    public static Integer GENERATIONS_STEP = 100;
+    public static Integer NUM_ISLANDS = 1;
+    public static Integer DEVICE_LIMIT = 3;
+    public static Integer POPULATION_SIZE = 20;
+    public static Integer GENERATIONS_LIMIT = 100;
+    public static Integer GENERATIONS_STEP = 10;
+    public static Double INFINITE_COSTS = 1000000000d;
 
     static public class Coef {
 
         /**
-         * Exponential coefficient in device production price calculation.
-         * price coefficient = c_lin * EXP(c_exp * price);
+         * Exponential coefficient for agent assembly price calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
          */
-        public static Double agentProductionExp = 0.05d;
+        public static Double agentAssyExp = 0.15d;
         /**
-         * Linear coefficient in device production price calculation.
-         * price coefficient = c_lin * EXP(c_exp * price);
+         * Linear coefficient for agent assembly price calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
          */
-        public static Double agentProductionLin = 1.0d;
+        public static Double agentAssyLin = 20.0d;
         /**
-         * Exponential coefficient in device operating price calculation.
-         * price coefficient = c_lin * EXP(c_exp * price);
+         * Exponential coefficient for agent design price calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
          */
-        public static Double agentOperatingExp = 0.05d;
+        public static Double agentDesignExp = 0.2d;
         /**
-         * Linear coefficient in device operating price calculation.
-         * price coefficient = c_lin * EXP(c_exp * price);
+         * Linear coefficient for agent design price calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
          */
-        public static Double agentOperatingLin = 1.0d;
+        public static Double agentDesingLin = 140.0d;
+        /**
+         * System design coefficient         
+         */
+        public static Double systemDesign = 0.4d;
+        /**
+         * Exponential coefficient for system maintenence calculation.
+         * price = c_lin * EXP(c_exp * Nagent);
+         */
+        public static Double systemMaintExp = 0.2d;
+        /**
+         * Linear coefficient for system maintenence calculation.
+         * price = c_lin * EXP(c_exp * Nagent);
+         */
+        public static Double systemMaintLin = 20.0d;
+        
+        /**
+         * Eventual replacement rate
+         */
+        public static Double systemReplRate = 0.05d;
+        
+        /**
+         * Exponential coefficient for agent energy loss calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
+         */
+        public static Double agentEnergyLossExp = 0.2d;
+        /**
+         * Linear coefficient for agent energy loss calculation.
+         * price = c_lin * EXP(c_exp * Ncomp);
+         */
+        public static Double agentEnergyLossLin = 140.0d;
     }
 
     static public class Prop {
@@ -63,9 +94,9 @@ public class Config {
          */
         public static String investmentCosts = "investmentCosts";
         /**
-         * Operating costs of component (absolute) per time unit. 
+         * Operating power of component (absolute) per time unit. 
          */
-        public static String operatingCosts = "operatingCosts";
+        public static String operatingPower = "operatingPower";
         /**
          * Complexity of of component (relative). Increases design price of device. 
          * Default value is 1.0

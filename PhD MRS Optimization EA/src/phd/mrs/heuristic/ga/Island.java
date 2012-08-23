@@ -17,18 +17,15 @@
 package phd.mrs.heuristic.ga;
 
 import phd.mrs.heuristic.utils.Config;
-import java.util.ArrayList;
-import java.util.List;
-import org.jgap.Chromosome;
 import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
-import org.jgap.impl.DefaultConfiguration;
+import phd.mrs.heuristic.ChromosomeTestFrame;
 import phd.mrs.heuristic.entity.Agent;
 import phd.mrs.heuristic.entity.Project;
-import phd.mrs.heuristic.ga.fitness.MrsSimpleFitnessFunction;
+import phd.mrs.heuristic.utils.Debug;
 
 /**
  *
@@ -40,31 +37,16 @@ public class Island extends Thread {
     Configuration configuration;
     Genotype genotype;
 
-    public Island(String name, Project project) throws InvalidConfigurationException {
+    public Island(String name, Configuration configuration) throws InvalidConfigurationException {
         super(name);
-        System.out.println("Creating island: " + this.getName() + "@" + Thread.currentThread().getId());
-        this.project = project;
-
-        this.configuration = new DefaultConfiguration(name, name);
-
-        List<AgentGene> genes = new ArrayList<AgentGene>();
-        for (Agent dev : project.getDevices()) {
-            genes.add(new AgentGene(this.configuration, 0, Config.DEVICE_LIMIT, dev));
-        }
-
-        Chromosome sampleChromosome = new Chromosome(this.configuration, genes.toArray(new AgentGene[0]));
-        this.configuration.setSampleChromosome(sampleChromosome);
-
-        this.configuration.setFitnessFunction(new MrsSimpleFitnessFunction(project.getComponents()));
-
-        this.configuration.setPopulationSize(Config.POPULATION_SIZE);             
-
+        Debug.log.info("Populating island");
+        this.configuration = configuration;
         this.genotype = Genotype.randomInitialGenotype(this.configuration);
     }
 
     @Override
     public void run() {
-        System.out.println("Starting evalution: " + this.getName() + "@" + Thread.currentThread().getId());
+        Debug.log.info("Starting evalution");
 
         Integer popNum = 0;
 
@@ -73,18 +55,25 @@ public class Island extends Thread {
             popNum += Config.GENERATIONS_STEP;
 
             IChromosome best = genotype.getFittestChromosome();
-            System.out.println(this.getName() + ":\t" + popNum + "\t" + best.getFitnessValue());
+            Debug.log.info(popNum + "\t" + best.getFitnessValue());
         }
-
-        IChromosome solution = genotype.getFittestChromosome();
         
-        solution.getFitnessValue();
+        new ChromosomeTestFrame(configuration, genotype.getFittestChromosome()).setVisible(true);
+    }
+
+    public void printSolution() {
+        IChromosome solution = genotype.getFittestChromosome();
 
         for (Gene gene : solution.getGenes()) {
-            AgentGene dev = (AgentGene) gene;
-            if (dev.getInstances() > 0) {
-                System.out.println(dev.getInstances() + " x "+dev.getAgent().getInvestmentCosts());
-                dev.getAgent().print();
+            AgentGene agentGene = (AgentGene) gene;
+            if (agentGene.getInstances() > 0) {
+
+                Agent agent = agentGene.getAgent();
+
+                System.out.println(agentGene.getInstances() + " x " + agent.getComponents());
+
+                //Debug.log.info(agentGene.getInstances() + " x "+agentGene.getAgent().getProductionCosts());
+                //agentGene.getAgent().print();
             }
         }
     }

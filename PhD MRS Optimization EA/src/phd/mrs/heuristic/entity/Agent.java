@@ -16,106 +16,81 @@
  */
 package phd.mrs.heuristic.entity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import phd.mrs.heuristic.utils.CachedProperty;
 import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.utils.Debug;
 
 /**
  *
  * @author Vitaljok
  */
-@Entity
-public class Agent implements Serializable {
+public class Agent {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @OneToMany
     private List<Component> components = new ArrayList<Component>();
+    private CachedProperty<Double> designCosts = new CachedProperty<Double>() {
+
+        @Override
+        protected Double calculateValue() {
+            Debug.log.fine("Calculated cached desing costs");
+            return Config.Coef.agentDesingLin * Math.exp(Config.Coef.agentDesignExp * getComponents().size());
+        }
+    };
+    private CachedProperty<Double> productionCosts = new CachedProperty<Double>() {
+
+        @Override
+        protected Double calculateValue() {
+            double costs = 0d;
+            double maxComplexity = 0d;
+
+            // sum of components
+            for (Component comp : getComponents()) {
+                double compPrice = comp.getDoubleProperty(Config.Prop.investmentCosts);
+                maxComplexity = Math.max(maxComplexity, comp.getDoubleProperty(Config.Prop.complexity, 1.0));
+                costs += compPrice;
+            }
+
+            // add assembly costs
+            costs += Config.Coef.agentAssyLin * Math.exp(Config.Coef.agentAssyExp * getComponents().size()) * maxComplexity;
+
+            Debug.log.fine("Calculated cached production costs");
+
+            return costs;
+        }
+    };
+    private CachedProperty<Double> operatingEnergy = new CachedProperty<Double>() {
+
+        @Override
+        protected Double calculateValue() {
+            Debug.log.fine("Calculated cached operating energy");
+
+            double energy = 0d;
+            for (Component comp : components) {
+                energy += comp.getDoubleProperty(Config.Prop.operatingPower);
+            }
+
+            return energy + Config.Coef.agentEnergyLossLin * Math.exp(Config.Coef.agentEnergyLossExp * getComponents().size());
+        }
+    };
+
+    public Double getOperatingEnergy() {
+        return operatingEnergy.getValue();
+    }    
 
     protected Agent() {
-    }
-
-    public Agent(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        Debug.log.finest("New agent created");
     }
 
     public List<Component> getComponents() {
         return components;
     }
 
-    public void print() {
-        System.out.println("Device #" + this.id + "\t" + components);
-    }
-    @Transient
-    CachedProperty<Double> investmentCots = new CachedProperty<Double>() {
-
-        @Override
-        protected Double calculateValue() {
-            Double costs = 0d;
-
-            Double maxComplexity = 0d;
-
-            // sum of components
-            for (Component comp : getComponents()) {
-                Double compPrice = comp.getDoubleProperty(Config.Prop.investmentCosts);
-                maxComplexity = Math.max(maxComplexity, comp.getDoubleProperty(Config.Prop.complexity, 1.0));
-                costs += compPrice;
-            }
-
-            // producion coefficient
-            costs *= Config.Coef.agentProductionLin * Math.exp(Config.Coef.agentProductionExp * getComponents().size());
-
-            // complexity coefficient
-            costs *= maxComplexity;
-
-            return costs;
-        }
-    };
-
-    public Double getInvestmentCosts() {
-        return this.investmentCots.getValue();
+    public Double getProductionCosts() {
+        return this.productionCosts.getValue();
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Agent)) {
-            return false;
-        }
-        Agent other = (Agent) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "phd.mrs.entity.Device[id=" + id + "]";
+    public Double getDesignCosts() {
+        return this.designCosts.getValue();
     }
 }

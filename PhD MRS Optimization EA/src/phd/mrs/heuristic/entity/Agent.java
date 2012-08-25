@@ -76,7 +76,7 @@ public class Agent {
 
     public Double getOperatingEnergy() {
         return operatingEnergy.getValue();
-    }    
+    }
 
     protected Agent() {
         Debug.log.finest("New agent created");

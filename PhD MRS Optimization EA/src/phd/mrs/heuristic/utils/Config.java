@@ -28,6 +28,7 @@ public class Config {
     public static Integer GENERATIONS_LIMIT = 100;
     public static Integer GENERATIONS_STEP = 10;
     public static Double INFINITE_COSTS = 1000000000d;
+    public static Double NEAR_ZERO = 0.0000000001;
 
     static public class Coef {
 

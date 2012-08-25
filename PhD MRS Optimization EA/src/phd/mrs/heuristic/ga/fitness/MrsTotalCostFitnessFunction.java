@@ -17,13 +17,14 @@
 package phd.mrs.heuristic.ga.fitness;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jgap.FitnessFunction;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.heuristic.entity.Component;
+import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.ga.AgentGene;
 import phd.mrs.heuristic.utils.Config;
 import phd.mrs.heuristic.utils.Debug;
@@ -34,16 +35,24 @@ import phd.mrs.heuristic.utils.Debug;
  */
 public class MrsTotalCostFitnessFunction extends FitnessFunction {
 
-    List<Component> systemComponents;
+    Project project;
     Map<Component, Integer> compsMap;
 
-    public MrsTotalCostFitnessFunction(List<Component> systemComponents) {
-        this.systemComponents = systemComponents;
+    public MrsTotalCostFitnessFunction(Project project) {
+        this.project = project;
         this.compsMap = new HashMap<Component, Integer>();
 
-        for (Component c : systemComponents) {
+        for (Component c : this.project.getComponents()) {
             this.compsMap.put(c, 0);
         }
+    }
+
+    private double estimateWorkTime(IChromosome solution) {
+
+
+
+
+        return 0d;
     }
 
     @Override
@@ -63,7 +72,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
                 Qinv += agentGene.getAgent().getProductionCosts() * agentGene.getInstances();
                 // QDesign
                 Qinv += agentGene.getAgent().getDesignCosts();
-                
+
                 for (Component comp : agentGene.getAgent().getComponents()) {
                     comps.put(comp, comps.get(comp) + 1);
                 }
@@ -88,28 +97,20 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
         // apply system design coefficient (Csys_design)
         Qinv *= Config.Coef.systemDesign;
 
-        
-        // operating costs calculation
-        double Qoper = 0d;
-        double Tsys = 5d; //TODO: = max(Tagent)       
-        double Tagent = 5d; //TODO: estimate operation time       
-        
-        int Nagents = 0;
-        double Qenergy = 0d;
-        
-        for (Gene gene : genes) {
-            AgentGene agentGene = (AgentGene) gene;
-            if (agentGene.getInstances() > 0) {
-                Qenergy += agentGene.getAgent().getOperatingEnergy() * Tagent;                               
-                Nagents += agentGene.getInstances();
-            }
+
+        OperatingCostCalculator calc = new OperatingCostCalculator(project, a_subject, 0d);
+
+        Thread sub = new Thread(calc, "OpCostSubThread");
+        try {
+            sub.start();
+            sub.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MrsTotalCostFitnessFunction.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        double Qmaint = Config.Coef.systemMaintLin * Math.exp(Config.Coef.systemMaintExp * Nagents) * Tsys;
-        double Qrepl = Qinv * Config.Coef.systemReplRate * Tsys;
-        
-        Qoper = Qmaint + Qrepl + Qenergy;
-        
-        return Qmaint;//Qinv + Qoper;
+
+        Double Qoper = calc.getEstimation();
+
+
+        return Qinv + Qoper;
     }
 }

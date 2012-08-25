@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import phd.mrs.heuristic.mission.Mission;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -33,6 +34,7 @@ public class Project implements Serializable {
     private List<Component> components = new ArrayList<Component>();
     private List<Agent> agents = new ArrayList<Agent>();
     private Map<Component, List<Component>> reqMap = new HashMap<Component, List<Component>>();
+    private List<Mission> missions = new ArrayList<Mission>();
 
     public Project(String name) {
         this.name = name;
@@ -66,6 +68,10 @@ public class Project implements Serializable {
         this.reqMap.get(orig).add(ref);
     }
 
+    public List<Mission> getMissions() {
+        return missions;
+    }
+
     public List<Agent> getAgents() {
         return agents;
     }
@@ -73,21 +79,21 @@ public class Project implements Serializable {
     private boolean isAgentValid(Agent agent) {
         for (Component comp : agent.getComponents()) {
             List<Component> refList = reqMap.get(comp);
-            
+
             if (refList != null) {
                 if (!agent.getComponents().containsAll(refList)) {
                     return false;
                 }
             }
-        }       
-        
+        }
+
         return true;
     }
 
     public Integer generateAgents() {
         Integer compNum = this.getComponents().size();
         Debug.log.info("Generating agents: " + (1 << compNum));
-        
+
         int inv = 0;
 
         for (int i = 1; i <= (1 << compNum); i++) {
@@ -101,14 +107,14 @@ public class Project implements Serializable {
                     agent.getComponents().add(this.getComponents().get(j));
                 }
             }
-           
+
             if (this.isAgentValid(agent)) {
                 this.getAgents().add(agent);
             } else {
                 inv++;
-            }             
+            }
         }
-        
+
         Debug.log.info("Skipped invalid agents: " + inv);
 
         return 0;

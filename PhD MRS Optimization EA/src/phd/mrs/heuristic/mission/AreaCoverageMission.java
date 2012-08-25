@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Vitaljok
+ * Copyright (C) 2012 Vitaljok
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,113 +16,79 @@
  */
 package phd.mrs.heuristic.mission;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.utils.CachedProperty;
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.Component;
 
 /**
- *
+ * Area coverage mission, which imply that agent moves upon defined area 
+ * and performs an operation by its work device.
  * @author Vitaljok
  */
-public class AreaCoverageMission extends AbstractMission {
+public class AreaCoverageMission implements Mission {
 
-    List<Component> locomotionComponents = new ArrayList<Component>();
-    List<Component> navigationComponents = new ArrayList<Component>();
-    Map<Agent, Integer> solution;
-    Integer sizeX;
-    Integer sizeY;
-    CachedProperty<Double> locomotionPrice = new CachedProperty<Double>() {
+    Double areaSizeX;
+    Double areaSizeY;
+    Double workDensity;
+    Double workDeviceWidth;
+    Double movingSpeed;
+    Component mobileBase;
+    Component workDevice;
 
-        @Override
-        protected Double calculateValue() {
-            Double price = 0d;
-            if (locomotionComponents.isEmpty()) {
-                throw new RuntimeException("Locomotion components are not defined!");
-            }
-            for (Component comp : locomotionComponents) {
-                price += comp.getDoubleProperty(Config.Prop.operatingPower);
-            }
-            return price;
-        }
-    };
-    CachedProperty<Double> navigationPrice = new CachedProperty<Double>() {
-
-        @Override
-        protected Double calculateValue() {
-            Double price = 0d;
-            if (navigationComponents.isEmpty()) {
-                throw new RuntimeException("Navigation components are not defined!");
-            }
-            for (Component comp : navigationComponents) {
-                price += comp.getDoubleProperty(Config.Prop.operatingPower);
-            }
-            return price;
-        }
-    };
-
-    public AreaCoverageMission(Properties properties, Map<Agent, Integer> solution) {
-        super(properties);
-        try {
-            sizeX = Integer.valueOf(properties.getProperty(Config.Prop.missionSizeX));
-        } catch (Exception ex) {
-            throw new RuntimeException(
-                    MessageFormat.format("AreaCoverageMission does not have valid \"{0}\" property!",
-                    Config.Prop.missionSizeX));
-        }
-
-        try {
-            sizeY = Integer.valueOf(properties.getProperty(Config.Prop.missionSizeY));
-        } catch (Exception ex) {
-            throw new RuntimeException(
-                    MessageFormat.format("AreaCoverageMission does not have valid \"{0}\" property!",
-                    Config.Prop.missionSizeY));
-        }
-
-        this.solution = solution;
+    /**
+     * Creates new mission instance
+     * @param areaSizeX size of working area on X axis
+     * @param areaSizeY size of working area on Y axis
+     * @param workDensity percentage of total area to be processed during work
+     */
+    public AreaCoverageMission(Double areaSizeX, Double areaSizeY, Double workDensity) {
+        this.areaSizeX = areaSizeX;
+        this.areaSizeY = areaSizeY;
+        this.workDensity = workDensity;
     }
 
-    public List<Component> getLocomotionComponents() {
-        return locomotionComponents;
+    public Component getMobileBase() {
+        return mobileBase;
     }
 
-    public List<Component> getNavigationComponents() {
-        return navigationComponents;
+    /**
+     * @param mobileBase component used to move the agent around the area
+     * @param movingSpeed moving speed
+     */
+    public void setMobileBase(Component mobileBase, Double movingSpeed) {
+        this.mobileBase = mobileBase;
+        this.movingSpeed = movingSpeed;
     }
 
-    public Map<Agent, Integer> getSolution() {
-        return solution;
+    public Component getWorkDevice() {
+        return workDevice;
     }
 
-    public void setSolution(Map<Agent, Integer> solution) {
-        this.solution = solution;
-    }
-
-    public void process() {
-        Double costs = 0d;
-        Integer ops = sizeX * sizeY;
-        Integer devs = 0;
-
-        for (Agent dev : solution.keySet()) {
-            if (dev.getComponents().containsAll(locomotionComponents)) {
-                devs += solution.get(dev);
-            }
-        }
-        
-        // now I have ops * price formula. 
-        // TODO: implement advanced time assignment model for different devices
-        costs = Math.ceil(1.0d * ops / devs) * locomotionPrice.getValue() * devs;        
-
-        System.out.println("Operating costs: " + costs+"\t"+devs);
+    /**
+     * @param workDevice component, which performs the work while moving around the area
+     * @param workDeviceWidth width of work device
+     */
+    public void setWorkDevice(Component workDevice, Double workDeviceWidth) {
+        this.workDevice = workDevice;
+        this.workDeviceWidth = workDeviceWidth;
     }
 
     @Override
-    public Double getTime() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Double getAgentPerformance(Agent agent) {
+        if (agent.getComponents().contains(this.mobileBase)
+                && agent.getComponents().contains(this.workDevice)) {
+            return this.movingSpeed;
+        } else {
+            return 0d;
+        }
+    }    
+
+    @Override
+    public Double getAmountOfWork() {
+        return this.areaSizeX * this.areaSizeY / this.workDeviceWidth * this.workDensity;
+    }
+
+    @Override
+    public Integer getMaxTimeEstimation() {
+        return new Integer((int)(Math.ceil(this.getAmountOfWork() / this.movingSpeed * 1.25)));
     }
 }

@@ -16,20 +16,17 @@
  */
 package phd.mrs.heuristic.mission;
 
-import java.util.ArrayList;
-import java.util.List;
 import phd.mrs.heuristic.entity.Agent;
 
 /**
  *
  * @author Vitaljok
  */
-public abstract class AbstractMission implements Mission {
+public interface Mission {
+
+    Double getAgentPerformance(Agent agent);
+
+    Double getAmountOfWork();
     
-//    /**
-//     * the list of components required for mission
-//     */
-//    protected List<Component> components = new ArrayList<Component>();
-//        return components;
-//    }    
+    Integer getMaxTimeEstimation();
 }

@@ -29,6 +29,7 @@ import org.jgap.impl.GABreeder;
 import org.jgap.impl.MutationOperator;
 import org.jgap.impl.StockRandomGenerator;
 import phd.mrs.heuristic.entity.Agent;
+import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.ga.AgentGene;
@@ -57,7 +58,6 @@ public class MRSOptimizer {
         Component compMobileBase = new Component("mobile-base", "Mobile base", null);
         compMobileBase.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(60d));
         compMobileBase.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(4d));
-        compMobileBase.getProperties().setProperty(Config.Prop.complexity, Double.toString(1d));
         compMobileBase.getProperties().setProperty(Config.Prop.compFamily, "wheeled car-like");
         project.getComponents().add(compMobileBase);
 
@@ -72,6 +72,7 @@ public class MRSOptimizer {
         compMowingMachine.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(40.00));
         compMowingMachine.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(5d));
         compMowingMachine.getProperties().setProperty(Config.Prop.compFamily, "1-DOF manipulator");
+        compMowingMachine.getProperties().setProperty(Config.Prop.workDeviceWidth, Double.toString(1d));
         project.getComponents().add(compMowingMachine);
 
         Component compLoader = new Component("loader", "Loader", null);
@@ -108,12 +109,14 @@ public class MRSOptimizer {
         compNavigation.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(50.00));
         compNavigation.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(1d));
         compNavigation.getProperties().setProperty(Config.Prop.compFamily, "Computation");
+        compNavigation.getProperties().setProperty(Config.Prop.complexity, Double.toString(1.3));
         project.getComponents().add(compNavigation);
 
         Component compTaskAllocation = new Component("task-allocation", "Task allocation", null);
         compTaskAllocation.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(50.00));
         compTaskAllocation.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(1d));
         compTaskAllocation.getProperties().setProperty(Config.Prop.compFamily, "Computation");
+        compTaskAllocation.getProperties().setProperty(Config.Prop.complexity, Double.toString(1.2));
         project.getComponents().add(compTaskAllocation);
         
         // component requirements               
@@ -125,7 +128,17 @@ public class MRSOptimizer {
         project.addReq(compGPS, compMobileBase); // GPS is useless on stationary device
         project.addReq(compNavigation, compWiFi); // Networking is required for controlling navigation
         project.addReq(compTaskAllocation, compWiFi); // Tasks should be sent via net
-        
+        //reverse requirements
+        project.addReq(compMobileBase, compGPS); // Mobile base requires GPS for navigation
+        project.addReq(compMobileBase, compWiFi); // Mobile base requires WiFi
+        project.addReq(compMobileBase, compLaser); // Mobile base requires laser for navigation
+                      
+        // Missions
+        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d, 0.7);        
+        areaCoverageMission.setMobileBase(compMobileBase, 2d); // moves 2m/s
+        areaCoverageMission.setWorkDevice(compMowingMachine, 1.2); // trims 1.2 m wide area
+
+        project.getMissions().add(areaCoverageMission);        
     }
 
     public void execute() {
@@ -148,7 +161,7 @@ public class MRSOptimizer {
 
             // fitness function
             this.configuration.setFitnessEvaluator(new InverseFitnessEvaluator());
-            this.configuration.setFitnessFunction(new MrsTotalCostFitnessFunction(project.getComponents()));
+            this.configuration.setFitnessFunction(new MrsTotalCostFitnessFunction(project));
 
             // genetic operations            
             BestChromosomesSelector bestChromsSelector = new BestChromosomesSelector(

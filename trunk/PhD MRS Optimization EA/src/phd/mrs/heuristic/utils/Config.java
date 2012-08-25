@@ -105,10 +105,21 @@ public class Config {
         /**
          * Mission size on X axis.
          */
+        @Deprecated
         public static String missionSizeX = "missionSizeX";
         /**
          * Mission size on Y axis.
          */
+        @Deprecated
         public static String missionSizeY = "missionSizeY";
+        
+        /**
+         * The width of work device used in @AreaCoverageMission calculations
+         */
+        public static String workDeviceWidth = "workDeviceWidth";
+        /**
+         * The width of work device used in @AreaCoverageMission calculations
+         */
+        public static String speed = "speed";
     }
 }

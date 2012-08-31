@@ -70,7 +70,7 @@ public class MrsOpCostFitnessFunction extends FitnessFunction {
                     + opGene.getMission().getAgentPerformance(opGene.getAgent()) * opGene.getTime());
         }
         
-        double Qmaint = Config.Coef.systemMaintLin * Math.exp(Config.Coef.systemMaintExp * a_subject.getGenes().length) * Tsys;
+        double Qmaint = Config.CostModel.getSysMaint(a_subject.getGenes().length) * Tsys;
         double Qrepl = this.qInv * Config.Coef.systemReplRate * Tsys;
 
         // evaluate results (add penalties for uncomplete work)

@@ -208,7 +208,7 @@ public class MRSOptimizer {
 
 
         try {
-            Island island = new Island("IslandA", configuration);
+            Island island = new Island("IslandA", configuration, project);
             island.run();
 
         } catch (InvalidConfigurationException ex) {

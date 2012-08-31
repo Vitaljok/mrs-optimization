@@ -37,28 +37,35 @@ public class Island extends Thread {
     Configuration configuration;
     Genotype genotype;
 
-    public Island(String name, Configuration configuration) throws InvalidConfigurationException {
+    public Island(String name, Configuration configuration, Project project) throws InvalidConfigurationException {
         super(name);
         Debug.log.info("Populating island");
         this.configuration = configuration;
         this.genotype = Genotype.randomInitialGenotype(this.configuration);
+        this.project = project;
     }
 
     @Override
     public void run() {
         Debug.log.info("Starting evalution");
 
-        Integer popNum = 0;
+        int genNum = 0;
+        int lastChangeGen = 0;
+        double lastFitValue = -1d;
 
-        while (popNum < Config.GENERATIONS_LIMIT) {
+        while (genNum < Config.GENERATIONS_LIMIT) {
             genotype.evolve(Config.GENERATIONS_STEP);
-            popNum += Config.GENERATIONS_STEP;
+            genNum += Config.GENERATIONS_STEP;
 
             IChromosome best = genotype.getFittestChromosome();
-            Debug.log.info(popNum + "\t" + best.getFitnessValue());
+            if (lastFitValue != best.getFitnessValue()) {
+                lastChangeGen = genNum;
+                lastFitValue = best.getFitnessValue();
+            }
+            Debug.log.info(genNum + "\t~"+lastChangeGen +"\t"+ best.getFitnessValue() );
         }
-        
-        new ChromosomeTestFrame(configuration, genotype.getFittestChromosome()).setVisible(true);
+
+        new ChromosomeTestFrame(configuration, genotype.getFittestChromosome(), project).setVisible(true);
     }
 
     public void printSolution() {

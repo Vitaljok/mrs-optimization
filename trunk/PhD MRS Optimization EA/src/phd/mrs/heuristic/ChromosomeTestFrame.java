@@ -22,11 +22,17 @@
  */
 package phd.mrs.heuristic;
 
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.jgap.Configuration;
+import org.jgap.Gene;
 import org.jgap.IChromosome;
+import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.ga.AgentGene;
+import phd.mrs.heuristic.utils.SolutionCalculator;
 
 /**
  *
@@ -36,22 +42,24 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
 
     Configuration configuration;
     IChromosome chromosome;
+    Project project;
 
-    public ChromosomeTestFrame(Configuration configuration, IChromosome chromosome) {
+    public ChromosomeTestFrame(Configuration configuration, IChromosome chromosome, Project project) {
         this.configuration = configuration;
         this.chromosome = chromosome;
-        initComponents();        
-        
+        this.project = project;
+        initComponents();
+
         MyTableModel model = new MyTableModel(chromosome);
         this.jTable.setModel(model);
-                
+
         this.jTable.setRowSorter(new TableRowSorter<MyTableModel>(model));
-        
+
         this.jTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         this.jTable.getColumnModel().getColumn(0).setMaxWidth(50);
         this.jTable.getColumnModel().getColumn(1).setMaxWidth(50);
 
-        
+
     }
 
     /** This method is called from within the constructor to
@@ -66,7 +74,8 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
         jButtonEvaluate = new javax.swing.JButton();
-        jLabel = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTableRes = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,44 +88,80 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel.setText("jLabel");
+        jTableRes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(jTableRes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonEvaluate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButtonEvaluate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 915, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButtonEvaluate)
-                    .addComponent(jLabel))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonEvaluateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEvaluateActionPerformed
-        Double value = this.configuration.getFitnessFunction().getFitnessValue(this.chromosome);        
-        
-        this.jLabel.setText(value.toString());
+        Double value = this.configuration.getFitnessFunction().getFitnessValue(this.chromosome);
+
+        List<AgentGene> solution = new LinkedList<>();
+
+        for (Gene gene : this.chromosome.getGenes()) {
+            solution.add((AgentGene) gene);
+        }
+
+        SolutionCalculator calc = new SolutionCalculator(solution, project);
+        calc.process();
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Position", "Value"}, 0);
+        model.addRow(new Object[]{"Fitness value", value});
+        model.addRow(new Object[]{"Qinv", calc.getQinv()});
+        model.addRow(new Object[]{"Qsys_design", calc.getQsys_design()});        
+        model.addRow(new Object[]{"Qdesign", calc.getQdesign()});
+        model.addRow(new Object[]{"Qprod", calc.getQprod()});
+        model.addRow(new Object[]{"Qassy", calc.getQassy()});
+        model.addRow(new Object[]{"Qoper", calc.getQoper()});
+        model.addRow(new Object[]{"Qmaint", calc.getQmaint()});
+        model.addRow(new Object[]{"Qrepl", calc.getQrepl()});
+
+        this.jTableRes.setModel(model);
+
+
     }//GEN-LAST:event_jButtonEvaluateActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEvaluate;
-    private javax.swing.JLabel jLabel;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable;
+    private javax.swing.JTable jTableRes;
     // End of variables declaration//GEN-END:variables
 
     class MyTableModel extends AbstractTableModel {
@@ -132,8 +177,6 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return columnIndex == 0;
         }
-        
-        
 
         @Override
         public int getRowCount() {
@@ -159,7 +202,7 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return (Integer)this.chrom.getGenes()[rowIndex].getAllele();
+                    return (Integer) this.chrom.getGenes()[rowIndex].getAllele();
                 case 1:
                     return ((AgentGene) this.chrom.getGenes()[rowIndex]).getAgent().getComponents().size();
                 case 2:
@@ -171,12 +214,11 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (aValue == null){
+            if (aValue == null) {
                 aValue = new Integer(0);
             }
-            super.setValueAt(aValue, rowIndex, columnIndex);            
-            this.chrom.getGenes()[rowIndex].setAllele(aValue);            
-        }       
-        
+            super.setValueAt(aValue, rowIndex, columnIndex);
+            this.chrom.getGenes()[rowIndex].setAllele(aValue);
+        }
     }
 }

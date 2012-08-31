@@ -26,7 +26,7 @@ import phd.mrs.heuristic.utils.Debug;
  *
  * @author Vitaljok
  */
-public class Agent {
+public class Agent implements Cloneable {
 
     private List<Component> components = new ArrayList<Component>();
     private CachedProperty<Double> designCosts = new CachedProperty<Double>() {
@@ -34,13 +34,14 @@ public class Agent {
         @Override
         protected Double calculateValue() {
             Debug.log.fine("Calculated cached desing costs");
-            return Config.Coef.agentDesingLin * Math.exp(Config.Coef.agentDesignExp * getComponents().size());
+            return Config.CostModel.getDesign(getComponents().size());
         }
     };
     private CachedProperty<Double> productionCosts = new CachedProperty<Double>() {
 
         @Override
         protected Double calculateValue() {
+            Debug.log.fine("Calculated cached production costs");
             double costs = 0d;
             double maxComplexity = 0d;
 
@@ -52,10 +53,7 @@ public class Agent {
             }
 
             // add assembly costs
-            costs += Config.Coef.agentAssyLin * Math.exp(Config.Coef.agentAssyExp * getComponents().size()) * maxComplexity;
-
-            Debug.log.fine("Calculated cached production costs");
-
+            costs += Config.CostModel.getAssembly(getComponents().size(), maxComplexity);
             return costs;
         }
     };
@@ -70,7 +68,9 @@ public class Agent {
                 energy += comp.getDoubleProperty(Config.Prop.operatingPower);
             }
 
-            return energy + Config.Coef.agentEnergyLossLin * Math.exp(Config.Coef.agentEnergyLossExp * getComponents().size());
+            // add energy loss
+            energy += Config.CostModel.getEnergyLoss(getComponents().size());
+            return energy;
         }
     };
 
@@ -92,5 +92,16 @@ public class Agent {
 
     public Double getDesignCosts() {
         return this.designCosts.getValue();
+    }
+
+    @Override
+    public Agent clone() {
+        Agent new_agent = new Agent();
+        new_agent.components = this.components;
+        new_agent.operatingEnergy = this.operatingEnergy;
+        new_agent.productionCosts = this.productionCosts;
+        new_agent.designCosts = this.designCosts;
+
+        return new_agent;
     }
 }

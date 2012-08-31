@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs.heuristic.ga.fitness;
+package phd.mrs.heuristic.ga.fitness.opcost;
 
-import java.util.Iterator;
 import java.util.List;
 import phd.mrs.heuristic.entity.Agent;
 import phd.mrs.heuristic.mission.Mission;
-import phd.mrs.heuristic.utils.Pair;
+import phd.mrs.heuristic.utils.Config;
 
 /**
  *
@@ -77,6 +76,7 @@ public class AgentMissionMatrix {
         double maxValue = 0d;
         double result = 0d;
 
+        // calc energy costs
         for (Agent agent : agents) {
             double agentValue = 0d;
             for (Mission mis : this.missions) {
@@ -88,8 +88,29 @@ public class AgentMissionMatrix {
             maxValue = Math.max(agentValue, maxValue);
         }
 
-        return result + maxValue * sysCosts;
+        // add maintanence costs
+        result += Config.CostModel.getSysMaint(this.agents.size()) * maxValue;
+        
+        // add replacement costs
+        result += Config.Coef.systemReplRate * maxValue * sysCosts;
+        
+        return result;
 
+    }
+    
+    public Double getSysTime(){
+        double maxValue = 0d;
+
+        // calc energy costs
+        for (Agent agent : agents) {
+            double agentValue = 0d;
+            for (Mission mis : this.missions) {
+                agentValue += this.getValue(agent, mis);;
+            }
+
+            maxValue = Math.max(agentValue, maxValue);
+        }
+        return maxValue;
     }
 
     public void incValue(Agent agent, Mission mission, Double delta) {

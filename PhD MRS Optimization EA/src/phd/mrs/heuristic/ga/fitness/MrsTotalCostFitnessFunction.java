@@ -29,7 +29,6 @@ import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.ga.AgentGene;
 import phd.mrs.heuristic.ga.fitness.opcost.AbstractOpCostCalculator;
-import phd.mrs.heuristic.utils.Config;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -58,7 +57,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
 
         double Qinv = 0d;
 
-        Map<Component, Integer> comps = new HashMap<Component, Integer>(compsMap);
+        Map<Component, Integer> comps = new HashMap<>(compsMap);
 
         // loop through components and sum-product costs
         Gene[] genes = a_subject.getGenes();
@@ -86,7 +85,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
         }
         
         // add system design costs (use only active)
-        Qinv +=  Config.CostModel.getSysDesign(opAgentList.size());
+        Qinv +=  project.costModel.calcSysDesign(opAgentList.size());
         
 
         // check if all components are used in solution
@@ -101,7 +100,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
                 }
             }
 
-            return num * Config.INFINITE_COSTS;
+            return num * this.project.config.nearInfinity;
         }
         
         // TODO: check is mrs able to perform mission???

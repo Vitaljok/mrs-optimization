@@ -22,11 +22,11 @@ import phd.mrs.heuristic.entity.Agent;
  *
  * @author Vitaljok
  */
-public interface Mission {
+public abstract class Mission {
 
-    Double getAgentPerformance(Agent agent);
+    public abstract Double getAgentPerformance(Agent agent);
 
-    Double getAmountOfWork();
-    
-    Integer getMaxTimeEstimation();
+    public abstract Double getAmountOfWork();
+
+    public abstract Integer getMaxTimeEstimation();
 }

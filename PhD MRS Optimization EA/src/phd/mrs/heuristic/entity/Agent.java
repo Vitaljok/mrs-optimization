@@ -19,7 +19,6 @@ package phd.mrs.heuristic.entity;
 import java.util.ArrayList;
 import java.util.List;
 import phd.mrs.heuristic.utils.CachedProperty;
-import phd.mrs.heuristic.utils.Config;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -28,13 +27,14 @@ import phd.mrs.heuristic.utils.Debug;
  */
 public class Agent implements Cloneable {
 
-    private List<Component> components = new ArrayList<Component>();
+    private Project project;
+    private List<Component> components = new ArrayList<>();
     private CachedProperty<Double> designCosts = new CachedProperty<Double>() {
 
         @Override
         protected Double calculateValue() {
             Debug.log.fine("Calculated cached desing costs");
-            return Config.CostModel.getDesign(getComponents().size());
+            return project.costModel.calcDesign(getComponents().size());
         }
     };
     private CachedProperty<Double> productionCosts = new CachedProperty<Double>() {
@@ -47,13 +47,13 @@ public class Agent implements Cloneable {
 
             // sum of components
             for (Component comp : getComponents()) {
-                double compPrice = comp.getDoubleProperty(Config.Prop.investmentCosts);
-                maxComplexity = Math.max(maxComplexity, comp.getDoubleProperty(Config.Prop.complexity, 1.0));
+                double compPrice = comp.getInvestmentCosts();
+                maxComplexity = Math.max(maxComplexity, comp.getComplexity());
                 costs += compPrice;
             }
 
             // add assembly costs
-            costs += Config.CostModel.getAssembly(getComponents().size(), maxComplexity);
+            costs += project.costModel.calcAssembly(getComponents().size(), maxComplexity);
             return costs;
         }
     };
@@ -65,11 +65,11 @@ public class Agent implements Cloneable {
 
             double energy = 0d;
             for (Component comp : components) {
-                energy += comp.getDoubleProperty(Config.Prop.operatingPower);
+                energy += comp.getOperatingPower();
             }
 
             // add energy loss
-            energy += Config.CostModel.getEnergyLoss(getComponents().size());
+            energy += project.costModel.calcEnergyLoss(getComponents().size());
             return energy;
         }
     };
@@ -78,9 +78,10 @@ public class Agent implements Cloneable {
         return operatingEnergy.getValue();
     }
 
-    protected Agent() {
+    public Agent(Project project) {
+        this.project = project;
         Debug.log.finest("New agent created");
-    }
+    }   
 
     public List<Component> getComponents() {
         return components;
@@ -96,7 +97,7 @@ public class Agent implements Cloneable {
 
     @Override
     public Agent clone() {
-        Agent new_agent = new Agent();
+        Agent new_agent = new Agent(project);
         new_agent.components = this.components;
         new_agent.operatingEnergy = this.operatingEnergy;
         new_agent.productionCosts = this.productionCosts;

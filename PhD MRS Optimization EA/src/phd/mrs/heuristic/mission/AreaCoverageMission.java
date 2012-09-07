@@ -16,6 +16,8 @@
  */
 package phd.mrs.heuristic.mission;
 
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 import phd.mrs.heuristic.entity.Agent;
 import phd.mrs.heuristic.entity.Component;
 
@@ -24,15 +26,19 @@ import phd.mrs.heuristic.entity.Component;
  * and performs an operation by its work device.
  * @author Vitaljok
  */
-public class AreaCoverageMission implements Mission {
+@XmlRootElement
+public class AreaCoverageMission extends Mission {
 
     Double areaSizeX;
     Double areaSizeY;
-    Double workDensity;
-    Double workDeviceWidth;
-    Double movingSpeed;
+    Double workDensity;        
     Component mobileBase;
+    Double mobileBaseSpeed;
     Component workDevice;
+    Double workDeviceWidth;
+
+    private AreaCoverageMission() {
+    }    
 
     /**
      * Creates new mission instance
@@ -46,37 +52,69 @@ public class AreaCoverageMission implements Mission {
         this.workDensity = workDensity;
     }
 
+    public Double getAreaSizeX() {
+        return areaSizeX;
+    }
+
+    public void setAreaSizeX(Double areaSizeX) {
+        this.areaSizeX = areaSizeX;
+    }
+
+    public Double getAreaSizeY() {
+        return areaSizeY;
+    }
+
+    public void setAreaSizeY(Double areaSizeY) {
+        this.areaSizeY = areaSizeY;
+    }
+
+    public Double getMobileBaseSpeed() {
+        return mobileBaseSpeed;
+    }
+
+    public void setMobileBaseSpeed(Double mobileBaseSpeed) {
+        this.mobileBaseSpeed = mobileBaseSpeed;
+    }
+
+    public Double getWorkDensity() {
+        return workDensity;
+    }
+
+    public void setWorkDensity(Double workDensity) {
+        this.workDensity = workDensity;
+    }
+
+    public Double getWorkDeviceWidth() {
+        return workDeviceWidth;
+    }
+
+    public void setWorkDeviceWidth(Double workDeviceWidth) {
+        this.workDeviceWidth = workDeviceWidth;
+    }    
+    
+    @XmlIDREF
     public Component getMobileBase() {
         return mobileBase;
     }
 
-    /**
-     * @param mobileBase component used to move the agent around the area
-     * @param movingSpeed moving speed
-     */
-    public void setMobileBase(Component mobileBase, Double movingSpeed) {
-        this.mobileBase = mobileBase;
-        this.movingSpeed = movingSpeed;
-    }
-
+    @XmlIDREF
     public Component getWorkDevice() {
         return workDevice;
     }
 
-    /**
-     * @param workDevice component, which performs the work while moving around the area
-     * @param workDeviceWidth width of work device
-     */
-    public void setWorkDevice(Component workDevice, Double workDeviceWidth) {
-        this.workDevice = workDevice;
-        this.workDeviceWidth = workDeviceWidth;
+    public void setMobileBase(Component mobileBase) {
+        this.mobileBase = mobileBase;
     }
+
+    public void setWorkDevice(Component workDevice) {
+        this.workDevice = workDevice;
+    }    
 
     @Override
     public Double getAgentPerformance(Agent agent) {
         if (agent.getComponents().contains(this.mobileBase)
                 && agent.getComponents().contains(this.workDevice)) {
-            return this.movingSpeed;
+            return this.mobileBaseSpeed*this.workDeviceWidth;
         } else {
             return 0d;
         }
@@ -89,6 +127,6 @@ public class AreaCoverageMission implements Mission {
 
     @Override
     public Integer getMaxTimeEstimation() {
-        return new Integer((int)(Math.ceil(this.getAmountOfWork() / this.movingSpeed * 1.25)));
+        return new Integer((int)(Math.ceil(this.getAmountOfWork() / this.mobileBaseSpeed * 1.25)));
     }
 }

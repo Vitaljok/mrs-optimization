@@ -27,7 +27,6 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.heuristic.entity.Project;
@@ -40,12 +39,10 @@ import phd.mrs.heuristic.utils.SolutionCalculator;
  */
 public class ChromosomeTestFrame extends javax.swing.JFrame {
 
-    Configuration configuration;
     IChromosome chromosome;
     Project project;
 
-    public ChromosomeTestFrame(Configuration configuration, IChromosome chromosome, Project project) {
-        this.configuration = configuration;
+    public ChromosomeTestFrame(IChromosome chromosome, Project project) {
         this.chromosome = chromosome;
         this.project = project;
         initComponents();
@@ -130,7 +127,7 @@ public class ChromosomeTestFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonEvaluateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEvaluateActionPerformed
-        Double value = this.configuration.getFitnessFunction().getFitnessValue(this.chromosome);
+        Double value = this.project.getGaConfig().getFitnessFunction().getFitnessValue(this.chromosome);
 
         List<AgentGene> solution = new LinkedList<>();
 

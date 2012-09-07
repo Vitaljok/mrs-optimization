@@ -21,7 +21,7 @@ import java.util.List;
 import phd.mrs.heuristic.entity.Agent;
 import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.mission.Mission;
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.config.Config;
 import phd.mrs.heuristic.utils.Pair;
 
 /**
@@ -39,11 +39,11 @@ public class EvenUpDownOpCostCalculator extends AbstractOpCostCalculator {
         List<Agent> agents = mrs;
         List<Mission> missions = this.project.getMissions();
 
-        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(agents, missions);
+        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(agents, project);
 
         // fill all work amount on cheapest agent
         for (Mission mis : this.project.getMissions()) {
-            double minCost = Config.INFINITE_COSTS;
+            double minCost = project.config.nearInfinity;
             Agent minAgent = null;
             for (Agent agent : mrs) {
                 double currCost = agent.getOperatingEnergy() / mis.getAgentPerformance(agent);
@@ -103,10 +103,10 @@ public class EvenUpDownOpCostCalculator extends AbstractOpCostCalculator {
                 changed = true;
             }
 
-            while (deltaWork > 0) {//-Config.NEAR_ZERO) {
+            while (deltaWork > 0) {//-Config.nearZero) {
                 // find cheapest agent to increase 
                 Agent minAgent = null;
-                double minCost = Config.INFINITE_COSTS;
+                double minCost = project.config.nearInfinity;
 
                 for (Agent agent : agents) {
                     if (agent != maxPair.getValue1()

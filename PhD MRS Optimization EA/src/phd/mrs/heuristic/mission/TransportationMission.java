@@ -14,37 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs.heuristic.ga.fitness.opcost;
+package phd.mrs.heuristic.mission;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
 import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.entity.Project;
-import phd.mrs.heuristic.entity.config.Config;
 
 /**
  *
  * @author Vitaljok
  */
-public abstract class AbstractOpCostCalculator {
-    Project project;
-    Integer scale;
-    Double valueStep;
+public class TransportationMission extends Mission {
 
-    public AbstractOpCostCalculator(Project project, Integer scale) {
-        
-        this.project = project;
-        this.scale = scale;
-        
-        this.valueStep = roundUp(project.config.nearZero);
+    @Override
+    public Double getAgentPerformance(Agent agent) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public abstract Double calcOpCosts(List<Agent> mrs, Double Qinv);
-
-    final Double roundUp(Double value) {
-        return (new BigDecimal(value)).setScale(this.scale, RoundingMode.UP).doubleValue();
+    @Override
+    public Double getAmountOfWork() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    @Override
+    public Integer getMaxTimeEstimation() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

@@ -60,11 +60,11 @@ public class SolutionCalculator {
 
                 // sum of components
                 for (phd.mrs.heuristic.entity.Component comp : agentGene.getAgent().getComponents()) {
-                    maxComplexity = Math.max(maxComplexity, comp.getDoubleProperty(Config.Prop.complexity, 1.0));
+                    maxComplexity = Math.max(maxComplexity, comp.getComplexity());
                 }
 
                 // add assembly costs
-                Qassy += Config.CostModel.getAssembly(agentGene.getAgent().getComponents().size(), maxComplexity) * agentGene.getInstances();
+                //Qassy += CostModel.calcAssembly(agentGene.getAgent().getComponents().size(), maxComplexity) * agentGene.getInstances();
 
                 //store agents for Op cost calcualtion
                 for (int i = 0; i < agentGene.getInstances(); i++) {
@@ -74,7 +74,7 @@ public class SolutionCalculator {
         }
 
         // add system design costs (use only active)
-        Qsys_design = Config.CostModel.getSysDesign(opAgentList.size());
+        //Qsys_design = CostModel.calcSysDesign(opAgentList.size());
 
         Qinv = Qsys_design + Qdesign + Qprod;
 
@@ -82,7 +82,7 @@ public class SolutionCalculator {
         List<Agent> agents = opAgentList;
         List<Mission> missions = this.project.getMissions();
 
-        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(agents, missions);
+        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(agents, null);
 
         // fill initial work amount
         for (Mission mis : this.project.getMissions()) {
@@ -103,8 +103,8 @@ public class SolutionCalculator {
 
         Qoper = timeMatrix.getCosts(Qinv);
 
-        Qmaint = Config.CostModel.getSysMaint(agents.size()) * timeMatrix.getSysTime();
-        Qrepl = Config.Coef.systemReplRate * timeMatrix.getSysTime() * Qinv;
+        //Qmaint = CostModel.calcSysMaint(agents.size()) * timeMatrix.getSysTime();
+        Qrepl = project.costModel.systemReplRate * timeMatrix.getSysTime() * Qinv;
 
         timeMatrix.print();
 

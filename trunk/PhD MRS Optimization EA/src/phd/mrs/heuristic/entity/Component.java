@@ -16,59 +16,43 @@
  */
 package phd.mrs.heuristic.entity;
 
-import java.text.MessageFormat;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Vitaljok
  */
-public class Component{
+@XmlRootElement
+public class Component {
 
-    private String clazz;
+    private String id;
     private String name;
-    private Component parent;
-    Properties properties = new Properties();
+    private String family;
+    private Double investmentCosts;
+    private Double operatingPower;
+    private Double complexity = 1.0;
+    
+    private List<Requirement> required = new ArrayList<>();
 
     protected Component() {
     }
 
-    public Component(String clazz, String name, Component parent) {
-        this.clazz = clazz;
-        this.name = name;
-        this.parent = parent;
+    public Component(String id, String name) {
+        this.id = id;
+        this.name = name;                
+    }   
+    
+    @XmlID
+    public String getId() {
+        return id;
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public Double getDoubleProperty(String key) {
-
-        try {
-            return Double.valueOf(this.getProperties().getProperty(key));
-        } catch (Exception ex) {
-            throw new RuntimeException(
-                    MessageFormat.format("Component \"{0}\" does not have valid \"{1}\" property!",
-                    this.getClazz(),
-                    key));
-        }
-    }
-
-    public Double getDoubleProperty(String key, Double defaultValue) {
-        try {
-            return this.getDoubleProperty(key);
-        } catch (Exception ex) {
-            return defaultValue;
-        }
-    }
-
-    public String getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(String clazz) {
-        this.clazz = clazz;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -79,16 +63,46 @@ public class Component{
         this.name = name;
     }
 
-    public Component getParent() {
-        return parent;
+    public Double getComplexity() {
+        return complexity;
     }
 
-    public void setParent(Component parent) {
-        this.parent = parent;
+    public void setComplexity(Double complexity) {
+        this.complexity = complexity;
     }
+
+    public String getFamily() {
+        return family;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
+    }
+
+    public Double getInvestmentCosts() {
+        return investmentCosts;
+    }
+
+    public void setInvestmentCosts(Double investmentCosts) {
+        this.investmentCosts = investmentCosts;
+    }
+
+    public Double getOperatingPower() {
+        return operatingPower;
+    }
+
+    public void setOperatingPower(Double operatingPower) {
+        this.operatingPower = operatingPower;
+    }
+
+    @XmlElement
+    public List<Requirement> getRequired() {
+        return required;
+    }
+    
 
     @Override
     public String toString() {
-        return "[" + clazz + "]";
+        return "[" + id + "]";
     }
 }

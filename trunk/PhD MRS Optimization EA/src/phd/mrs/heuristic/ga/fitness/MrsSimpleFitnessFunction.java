@@ -24,7 +24,7 @@ import org.jgap.Gene;
 import org.jgap.IChromosome;
 import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.ga.AgentGene;
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.config.Config;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -78,7 +78,7 @@ public class MrsSimpleFitnessFunction extends FitnessFunction {
 
         //Debug.log.finest("Calculated value ["+this.getSolutionHash(a_subject) +"] = "+investmentCosts);
 
-        value = Config.INFINITE_COSTS - investmentCosts;
+        value = 100000000000d - investmentCosts;
 
 
         return value;

@@ -24,7 +24,8 @@ import org.jgap.IChromosome;
 import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.ga.OpTimeGene;
 import phd.mrs.heuristic.mission.Mission;
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.entity.config.CostModel;
 
 /**
  *
@@ -70,8 +71,8 @@ public class MrsOpCostFitnessFunction extends FitnessFunction {
                     + opGene.getMission().getAgentPerformance(opGene.getAgent()) * opGene.getTime());
         }
         
-        double Qmaint = Config.CostModel.getSysMaint(a_subject.getGenes().length) * Tsys;
-        double Qrepl = this.qInv * Config.Coef.systemReplRate * Tsys;
+        double Qmaint = project.costModel.calcSysMaint(a_subject.getGenes().length) * Tsys;
+        double Qrepl = this.qInv * project.costModel.systemReplRate * Tsys;
 
         // evaluate results (add penalties for uncomplete work)
         double penalty = 0d;

@@ -16,27 +16,18 @@
  */
 package phd.mrs.heuristic;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jgap.Chromosome;
-import org.jgap.Configuration;
+import java.io.File;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import org.jgap.Genotype;
+import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
-import org.jgap.event.EventManager;
-import org.jgap.impl.BestChromosomesSelector;
-import org.jgap.impl.ChromosomePool;
-import org.jgap.impl.CrossoverOperator;
-import org.jgap.impl.GABreeder;
-import org.jgap.impl.MutationOperator;
-import org.jgap.impl.StockRandomGenerator;
-import phd.mrs.heuristic.entity.Agent;
 import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.entity.Component;
 import phd.mrs.heuristic.entity.Project;
-import phd.mrs.heuristic.ga.AgentGene;
-import phd.mrs.heuristic.ga.InverseFitnessEvaluator;
+import phd.mrs.heuristic.entity.Requirement;
 import phd.mrs.heuristic.ga.Island;
-import phd.mrs.heuristic.ga.fitness.MrsTotalCostFitnessFunction;
-import phd.mrs.heuristic.utils.Config;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -46,193 +37,186 @@ import phd.mrs.heuristic.utils.Debug;
 public class MRSOptimizer {
 
     Project project;
-    Configuration configuration;
 
-    public MRSOptimizer() {
-
-        Debug.log.info("Setting up optimizer");
-        // creating project
-        project = new Project("Grass trimming project");
-
-        // defining components
-        Component compMobileBase = new Component("mobile-base", "Mobile base", null);
-        compMobileBase.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(60d));
-        compMobileBase.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(4d));
-        compMobileBase.getProperties().setProperty(Config.Prop.compFamily, "wheeled car-like");
-        project.getComponents().add(compMobileBase);
-
-        Component compWiFi = new Component("network-wifi", "Wi-Fi networking", null);
-        compWiFi.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(30d));
-        compWiFi.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(2d));
-        compWiFi.getProperties().setProperty(Config.Prop.complexity, Double.toString(1.1));
-        compWiFi.getProperties().setProperty(Config.Prop.compFamily, "Wi-FI");
-        project.getComponents().add(compWiFi);
-
-        Component compMowingMachine = new Component("mowing-machine", "Mowing machine", null);
-        compMowingMachine.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(40.00));
-        compMowingMachine.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(5d));
-        compMowingMachine.getProperties().setProperty(Config.Prop.compFamily, "1-DOF manipulator");
-        compMowingMachine.getProperties().setProperty(Config.Prop.workDeviceWidth, Double.toString(1d));
-        project.getComponents().add(compMowingMachine);
-
-        Component compLoader = new Component("loader", "Loader", null);
-        compLoader.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(40.00));
-        compLoader.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(4));
-        compLoader.getProperties().setProperty(Config.Prop.compFamily, "End effector");
-        project.getComponents().add(compLoader);
-
-        Component compDumper = new Component("dumper", "Dumper", null);
-        compDumper.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(20.00));
-        compDumper.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(3d));
-        compDumper.getProperties().setProperty(Config.Prop.compFamily, "1-DOF manipulator");
-        project.getComponents().add(compDumper);
-
-        Component compLaser = new Component("laser", "Laser", null);
-        compLaser.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(30.00));
-        compLaser.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(2d));
-        compLaser.getProperties().setProperty(Config.Prop.compFamily, "Proximity");
-        project.getComponents().add(compLaser);
-
-        Component compGPS = new Component("gps", "GPS", null);
-        compGPS.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(25.00));
-        compGPS.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(1.5d));
-        compGPS.getProperties().setProperty(Config.Prop.compFamily, "Position");
-        project.getComponents().add(compGPS);
-
-        Component compLoad = new Component("load", "Load", null);
-        compLoad.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(20.00));
-        compLoad.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(0.5d));
-        compLoad.getProperties().setProperty(Config.Prop.compFamily, "Position");
-        project.getComponents().add(compLoad);
-
-        Component compNavigation = new Component("navigation", "Navigation", null);
-        compNavigation.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(50.00));
-        compNavigation.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(1d));
-        compNavigation.getProperties().setProperty(Config.Prop.compFamily, "Computation");
-        compNavigation.getProperties().setProperty(Config.Prop.complexity, Double.toString(1.3));
-        project.getComponents().add(compNavigation);
-
-        Component compTaskAllocation = new Component("task-allocation", "Task allocation", null);
-        compTaskAllocation.getProperties().setProperty(Config.Prop.investmentCosts, Double.toString(50.00));
-        compTaskAllocation.getProperties().setProperty(Config.Prop.operatingPower, Double.toString(1d));
-        compTaskAllocation.getProperties().setProperty(Config.Prop.compFamily, "Computation");
-        compTaskAllocation.getProperties().setProperty(Config.Prop.complexity, Double.toString(1.2));
-        project.getComponents().add(compTaskAllocation);
-        
-        // component requirements               
-        project.addReq(compWiFi, compMobileBase); // Wi-Fi should be placed on mobile base
-        project.addReq(compMowingMachine, compMobileBase); // Mowing machine is useless on stationary agent
-        project.addReq(compLoader, compMobileBase); // Loader should be mobile
-        project.addReq(compLoader, compLoad); // Loader should know the weight of cargo
-        project.addReq(compLaser, compMobileBase); // laser is useless on stationary device
-        project.addReq(compGPS, compMobileBase); // GPS is useless on stationary device
-        project.addReq(compNavigation, compWiFi); // Networking is required for controlling navigation
-        project.addReq(compTaskAllocation, compWiFi); // Tasks should be sent via net
-        //reverse requirements
-        project.addReq(compMobileBase, compGPS); // Mobile base requires GPS for navigation
-        project.addReq(compMobileBase, compWiFi); // Mobile base requires WiFi
-        project.addReq(compMobileBase, compLaser); // Mobile base requires laser for navigation
-                      
-        // Missions
-        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d, 0.7);        
-        areaCoverageMission.setMobileBase(compMobileBase, 2d); // moves 2m/s
-        areaCoverageMission.setWorkDevice(compMowingMachine, 1.2); // trims 1.2 m wide area
-
-        project.getMissions().add(areaCoverageMission);        
+    public MRSOptimizer() throws InvalidConfigurationException {
+        initDefaultProject();
+        project.configure();
     }
 
-    public void execute() {
+    private void initDefaultProject() {
 
-        this.project.generateAgents();
+        // creating project
+        project = new Project();
+        project.setName("Grass trimming project");
 
-        try {
-            Debug.log.info("Creating configuration");
-            this.configuration = new Configuration("mrs", "MRS optimization");
+        // defining components
+        Component compMobileBase = new Component("mobile-base", "Mobile base");
+        compMobileBase.setInvestmentCosts(60d);
+        compMobileBase.setOperatingPower(4d);
+        compMobileBase.setFamily("wheeled car-like");
+        project.getComponents().add(compMobileBase);
 
-            this.configuration.setBreeder(new GABreeder());
-            this.configuration.setRandomGenerator(new StockRandomGenerator());
-            this.configuration.setEventManager(new EventManager());
+        Component compWiFi = new Component("network-wifi", "Wi-Fi networking");
+        compWiFi.setInvestmentCosts(30d);
+        compWiFi.setOperatingPower(2d);
+        compWiFi.setComplexity(1.1);
+        compWiFi.setFamily("Wi-FI");
+        project.getComponents().add(compWiFi);
 
-            this.configuration.setMinimumPopSizePercent(0);
-            this.configuration.setSelectFromPrevGen(0.95d);
-            this.configuration.setKeepPopulationSizeConstant(true);
-            this.configuration.setChromosomePool(new ChromosomePool());
-            this.configuration.setPopulationSize(Config.POPULATION_SIZE);
+        Component compMowingMachine = new Component("mowing-machine", "Mowing machine");
+        compMowingMachine.setInvestmentCosts(40.00);
+        compMowingMachine.setOperatingPower(5d);
+        compMowingMachine.setFamily("1-DOF manipulator");
+        project.getComponents().add(compMowingMachine);
 
-            // fitness function
-            this.configuration.setFitnessEvaluator(new InverseFitnessEvaluator());
-            this.configuration.setFitnessFunction(new MrsTotalCostFitnessFunction(project));
+        Component compLoader = new Component("loader", "Loader");
+        compLoader.setInvestmentCosts(40.00);
+        compLoader.setOperatingPower(4d);
+        compLoader.setFamily("End effector");
+        project.getComponents().add(compLoader);
 
-            // genetic operations            
-            BestChromosomesSelector bestChromsSelector = new BestChromosomesSelector(
-                    this.configuration, 0.90d);
-            bestChromsSelector.setDoubletteChromosomesAllowed(true);
-            this.configuration.addNaturalSelector(bestChromsSelector, false);
-            this.configuration.addGeneticOperator(new CrossoverOperator(this.configuration, 0.35d));
-            this.configuration.addGeneticOperator(new MutationOperator(this.configuration, 15));
+        Component compDumper = new Component("dumper", "Dumper");
+        compDumper.setInvestmentCosts(20.00);
+        compDumper.setOperatingPower(3d);
+        compDumper.setFamily("1-DOF manipulator");
+        project.getComponents().add(compDumper);
+
+        Component compLaser = new Component("laser", "Laser");
+        compLaser.setInvestmentCosts(30.00);
+        compLaser.setOperatingPower(2d);
+        compLaser.setFamily("Proximity");
+        project.getComponents().add(compLaser);
+
+        Component compGPS = new Component("gps", "GPS");
+        compGPS.setInvestmentCosts(25.00);
+        compGPS.setOperatingPower(1.5d);
+        compGPS.setFamily("Position");
+        project.getComponents().add(compGPS);
+
+        Component compLoad = new Component("load", "Load");
+        compLoad.setInvestmentCosts(20.00);
+        compLoad.setOperatingPower(0.5d);
+        compLoad.setFamily("Sensing");
+        project.getComponents().add(compLoad);
+
+        Component compNavigation = new Component("navigation", "Navigation");
+        compNavigation.setInvestmentCosts(50.00);
+        compNavigation.setOperatingPower(1d);
+        compNavigation.setFamily("Computation");
+        compNavigation.setComplexity(1.3);
+        project.getComponents().add(compNavigation);
+
+        Component compTaskAllocation = new Component("task-allocation", "Task allocation");
+        compTaskAllocation.setInvestmentCosts(50.00);
+        compTaskAllocation.setOperatingPower(1d);
+        compTaskAllocation.setFamily("Computation");
+        compTaskAllocation.setComplexity(1.2);
+        project.getComponents().add(compTaskAllocation);
 
 
-            // sample chromosome
-            List<AgentGene> genes = new ArrayList<AgentGene>();
-            for (Agent agent : project.getAgents()) {
+        // component requirements               
+        compWiFi.getRequired().add(new Requirement(compMobileBase, "Wi-Fi should be placed on mobile base"));
+        compMowingMachine.getRequired().add(new Requirement(compMobileBase, "Mowing machine is useless on stationary agent"));
+        compLoader.getRequired().add(new Requirement(compMobileBase, "Loader should be mobile"));
+        compLoader.getRequired().add(new Requirement(compLoad, "Loader should know the weight of cargo"));
+        compLaser.getRequired().add(new Requirement(compMobileBase, "Laser is useless on stationary device"));
+        compGPS.getRequired().add(new Requirement(compMobileBase, "GPS is useless on stationary device"));
+        compNavigation.getRequired().add(new Requirement(compWiFi, "Networking is required for controlling navigation"));
+        compTaskAllocation.getRequired().add(new Requirement(compWiFi, "Tasks should be sent via net"));
+        compMobileBase.getRequired().add(new Requirement(compGPS, "Mobile base requires GPS for navigation"));
+        compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi"));
+        compMobileBase.getRequired().add(new Requirement(compLaser, "Mobile base requires laser for navigation"));
 
-                AgentGene gene = new AgentGene(this.configuration, 0, Config.DEVICE_LIMIT, agent);
-                gene.setAllele(new Integer(0));
-                
-                genes.add(gene);
+
+        // Missions
+        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d, 0.8);
+        areaCoverageMission.setMobileBase(compMobileBase);
+        areaCoverageMission.setMobileBaseSpeed(2d); // moves 2m/s
+        areaCoverageMission.setWorkDevice(compMowingMachine);
+        areaCoverageMission.setWorkDeviceWidth(1.2); // trims 1.2 m wide area
+
+        project.getMissions().add(areaCoverageMission);
+    }
+
+    /**
+     * Creates new MRS Optimizer instance and loads configuration from file
+     * @param config XML file to load
+     */
+    private MRSOptimizer(String config) throws JAXBException, InvalidConfigurationException {
+        Debug.log.info("Loading project from XML file: " + config);
+        JAXBContext xml = JAXBContext.newInstance(Project.class);
+        Unmarshaller unmarsh = xml.createUnmarshaller();
+        this.project = (Project) unmarsh.unmarshal(new File(config));
+
+        this.project.configure();
+    }
+
+    public void startEvolution() throws InvalidConfigurationException {
+
+        Debug.log.info("Populating world");
+        Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
+
+        Debug.log.info("Starting evolution");
+        int genNum = 0;
+        int lastChangeGen = 0;
+        double lastFitValue = -1d;
+
+        while (genNum < project.config.generationsLimit) {
+            world.evolve(project.config.generationsStep);
+            genNum += project.config.generationsStep;
+
+            IChromosome best = world.getFittestChromosome();
+            if (lastFitValue != best.getFitnessValue()) {
+                lastChangeGen = genNum;
+                lastFitValue = best.getFitnessValue();
             }
 
-            Chromosome sampleChromosome = new Chromosome(this.configuration, genes.toArray(new AgentGene[0]));
-            this.configuration.setSampleChromosome(sampleChromosome);
-        } catch (InvalidConfigurationException ex) {
-            Debug.log.severe("Error creating configuration");
-            ex.printStackTrace();
+            Debug.log.info(genNum + "\t~" + lastChangeGen + "\t" + best.getFitnessValue());
         }
 
-//        List<Island> world = new ArrayList<Island>();
-//
-//        for (int i = 0; i < Config.NUM_ISLANDS; i++) {
-//            try {
-//
-//                Island thread = new Island("Island" + (i + 1), configuration);
-//                world.add(thread);
-//            } catch (InvalidConfigurationException ex) {
-//                Debug.log.severe("Error creating island");
-//                ex.printStackTrace();
-//            }
-//        }
-//
-//        for (Island island : world) {
-//            island.start();
-//        }
-
-
-        try {
-            Island island = new Island("IslandA", configuration, project);
-            island.run();
-
-        } catch (InvalidConfigurationException ex) {
-            Debug.log.severe("Error creating island");
-            ex.printStackTrace();
-        }
-
-        //new ChromosomeTestFrame(configuration, configuration.getSampleChromosome()).setVisible(true);
+        Debug.log.info("Showing results");
+        new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);
 
     }
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+        System.setProperty("java.util.logging.config.file", "logging.properties");
+
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (Exception ex) {
+            Debug.log.warning("Error loading \"Nimbus\" look and feel.");
         }
-        
-        MRSOptimizer optimizer = new MRSOptimizer();
-        optimizer.execute();
+
+        if (args.length > 0) {
+            String xmlFileName = args[0];
+            MRSOptimizer optimizer;
+            try {
+                optimizer = new MRSOptimizer(xmlFileName);
+
+                try {
+                    optimizer.startEvolution();
+                } catch (InvalidConfigurationException e) {
+                    Debug.log.severe("Error running GA");
+                    e.printStackTrace();
+                }
+
+            } catch (JAXBException ex) {
+                Debug.log.severe("Error loading project from XML file: " + args[0]);
+            } catch (InvalidConfigurationException ex) {
+                Debug.log.severe("Error configuring GA");
+            }
+        } else {
+            Debug.log.severe("Project XML file is not specified");
+        }
     }
 }

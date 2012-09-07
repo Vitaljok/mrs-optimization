@@ -18,8 +18,10 @@ package phd.mrs.heuristic.ga.fitness.opcost;
 
 import java.util.List;
 import phd.mrs.heuristic.entity.Agent;
+import phd.mrs.heuristic.entity.Project;
 import phd.mrs.heuristic.mission.Mission;
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.entity.config.CostModel;
 
 /**
  *
@@ -27,19 +29,19 @@ import phd.mrs.heuristic.utils.Config;
  */
 public class AgentMissionMatrix {
 
+    Project project;
     List<Agent> agents;
-    List<Mission> missions;
     double[][] data;
 
-    public AgentMissionMatrix(List<Agent> agents, List<Mission> missions) {
+    public AgentMissionMatrix(List<Agent> agents, Project project) {
         this.agents = agents;
-        this.missions = missions;
+        this.project = project;
 
-        data = new double[this.agents.size()][this.missions.size()];
+        data = new double[this.agents.size()][this.project.getMissions().size()];
     }
 
     public Double getSum(Mission mission) {
-        int k = this.missions.indexOf(mission);
+        int k = this.project.getMissions().indexOf(mission);
 
         double res = 0;
 
@@ -79,7 +81,7 @@ public class AgentMissionMatrix {
         // calc energy costs
         for (Agent agent : agents) {
             double agentValue = 0d;
-            for (Mission mis : this.missions) {
+            for (Mission mis : this.project.getMissions()) {
                 double currValue = this.getValue(agent, mis);
                 result += agent.getOperatingEnergy() * currValue;
                 agentValue += currValue;
@@ -89,10 +91,10 @@ public class AgentMissionMatrix {
         }
 
         // add maintanence costs
-        result += Config.CostModel.getSysMaint(this.agents.size()) * maxValue;
+        result += project.costModel.calcSysMaint(this.agents.size()) * maxValue;
         
         // add replacement costs
-        result += Config.Coef.systemReplRate * maxValue * sysCosts;
+        result += project.costModel.systemReplRate * maxValue * sysCosts;
         
         return result;
 
@@ -104,7 +106,7 @@ public class AgentMissionMatrix {
         // calc energy costs
         for (Agent agent : agents) {
             double agentValue = 0d;
-            for (Mission mis : this.missions) {
+            for (Mission mis : this.project.getMissions()) {
                 agentValue += this.getValue(agent, mis);;
             }
 
@@ -118,11 +120,11 @@ public class AgentMissionMatrix {
     }
 
     public void setValue(Agent agent, Mission mission, Double value) {
-        this.data[this.agents.indexOf(agent)][this.missions.indexOf(mission)] = value > 0 ? value : 0;
+        this.data[this.agents.indexOf(agent)][this.project.getMissions().indexOf(mission)] = value > 0 ? value : 0;
     }
 
     public Double getValue(Agent agent, Mission mission) {
-        return this.data[this.agents.indexOf(agent)][this.missions.indexOf(mission)];
+        return this.data[this.agents.indexOf(agent)][this.project.getMissions().indexOf(mission)];
     }
 
     public void print() {
@@ -132,7 +134,7 @@ public class AgentMissionMatrix {
         }
         System.out.println();
 
-        for (Mission mission : this.missions) {
+        for (Mission mission : this.project.getMissions()) {
             System.out.print(mission.getClass().getSimpleName() + "\t");
 
             for (Agent agent : agents) {
@@ -146,7 +148,7 @@ public class AgentMissionMatrix {
         Mission maxMis = null;
         double maxVal = 0d;
 
-        for (Mission m : this.missions) {
+        for (Mission m : this.project.getMissions()) {
             if (m.getAgentPerformance(agent) > 0 
                     && this.getValue(agent, m) > 0) {
                 double val = agent.getOperatingEnergy() / m.getAgentPerformance(agent);

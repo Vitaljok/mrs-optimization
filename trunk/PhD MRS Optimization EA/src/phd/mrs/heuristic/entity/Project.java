@@ -18,26 +18,57 @@ package phd.mrs.heuristic.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import org.jgap.Chromosome;
+import org.jgap.Configuration;
+import org.jgap.InvalidConfigurationException;
+import org.jgap.event.EventManager;
+import org.jgap.impl.BestChromosomesSelector;
+import org.jgap.impl.ChromosomePool;
+import org.jgap.impl.CrossoverOperator;
+import org.jgap.impl.GABreeder;
+import org.jgap.impl.MutationOperator;
+import org.jgap.impl.StockRandomGenerator;
+import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.mission.Mission;
+import phd.mrs.heuristic.mission.TransportationMission;
+import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.entity.config.CostModel;
+import phd.mrs.heuristic.ga.AgentGene;
+import phd.mrs.heuristic.ga.InverseFitnessEvaluator;
+import phd.mrs.heuristic.ga.fitness.MrsTotalCostFitnessFunction;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
  *
  * @author Vitaljok
  */
+@XmlRootElement
+@XmlSeeAlso({AreaCoverageMission.class, TransportationMission.class})
 public class Project implements Serializable {
 
     private String name;
-    private List<Component> components = new ArrayList<Component>();
-    private List<Agent> agents = new ArrayList<Agent>();
-    private Map<Component, List<Component>> reqMap = new HashMap<Component, List<Component>>();
-    private List<Mission> missions = new ArrayList<Mission>();
+    @XmlElementWrapper(name = "components")
+    @XmlElement(name = "component")
+    private List<Component> components = new ArrayList<>();
+    @XmlElementWrapper(name = "missions")
+    @XmlElementRef
+    private List<Mission> missions = new ArrayList<>();
+    @XmlElement
+    public Config config = new Config();
+    @XmlElement
+    public CostModel costModel = new CostModel();
+    // private
+    private List<Agent> agents = new ArrayList<>();
+    private Configuration gaConfig;
 
-    public Project(String name) {
-        this.name = name;
+    public Project() {
     }
 
     public String getName() {
@@ -48,24 +79,8 @@ public class Project implements Serializable {
         this.name = name;
     }
 
-    public Map<Component, List<Component>> getCompMap() {
-        return reqMap;
-    }
-
     public List<Component> getComponents() {
         return components;
-    }
-
-    public Map<Component, List<Component>> getReqMap() {
-        return reqMap;
-    }
-
-    public void addReq(Component orig, Component ref) {
-        if (!this.reqMap.containsKey(orig)) {
-            this.reqMap.put(orig, new ArrayList<Component>());
-        }
-
-        this.reqMap.get(orig).add(ref);
     }
 
     public List<Mission> getMissions() {
@@ -78,21 +93,24 @@ public class Project implements Serializable {
 
     private boolean isAgentValid(Agent agent) {
         for (Component comp : agent.getComponents()) {
-            List<Component> refList = reqMap.get(comp);
+            List<Requirement> refList = comp.getRequired();
 
-            if (refList != null) {
-                if (!agent.getComponents().containsAll(refList)) {
-                    return false;
+            if (!refList.isEmpty()) {
+                for (Requirement ref : refList) {
+                    if (!agent.getComponents().contains(ref.getComponent())) {
+                        return false;
+                    }
                 }
+
             }
         }
 
         return true;
     }
 
-    public Integer generateAgents() {
+    private Integer generateAgents() {
         Integer compNum = this.getComponents().size();
-        Debug.log.info("Generating agents: " + (1 << compNum));
+        Debug.log.config("Generating agents: " + (1 << compNum));
 
         int inv = 0;
 
@@ -100,7 +118,7 @@ public class Project implements Serializable {
             String pattern = String.format("%" + compNum + "s",
                     Integer.toBinaryString(i)).replaceAll("\\s", "0");
 
-            Agent agent = new Agent();
+            Agent agent = new Agent(this);
 
             for (int j = 0; j < compNum; j++) {
                 if (pattern.charAt(compNum - j - 1) == '1') {
@@ -115,8 +133,62 @@ public class Project implements Serializable {
             }
         }
 
-        Debug.log.info("Skipped invalid agents: " + inv);
+        Debug.log.config("Skipped invalid agents: " + inv);
 
         return 0;
+    }
+
+    public void configure() throws InvalidConfigurationException {
+        Debug.log.info("Configuring GA");
+        this.generateAgents();
+
+        this.gaConfig = new Configuration("mrsGA", "MRS GA optimization");
+
+        this.gaConfig.setBreeder(new GABreeder());
+        this.gaConfig.setRandomGenerator(new StockRandomGenerator());
+        this.gaConfig.setEventManager(new EventManager());
+
+        this.gaConfig.setMinimumPopSizePercent(this.config.minimumPopSizePercent);
+        this.gaConfig.setSelectFromPrevGen(this.config.selectFromPrevGen);
+        this.gaConfig.setKeepPopulationSizeConstant(this.config.keepPopulationSizeConstant);
+        this.gaConfig.setChromosomePool(new ChromosomePool());
+        this.gaConfig.setPopulationSize(this.config.populationSize);
+
+        // fitness function
+        this.gaConfig.setFitnessEvaluator(new InverseFitnessEvaluator());
+        this.gaConfig.setFitnessFunction(new MrsTotalCostFitnessFunction(this));
+
+        // genetic operations            
+        BestChromosomesSelector bestChromsSelector = new BestChromosomesSelector(
+                this.gaConfig, this.config.selectorOriginalRate);
+        bestChromsSelector.setDoubletteChromosomesAllowed(this.config.doubletteChromosomesAllowed);
+        this.gaConfig.addNaturalSelector(bestChromsSelector, false);
+        this.gaConfig.addGeneticOperator(new CrossoverOperator(this.gaConfig, this.config.crossoverRate));
+        this.gaConfig.addGeneticOperator(new MutationOperator(this.gaConfig, this.config.mutationRate));
+
+
+        // sample chromosome
+        List<AgentGene> genes = new ArrayList<>();
+        for (Agent agent : this.agents) {
+
+            AgentGene gene = new AgentGene(this.gaConfig, 0, this.config.agentInstanceLimit, agent);
+            gene.setAllele(new Integer(0));
+
+            genes.add(gene);
+        }
+
+        Chromosome sampleChromosome = new Chromosome(this.gaConfig, genes.toArray(new AgentGene[0]));
+        
+        this.gaConfig.setSampleChromosome(sampleChromosome);
+
+    }
+
+    @XmlTransient    
+    public Configuration getGaConfig() {
+        return gaConfig;
+    }
+
+    public void setGaConfig(Configuration gaConfig) {
+        this.gaConfig = gaConfig;
     }
 }

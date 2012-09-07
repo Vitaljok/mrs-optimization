@@ -16,7 +16,7 @@
  */
 package phd.mrs.heuristic.ga;
 
-import phd.mrs.heuristic.utils.Config;
+import phd.mrs.heuristic.entity.config.Config;
 import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.Genotype;
@@ -53,9 +53,9 @@ public class Island extends Thread {
         int lastChangeGen = 0;
         double lastFitValue = -1d;
 
-        while (genNum < Config.GENERATIONS_LIMIT) {
-            genotype.evolve(Config.GENERATIONS_STEP);
-            genNum += Config.GENERATIONS_STEP;
+        while (genNum < project.config.generationsLimit) {
+            genotype.evolve(project.config.generationsStep);
+            genNum += project.config.generationsStep;
 
             IChromosome best = genotype.getFittestChromosome();
             if (lastFitValue != best.getFitnessValue()) {
@@ -65,7 +65,7 @@ public class Island extends Thread {
             Debug.log.info(genNum + "\t~"+lastChangeGen +"\t"+ best.getFitnessValue() );
         }
 
-        new ChromosomeTestFrame(configuration, genotype.getFittestChromosome(), project).setVisible(true);
+        new ChromosomeTestFrame(genotype.getFittestChromosome(), project).setVisible(true);
     }
 
     public void printSolution() {

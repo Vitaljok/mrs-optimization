@@ -37,7 +37,7 @@ public class AverageOpCostCalculator extends AbstractOpCostCalculator {
 
         List<Mission> missions = this.project.getMissions();
 
-        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(mrs, missions);
+        AgentMissionMatrix timeMatrix = new AgentMissionMatrix(mrs, project);
 
         // fill initial work amount
         for (Mission mis : this.project.getMissions()) {
@@ -46,6 +46,10 @@ public class AverageOpCostCalculator extends AbstractOpCostCalculator {
             double totalPerf = 0d;
             for (Agent agent : mrs) {
                 totalPerf += mis.getAgentPerformance(agent);
+            }
+            
+            if (totalPerf == 0d) {
+                return this.project.config.nearInfinity;
             }
 
             // set equal amount of work for agents
@@ -71,7 +75,8 @@ public class AverageOpCostCalculator extends AbstractOpCostCalculator {
             }
         }
 
-        Project project = new Project("test");
+        Project project = new Project();
+        project.setName("test");
         project.getMissions().add(new MissionA());
         project.getMissions().add(new MissionB());
 
@@ -93,7 +98,8 @@ public class AverageOpCostCalculator extends AbstractOpCostCalculator {
 class AgentA extends Agent {
 
     public AgentA() {
-        this.getComponents().add(new Component("compA", "compA", null));
+        super(null);
+        this.getComponents().add(new Component("compA", "compA"));
     }
 
     @Override
@@ -105,7 +111,8 @@ class AgentA extends Agent {
 class AgentB extends Agent {
 
     public AgentB() {
-        this.getComponents().add(new Component("compB", "compB", null));
+        super(null);
+        this.getComponents().add(new Component("compB", "compB"));
     }
 
     @Override
@@ -117,8 +124,9 @@ class AgentB extends Agent {
 class AgentAB extends Agent {
 
     public AgentAB() {
-        this.getComponents().add(new Component("compA", "compA", null));
-        this.getComponents().add(new Component("compB", "compB", null));
+        super(null);
+        this.getComponents().add(new Component("compA", "compA"));
+        this.getComponents().add(new Component("compB", "compB"));
     }
 
     @Override
@@ -127,7 +135,7 @@ class AgentAB extends Agent {
     }
 }
 
-class MissionA implements Mission {
+class MissionA extends Mission {
 
     @Override
     public Double getAgentPerformance(Agent agent) {
@@ -154,7 +162,7 @@ class MissionA implements Mission {
     }
 }
 
-class MissionB implements Mission {
+class MissionB extends Mission {
 
     @Override
     public Double getAgentPerformance(Agent agent) {

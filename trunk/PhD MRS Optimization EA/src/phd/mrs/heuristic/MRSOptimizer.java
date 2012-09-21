@@ -17,13 +17,22 @@
 package phd.mrs.heuristic;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import org.jgap.Chromosome;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
+import org.jgap.Population;
+import phd.mrs.heuristic.db.Evolution;
+import phd.mrs.heuristic.db.EvolutionPK;
 import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.object.Component;
 import phd.mrs.heuristic.object.Project;
@@ -38,6 +47,7 @@ import phd.mrs.heuristic.utils.Debug;
 public class MRSOptimizer {
 
     Project project;
+    EntityManager entityManager;
 
     private MRSOptimizer() throws InvalidConfigurationException {
         initDefaultProject();
@@ -164,8 +174,27 @@ public class MRSOptimizer {
 
     public void startEvolution() throws InvalidConfigurationException {
 
+        Debug.log.info("Connecting to database");
+
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
+        entityManager = factory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+
+        phd.mrs.heuristic.db.Process proc = new phd.mrs.heuristic.db.Process();
+        
+        Calendar startTime = Calendar.getInstance();
+        startTime.setTimeInMillis(System.currentTimeMillis());                
+        proc.setStartTime(startTime.getTime());
+
+        entityManager.persist(proc);
+
+        entityManager.getTransaction().commit();
+
         Debug.log.info("Populating world");
         Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
+        writePopulation(proc, 0, world.getPopulation(),
+                null, entityManager);
 
         Debug.log.info("Starting evolution");
         int genNum = 0;
@@ -182,14 +211,48 @@ public class MRSOptimizer {
                 lastFitValue = best.getFitnessValue();
             }
             
-            //world.getPopulation()
+            writePopulation(proc, genNum, world.getPopulation(),
+                best, entityManager);
 
             Debug.log.info(genNum + "\t~" + lastChangeGen + "\t" + best.getFitnessValue());
         }
+        
+        entityManager.getTransaction().begin();
+        
+        Calendar endTime = Calendar.getInstance();
+        endTime.setTimeInMillis(System.currentTimeMillis());                
+        proc.setEndTime(endTime.getTime());
+        
+        System.out.println("Start: "+startTime.getTime() + "\tEnd: "+endTime.getTime());
+        
+        entityManager.getTransaction().commit();
 
         Debug.log.info("Showing results");
         new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);
 
+
+        entityManager.close();
+    }
+
+    private void writePopulation(phd.mrs.heuristic.db.Process proc, int gen,
+            Population pop, IChromosome best, EntityManager em) {
+        
+        em.getTransaction().begin();
+
+        for (short i = 0; i < pop.getChromosomes().size(); i++) {
+            IChromosome chrom = pop.getChromosome(i);
+            EvolutionPK pk = new EvolutionPK(proc.getId(), gen, i);
+            Evolution ev = new Evolution(pk);
+            ev.setAge(chrom.getAge());
+            ev.setFitnessValue(chrom.getFitnessValueDirectly());
+            if (ev.equals(best)) {
+                ev.setBestInd(true);
+            }                        
+            
+            em.persist(ev);
+        }
+        
+        em.getTransaction().commit();
     }
 
     /**

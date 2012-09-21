@@ -148,9 +148,9 @@
     </missions>
     <config>
         <agentInstanceLimit>10</agentInstanceLimit>
-        <populationSize>200</populationSize>
-        <generationsLimit>1000000</generationsLimit>
-        <generationsStep>100</generationsStep>
+        <populationSize>50</populationSize>
+        <generationsLimit>1000</generationsLimit>
+        <generationsStep>1</generationsStep>
         <minimumPopSizePercent>0</minimumPopSizePercent>
         <selectFromPrevGen>0.95</selectFromPrevGen>
         <keepPopulationSizeConstant>true</keepPopulationSizeConstant>

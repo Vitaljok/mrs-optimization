@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
-import phd.mrs.heuristic.entity.Project;
+import phd.mrs.heuristic.object.Project;
 import phd.mrs.heuristic.ga.AgentGene;
 import phd.mrs.heuristic.utils.SolutionCalculator;
 

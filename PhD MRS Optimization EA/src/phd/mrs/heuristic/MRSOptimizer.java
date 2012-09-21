@@ -19,15 +19,16 @@ package phd.mrs.heuristic;
 import java.io.File;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import phd.mrs.heuristic.mission.AreaCoverageMission;
-import phd.mrs.heuristic.entity.Component;
-import phd.mrs.heuristic.entity.Project;
-import phd.mrs.heuristic.entity.Requirement;
-import phd.mrs.heuristic.ga.Island;
+import phd.mrs.heuristic.object.Component;
+import phd.mrs.heuristic.object.Project;
+import phd.mrs.heuristic.object.Requirement;
+import phd.mrs.heuristic.mission.TransportationMission;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -38,7 +39,7 @@ public class MRSOptimizer {
 
     Project project;
 
-    public MRSOptimizer() throws InvalidConfigurationException {
+    private MRSOptimizer() throws InvalidConfigurationException {
         initDefaultProject();
         project.configure();
     }
@@ -129,13 +130,23 @@ public class MRSOptimizer {
 
 
         // Missions
-        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d, 0.8);
+        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d);
+        areaCoverageMission.setWorkDensity(0.9);
         areaCoverageMission.setMobileBase(compMobileBase);
         areaCoverageMission.setMobileBaseSpeed(2d); // moves 2m/s
         areaCoverageMission.setWorkDevice(compMowingMachine);
-        areaCoverageMission.setWorkDeviceWidth(1.2); // trims 1.2 m wide area
+        areaCoverageMission.setWorkDeviceWidth(1.2); // trims 1.2 m wide area        
 
         project.getMissions().add(areaCoverageMission);
+
+        TransportationMission transportationMission = new TransportationMission(120d, 150d);
+        transportationMission.setWorkDensity(0.1); // package should be collected after every 9 units of area coverage mission
+        transportationMission.setTargetOffsetX(20d);
+        transportationMission.setTargetOffsetY(10d);
+        transportationMission.setMobileBase(compMobileBase);
+        transportationMission.setMobileBaseSpeed(6d);
+
+        project.getMissions().add(transportationMission);
     }
 
     /**
@@ -170,6 +181,8 @@ public class MRSOptimizer {
                 lastChangeGen = genNum;
                 lastFitValue = best.getFitnessValue();
             }
+            
+            //world.getPopulation()
 
             Debug.log.info(genNum + "\t~" + lastChangeGen + "\t" + best.getFitnessValue());
         }
@@ -197,6 +210,19 @@ public class MRSOptimizer {
             Debug.log.warning("Error loading \"Nimbus\" look and feel.");
         }
 
+//        try {
+//            MRSOptimizer opt = new MRSOptimizer();
+//
+//            JAXBContext xml = JAXBContext.newInstance(Project.class);
+//            Marshaller marsh = xml.createMarshaller();
+//            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//
+//            marsh.marshal(opt.project, new File("test.xml"));
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+
         if (args.length > 0) {
             String xmlFileName = args[0];
             MRSOptimizer optimizer;
@@ -218,5 +244,6 @@ public class MRSOptimizer {
         } else {
             Debug.log.severe("Project XML file is not specified");
         }
+
     }
 }

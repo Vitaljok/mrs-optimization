@@ -18,8 +18,8 @@ package phd.mrs.heuristic.mission;
 
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.entity.Component;
+import phd.mrs.heuristic.object.Agent;
+import phd.mrs.heuristic.object.Component;
 
 /**
  * Area coverage mission, which imply that agent moves upon defined area 
@@ -29,13 +29,13 @@ import phd.mrs.heuristic.entity.Component;
 @XmlRootElement
 public class AreaCoverageMission extends Mission {
 
-    Double areaSizeX;
-    Double areaSizeY;
-    Double workDensity;        
-    Component mobileBase;
-    Double mobileBaseSpeed;
-    Component workDevice;
-    Double workDeviceWidth;
+    private Double areaSizeX;
+    private Double areaSizeY;
+    private Double workDensity;        
+    private Component mobileBase;
+    private Double mobileBaseSpeed;
+    private Component workDevice;
+    private Double workDeviceWidth;
 
     private AreaCoverageMission() {
     }    
@@ -46,10 +46,9 @@ public class AreaCoverageMission extends Mission {
      * @param areaSizeY size of working area on Y axis
      * @param workDensity percentage of total area to be processed during work
      */
-    public AreaCoverageMission(Double areaSizeX, Double areaSizeY, Double workDensity) {
+    public AreaCoverageMission(Double areaSizeX, Double areaSizeY) {
         this.areaSizeX = areaSizeX;
         this.areaSizeY = areaSizeY;
-        this.workDensity = workDensity;
     }
 
     public Double getAreaSizeX() {

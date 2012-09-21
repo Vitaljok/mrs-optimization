@@ -19,9 +19,9 @@ package phd.mrs.heuristic.ga.fitness.opcost;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.entity.Project;
-import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.object.Agent;
+import phd.mrs.heuristic.object.Project;
+import phd.mrs.heuristic.object.config.Config;
 
 /**
  *

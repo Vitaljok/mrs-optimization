@@ -132,10 +132,19 @@
             <areaSizeY>150.0</areaSizeY>
             <mobileBase>mobile-base</mobileBase>
             <mobileBaseSpeed>2.0</mobileBaseSpeed>
-            <workDensity>0.8</workDensity>
+            <workDensity>0.9</workDensity>
             <workDevice>mowing-machine</workDevice>
             <workDeviceWidth>1.2</workDeviceWidth>
-        </areaCoverageMission>
+        </areaCoverageMission>        
+        <transportationMission>
+            <areaSizeX>120.0</areaSizeX>
+            <areaSizeY>150.0</areaSizeY>
+            <mobileBase>mobile-base</mobileBase>
+            <mobileBaseSpeed>6.0</mobileBaseSpeed>
+            <targetOffsetX>20.0</targetOffsetX>
+            <targetOffsetY>10.0</targetOffsetY>
+            <workDensity>0.1</workDensity>
+        </transportationMission>
     </missions>
     <config>
         <agentInstanceLimit>10</agentInstanceLimit>

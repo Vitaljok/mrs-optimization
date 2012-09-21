@@ -17,9 +17,9 @@
 package phd.mrs.heuristic.ga.fitness.opcost;
 
 import java.util.List;
-import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.entity.Component;
-import phd.mrs.heuristic.entity.Project;
+import phd.mrs.heuristic.object.Agent;
+import phd.mrs.heuristic.object.Component;
+import phd.mrs.heuristic.object.Project;
 import phd.mrs.heuristic.mission.Mission;
 
 

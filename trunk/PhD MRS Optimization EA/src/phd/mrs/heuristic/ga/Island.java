@@ -16,15 +16,15 @@
  */
 package phd.mrs.heuristic.ga;
 
-import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.object.config.Config;
 import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import phd.mrs.heuristic.ChromosomeTestFrame;
-import phd.mrs.heuristic.entity.Agent;
-import phd.mrs.heuristic.entity.Project;
+import phd.mrs.heuristic.object.Agent;
+import phd.mrs.heuristic.object.Project;
 import phd.mrs.heuristic.utils.Debug;
 
 /**

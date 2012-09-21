@@ -20,7 +20,7 @@ import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.IntegerGene;
-import phd.mrs.heuristic.entity.Agent;
+import phd.mrs.heuristic.object.Agent;
 import phd.mrs.heuristic.utils.Debug;
 
 /**

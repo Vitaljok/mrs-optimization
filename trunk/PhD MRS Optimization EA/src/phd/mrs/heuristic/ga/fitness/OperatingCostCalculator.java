@@ -33,7 +33,7 @@ import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.GABreeder;
 import org.jgap.impl.MutationOperator;
 import org.jgap.impl.StockRandomGenerator;
-import phd.mrs.heuristic.entity.Project;
+import phd.mrs.heuristic.object.Project;
 import phd.mrs.heuristic.ga.AgentGene;
 import phd.mrs.heuristic.ga.InverseFitnessEvaluator;
 import phd.mrs.heuristic.ga.OpTimeGene;

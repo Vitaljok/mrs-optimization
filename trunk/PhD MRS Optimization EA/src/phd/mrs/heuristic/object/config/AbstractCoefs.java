@@ -14,19 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phd.mrs.heuristic.mission;
-
-import phd.mrs.heuristic.object.Agent;
+package phd.mrs.heuristic.object.config;
 
 /**
  *
  * @author Vitaljok
  */
-public abstract class Mission {
+public class AbstractCoefs {
+    public double b0;
+    public double b1;
+    public double b2;
+    public double k;
 
-    public abstract Double getAgentPerformance(Agent agent);
+    public AbstractCoefs() {
+    }
 
-    public abstract Double getAmountOfWork();
-
-    public abstract Integer getMaxTimeEstimation();
+    public AbstractCoefs(double b0, double b1, double b2, double k) {
+        this.b0 = b0;
+        this.b1 = b1;
+        this.b2 = b2;
+        this.k = k;
+    }
+    
 }

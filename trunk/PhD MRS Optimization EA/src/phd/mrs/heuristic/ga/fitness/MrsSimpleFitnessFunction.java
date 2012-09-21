@@ -22,9 +22,9 @@ import java.util.Set;
 import org.jgap.FitnessFunction;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
-import phd.mrs.heuristic.entity.Component;
+import phd.mrs.heuristic.object.Component;
 import phd.mrs.heuristic.ga.AgentGene;
-import phd.mrs.heuristic.entity.config.Config;
+import phd.mrs.heuristic.object.config.Config;
 import phd.mrs.heuristic.utils.Debug;
 
 /**

@@ -38,7 +38,7 @@ public class Config {
     public double selectFromPrevGen = 0.95;
     public boolean keepPopulationSizeConstant = true;
     public double selectorOriginalRate = 0.90;
-    public boolean doubletteChromosomesAllowed = true;
+    public boolean doubletteChromosomesAllowed = false;
     public double crossoverRate = 0.35;
     public int mutationRate = 15;        
     

@@ -140,22 +140,22 @@
             <areaSizeX>120.0</areaSizeX>
             <areaSizeY>150.0</areaSizeY>
             <mobileBase>mobile-base</mobileBase>
-            <mobileBaseSpeed>6.0</mobileBaseSpeed>
+            <mobileBaseSpeed>8.0</mobileBaseSpeed>
             <targetOffsetX>20.0</targetOffsetX>
             <targetOffsetY>10.0</targetOffsetY>
-            <workDensity>0.1</workDensity>
+            <workDensity>0.04</workDensity>
         </transportationMission>
     </missions>
     <config>
         <agentInstanceLimit>10</agentInstanceLimit>
-        <populationSize>50</populationSize>
-        <generationsLimit>1000</generationsLimit>
-        <generationsStep>1</generationsStep>
+        <populationSize>20</populationSize>
+        <generationsLimit>1500</generationsLimit>
+        <generationsStep>20</generationsStep>
         <minimumPopSizePercent>0</minimumPopSizePercent>
         <selectFromPrevGen>0.95</selectFromPrevGen>
         <keepPopulationSizeConstant>true</keepPopulationSizeConstant>
         <selectorOriginalRate>0.9</selectorOriginalRate>
-        <doubletteChromosomesAllowed>true</doubletteChromosomesAllowed>
+        <doubletteChromosomesAllowed>false</doubletteChromosomesAllowed>
         <crossoverRate>0.35</crossoverRate>
         <mutationRate>15</mutationRate>
         <nearInfinity>1.0E12</nearInfinity>

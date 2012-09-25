@@ -17,16 +17,14 @@
 package phd.mrs.heuristic;
 
 import java.io.File;
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import org.jgap.Chromosome;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
@@ -150,11 +148,11 @@ public class MRSOptimizer {
         project.getMissions().add(areaCoverageMission);
 
         TransportationMission transportationMission = new TransportationMission(120d, 150d);
-        transportationMission.setWorkDensity(0.1); // package should be collected after every 9 units of area coverage mission
+        transportationMission.setWorkDensity(0.04); // package should be collected after every 25 units of area coverage mission
         transportationMission.setTargetOffsetX(20d);
         transportationMission.setTargetOffsetY(10d);
         transportationMission.setMobileBase(compMobileBase);
-        transportationMission.setMobileBaseSpeed(6d);
+        transportationMission.setMobileBaseSpeed(8d);
 
         project.getMissions().add(transportationMission);
     }
@@ -178,81 +176,92 @@ public class MRSOptimizer {
 
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
         entityManager = factory.createEntityManager();
+
+
         entityManager.getTransaction().begin();
-
-
         phd.mrs.heuristic.db.Process proc = new phd.mrs.heuristic.db.Process();
-        
-        Calendar startTime = Calendar.getInstance();
-        startTime.setTimeInMillis(System.currentTimeMillis());                
-        proc.setStartTime(startTime.getTime());
-
+        proc.setStartTime(new Date());
         entityManager.persist(proc);
-
         entityManager.getTransaction().commit();
+
+        Integer procId = proc.getId();
 
         Debug.log.info("Populating world");
         Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
-        writePopulation(proc, 0, world.getPopulation(),
-                null, entityManager);
+
+
+//        world.evolve();        
+//        writePopulation(proc, 1, world.getPopulation(),
+//                null, entityManager);
 
         Debug.log.info("Starting evolution");
         int genNum = 0;
         int lastChangeGen = 0;
         double lastFitValue = -1d;
 
+        int step = 1;
+
         while (genNum < project.config.generationsLimit) {
-            world.evolve(project.config.generationsStep);
-            genNum += project.config.generationsStep;
+            world.evolve(step);
+            genNum += step;
 
             IChromosome best = world.getFittestChromosome();
             if (lastFitValue != best.getFitnessValue()) {
                 lastChangeGen = genNum;
                 lastFitValue = best.getFitnessValue();
-            }
-            
-            writePopulation(proc, genNum, world.getPopulation(),
-                best, entityManager);
 
-            Debug.log.info(genNum + "\t~" + lastChangeGen + "\t" + best.getFitnessValue());
+//                writePopulation(proc, genNum, world.getPopulation(),
+//                best, entityManager);
+
+                entityManager.getTransaction().begin();
+                EvolutionPK pk = new EvolutionPK(procId, genNum, (short)0);
+                Evolution ev = new Evolution(pk);
+                ev.setAge(best.getAge());
+                ev.setFitnessValue(best.getFitnessValueDirectly());
+                ev.setBestInd(true);
+                entityManager.persist(ev);
+                entityManager.getTransaction().commit();
+                entityManager.clear(); // detach persisted objects to avoid memory leaks
+            } else if (step < project.config.generationsStep) {
+                step++;
+            }
+
+            Debug.log.log(Level.INFO, "{0}\t~{1}\t{2}\tStep: {3}", new Object[]{genNum, lastChangeGen, best.getFitnessValue(), step});
         }
-        
+
         entityManager.getTransaction().begin();
-        
-        Calendar endTime = Calendar.getInstance();
-        endTime.setTimeInMillis(System.currentTimeMillis());                
-        proc.setEndTime(endTime.getTime());
-        
-        System.out.println("Start: "+startTime.getTime() + "\tEnd: "+endTime.getTime());
-        
+        proc = entityManager.find(phd.mrs.heuristic.db.Process.class, procId);
+        proc.setEndTime(new Date());
         entityManager.getTransaction().commit();
 
-        Debug.log.info("Showing results");
-        new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);
-
-
+        
         entityManager.close();
+        
+        Debug.log.info("Showing results");
+        new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);       
     }
 
     private void writePopulation(phd.mrs.heuristic.db.Process proc, int gen,
             Population pop, IChromosome best, EntityManager em) {
-        
+
         em.getTransaction().begin();
 
         for (short i = 0; i < pop.getChromosomes().size(); i++) {
             IChromosome chrom = pop.getChromosome(i);
-            EvolutionPK pk = new EvolutionPK(proc.getId(), gen, i);
+            EvolutionPK pk = new EvolutionPK(proc.getId(), gen, (short)(i+1));
             Evolution ev = new Evolution(pk);
             ev.setAge(chrom.getAge());
             ev.setFitnessValue(chrom.getFitnessValueDirectly());
-            if (ev.equals(best)) {
+            if (chrom.equals(best)) {
                 ev.setBestInd(true);
-            }                        
-            
+            }
+
             em.persist(ev);
         }
-        
+
         em.getTransaction().commit();
+
+        em.clear(); // detach persisted objects to avoid memory leaks
     }
 
     /**

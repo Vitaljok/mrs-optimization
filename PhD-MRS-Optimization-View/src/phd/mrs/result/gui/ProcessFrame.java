@@ -10,12 +10,13 @@
  */
 package phd.mrs.result.gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -29,9 +30,16 @@ import javax.swing.table.AbstractTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import phd.mrs.heuristic.db.Evolution;
 import phd.mrs.heuristic.db.Process;
 
@@ -186,36 +194,106 @@ public class ProcessFrame extends JFrame {
 
     private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
         if (procTable.getSelectedRowCount() == 0) {
-           return;
+            return;
+        }
+
+        entityManager.clear(); // clear managed entities to get most actual
+
+        Query query = entityManager.createNamedQuery("Evolution.findByProcId");
+
+        //<editor-fold defaultstate="collapsed" desc=" Default XY Dataset ">
+//        DefaultXYDataset dataSet = new DefaultXYDataset();
+//
+//        for (int rowNum : procTable.getSelectedRows()) {
+//            int procId = procTableModel.getData().get(rowNum).getId();
+//            query.setParameter("procId", procId);
+//            List<Evolution> evList = query.getResultList();
+//            double[][] data = new double[2][evList.size()];
+//
+//
+//            for (int i = 0; i < evList.size(); i++) {
+//                Evolution ev = evList.get(i);
+//                data[1][i] = ev.getEvolutionPK().getGeneration();
+//                data[0][i] = ev.getFitnessValue();
+//            }
+//
+//            dataSet.addSeries(procId, data);
+//            
+//            
+//        }
+//
+//        JFreeChart chart = ChartFactory.createScatterPlot(null,
+//                "Cost",
+//                "Generation",
+//                dataSet,
+//                PlotOrientation.HORIZONTAL,
+//                true,
+//                false,
+//                false);
+        // </editor-fold>
+
+        XYSeriesCollection dataSet = new XYSeriesCollection();
+
+        for (int rowNum : procTable.getSelectedRows()) {
+            int procId = procTableModel.getData().get(rowNum).getId();
+            query.setParameter("procId", procId);
+            List<Evolution> evList = query.getResultList();
+
+            XYSeries series = new XYSeries(procId);
+
+            for (Evolution ev : evList) {
+                series.add(ev.getFitnessValue(), ev.getEvolutionPK().getGeneration());
+            }
+
+            dataSet.addSeries(series);
+        }
+
+        JFreeChart chart = ChartFactory.createXYLineChart(null,
+                "Cost",
+                "Generation",
+                dataSet,
+                PlotOrientation.HORIZONTAL,
+                true,
+                true,
+                false);
+
+        XYPlot plot = chart.getXYPlot();
+        plot.setDomainPannable(true);
+        plot.setRangePannable(true);
+
+        LogAxis domainAxis = new LogAxis("Total cost of ownership");
+        domainAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+        domainAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 14));
+
+        LogAxis rangeAxis = new LogAxis("Generation");
+        rangeAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+        rangeAxis.setLabelFont(new Font("SansSerif", Font.BOLD, 14));
+
+        plot.setDomainAxis(domainAxis);
+        plot.setRangeAxis(rangeAxis);
+        
+        
+
+        XYLineAndShapeRenderer render = (XYLineAndShapeRenderer) plot.getRenderer();
+
+        
+        XYToolTipGenerator gen = new StandardXYToolTipGenerator("{0}: (Cost: {1}; Gen: {2})", NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance());        
+        
+        render.setBaseToolTipGenerator(gen);
+        render.setBaseShapesVisible(true);
+        render.setBaseShapesFilled(true);
+        render.setUseOutlinePaint(true);
+
+        for (int i = 0; i < procTable.getSelectedRowCount(); i++) {
+            render.setSeriesOutlinePaint(i, Color.black);
         }
         
-        Process proc = procTableModel.getData().get(procTable.getSelectedRow());
-        
-        double[][] data = new double[2][proc.getEvolutionList().size()];                
-        
-        for (int i = 0; i < proc.getEvolutionList().size(); i++) {
-            Evolution ev = proc.getEvolutionList().get(i);
-            data[1][i] = ev.getEvolutionPK().getGeneration();
-            data[0][i] = ev.getFitnessValue();            
-        }            
-        
-        DefaultXYDataset dataSet = new DefaultXYDataset();
-        dataSet.addSeries("Aaa", data);
-        
-        JFreeChart chart = ChartFactory.createScatterPlot(null,
-                "Cost", 
-                "Generation",
-                dataSet, 
-                PlotOrientation.HORIZONTAL,
-                false,
-                false, 
-                false);
-                
+        ChartPanel chartPanel = new ChartPanel(chart);
+        //chartPanel.setMouseWheelEnabled(true);
         
         this.displayPanel.removeAll();
-        this.displayPanel.add(new ChartPanel(chart));
+        this.displayPanel.add(chartPanel);
         this.displayPanel.getParent().validate();
-        
     }//GEN-LAST:event_showBtnActionPerformed
 
     /**
@@ -277,6 +355,8 @@ public class ProcessFrame extends JFrame {
             }
 
             jTextPane1.setText(res);
+
+            showBtnActionPerformed(null);
         }
     };
     ProcessTableModel procTableModel = new ProcessTableModel();

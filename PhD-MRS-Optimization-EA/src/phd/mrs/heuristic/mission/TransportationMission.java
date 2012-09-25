@@ -36,6 +36,7 @@ public class TransportationMission extends Mission {
     private Double workDensity;
     private Component mobileBase;
     private Double mobileBaseSpeed;
+    private Component loader;
     
     private CachedProperty<Double> avgDist = new CachedProperty<Double>() {
 
@@ -66,7 +67,8 @@ public class TransportationMission extends Mission {
 
     @Override
     public Double getAgentPerformance(Agent agent) {
-        if (agent.getComponents().contains(this.mobileBase)) {
+        if (agent.getComponents().contains(this.mobileBase) &&
+                agent.getComponents().contains(this.loader)) {
             return this.mobileBaseSpeed;
         } else
         {
@@ -139,5 +141,14 @@ public class TransportationMission extends Mission {
 
     public void setMobileBaseSpeed(Double mobileBaseSpeed) {
         this.mobileBaseSpeed = mobileBaseSpeed;
+    }
+
+    @XmlIDREF
+    public Component getLoader() {
+        return loader;
+    }
+
+    public void setLoader(Component loader) {
+        this.loader = loader;
     }    
 }

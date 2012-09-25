@@ -24,6 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
@@ -124,7 +125,7 @@ public class MRSOptimizer {
 
 
         // component requirements               
-        compWiFi.getRequired().add(new Requirement(compMobileBase, "Wi-Fi should be placed on mobile base"));
+        //compWiFi.getRequired().add(new Requirement(compMobileBase, "Wi-Fi should be placed on mobile base"));
         compMowingMachine.getRequired().add(new Requirement(compMobileBase, "Mowing machine is useless on stationary agent"));
         compLoader.getRequired().add(new Requirement(compMobileBase, "Loader should be mobile"));
         compLoader.getRequired().add(new Requirement(compLoad, "Loader should know the weight of cargo"));
@@ -132,9 +133,10 @@ public class MRSOptimizer {
         compGPS.getRequired().add(new Requirement(compMobileBase, "GPS is useless on stationary device"));
         compNavigation.getRequired().add(new Requirement(compWiFi, "Networking is required for controlling navigation"));
         compTaskAllocation.getRequired().add(new Requirement(compWiFi, "Tasks should be sent via net"));
-        compMobileBase.getRequired().add(new Requirement(compGPS, "Mobile base requires GPS for navigation"));
-        compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi"));
-        compMobileBase.getRequired().add(new Requirement(compLaser, "Mobile base requires laser for navigation"));
+        //compMobileBase.getRequired().add(new Requirement(compGPS, "Mobile base requires GPS for navigation"));
+        //compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi"));
+        //compMobileBase.getRequired().add(new Requirement(compLaser, "Mobile base requires laser for navigation"));
+        compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi for receiving control commands"));
 
 
         // Missions
@@ -153,6 +155,7 @@ public class MRSOptimizer {
         transportationMission.setTargetOffsetY(10d);
         transportationMission.setMobileBase(compMobileBase);
         transportationMission.setMobileBaseSpeed(8d);
+        transportationMission.setLoader(compLoader);
 
         project.getMissions().add(transportationMission);
     }
@@ -189,11 +192,6 @@ public class MRSOptimizer {
         Debug.log.info("Populating world");
         Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
 
-
-//        world.evolve();        
-//        writePopulation(proc, 1, world.getPopulation(),
-//                null, entityManager);
-
         Debug.log.info("Starting evolution");
         int genNum = 0;
         int lastChangeGen = 0;
@@ -209,9 +207,6 @@ public class MRSOptimizer {
             if (lastFitValue != best.getFitnessValue()) {
                 lastChangeGen = genNum;
                 lastFitValue = best.getFitnessValue();
-
-//                writePopulation(proc, genNum, world.getPopulation(),
-//                best, entityManager);
 
                 entityManager.getTransaction().begin();
                 EvolutionPK pk = new EvolutionPK(procId, genNum, (short)0);
@@ -233,7 +228,6 @@ public class MRSOptimizer {
         proc = entityManager.find(phd.mrs.heuristic.db.Process.class, procId);
         proc.setEndTime(new Date());
         entityManager.getTransaction().commit();
-
         
         entityManager.close();
         
@@ -294,6 +288,8 @@ public class MRSOptimizer {
 //        } catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
+//        
+//        System.exit(0);
 
         if (args.length > 0) {
             String xmlFileName = args[0];

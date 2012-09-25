@@ -9,16 +9,8 @@
             <name>Mobile base</name>
             <operatingPower>4.0</operatingPower>
             <required>
-                <comment>Mobile base requires GPS for navigation</comment>
-                <component>gps</component>
-            </required>
-            <required>
-                <comment>Mobile base requires WiFi</comment>
+                <comment>Mobile base requires WiFi for receiving control commands</comment>
                 <component>network-wifi</component>
-            </required>
-            <required>
-                <comment>Mobile base requires laser for navigation</comment>
-                <component>laser</component>
             </required>
         </component>
         <component>
@@ -28,10 +20,6 @@
             <investmentCosts>30.0</investmentCosts>
             <name>Wi-Fi networking</name>
             <operatingPower>2.0</operatingPower>
-            <required>
-                <comment>Wi-Fi should be placed on mobile base</comment>
-                <component>mobile-base</component>
-            </required>
         </component>
         <component>
             <complexity>1.0</complexity>
@@ -135,10 +123,11 @@
             <workDensity>0.9</workDensity>
             <workDevice>mowing-machine</workDevice>
             <workDeviceWidth>1.2</workDeviceWidth>
-        </areaCoverageMission>        
+        </areaCoverageMission>
         <transportationMission>
             <areaSizeX>120.0</areaSizeX>
             <areaSizeY>150.0</areaSizeY>
+            <loader>loader</loader>
             <mobileBase>mobile-base</mobileBase>
             <mobileBaseSpeed>8.0</mobileBaseSpeed>
             <targetOffsetX>20.0</targetOffsetX>

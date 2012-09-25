@@ -35,7 +35,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "evolution")
 @NamedQueries({
-    @NamedQuery(name = "Evolution.findAll", query = "SELECT e FROM Evolution e")})
+    @NamedQuery(name = "Evolution.findByProcId", query = "SELECT e FROM Evolution e WHERE e.evolutionPK.processId = :procId")})
 public class Evolution implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId

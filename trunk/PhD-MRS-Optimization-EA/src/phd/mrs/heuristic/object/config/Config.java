@@ -28,9 +28,9 @@ public class Config {
     @Deprecated
     public static Integer NUM_ISLANDS = 1;    
     public Integer agentInstanceLimit = 10;
-    public Integer populationSize = 200;
-    public Integer generationsLimit = 1000000;
-    public Integer generationsStep = 100;
+    public Integer populationSize = 20;
+    public Integer generationsLimit = 1500;
+    public Integer generationsStep = 20;
     
     
     

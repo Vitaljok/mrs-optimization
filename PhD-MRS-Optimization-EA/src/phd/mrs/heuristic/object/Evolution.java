@@ -28,8 +28,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -40,6 +41,8 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = {"project_id", "generation"})})
+@NamedQueries({
+    @NamedQuery(name = "Evolution.findByProject", query = "SELECT e FROM Evolution e WHERE e.project = :proj")})
 public class Evolution implements Serializable {
 
     @Id

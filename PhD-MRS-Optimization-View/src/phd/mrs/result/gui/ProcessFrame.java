@@ -24,6 +24,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -31,17 +32,15 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogAxis;
-import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import phd.mrs.heuristic.db.Evolution;
-import phd.mrs.heuristic.db.Process;
+import phd.mrs.heuristic.object.Evolution;
+import phd.mrs.heuristic.object.Project;
 
 /**
  *
@@ -83,7 +82,7 @@ public class ProcessFrame extends JFrame {
         procReloadBtn = new javax.swing.JButton();
         showBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        procTable = new javax.swing.JTable();
+        projTable = new javax.swing.JTable();
         rightPanel = new javax.swing.JPanel();
         jSplitPane3 = new javax.swing.JSplitPane();
         dataPanel = new javax.swing.JPanel();
@@ -105,7 +104,7 @@ public class ProcessFrame extends JFrame {
         jSplitPane1.setPreferredSize(new java.awt.Dimension(1200, 800));
 
         leftPanel.setMaximumSize(new java.awt.Dimension(300, 32767));
-        leftPanel.setPreferredSize(new java.awt.Dimension(250, 10));
+        leftPanel.setPreferredSize(new java.awt.Dimension(280, 10));
         leftPanel.setLayout(new java.awt.BorderLayout());
 
         procToolBar.setFloatable(false);
@@ -136,11 +135,11 @@ public class ProcessFrame extends JFrame {
 
         leftPanel.add(procToolBar, java.awt.BorderLayout.NORTH);
 
-        procTable.setModel(procTableModel);
-        procTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        procTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        procTable.getSelectionModel().addListSelectionListener(procTableListener);
-        jScrollPane1.setViewportView(procTable);
+        projTable.setModel(projTableModel);
+        projTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        projTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        projTable.getSelectionModel().addListSelectionListener(procTableListener);
+        jScrollPane1.setViewportView(projTable);
 
         leftPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -182,9 +181,12 @@ public class ProcessFrame extends JFrame {
 
     private void procReloadBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_procReloadBtnActionPerformed
         entityManager.clear();
-        Query query = entityManager.createNamedQuery("Process.findAll");
-        //query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-        this.procTableModel.setData(query.getResultList());
+        Query query = entityManager.createNamedQuery("Project.findAll");
+        this.projTableModel.setData(query.getResultList());
+        
+        this.projTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        this.projTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+        
     }//GEN-LAST:event_procReloadBtnActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -193,26 +195,26 @@ public class ProcessFrame extends JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void showBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showBtnActionPerformed
-        if (procTable.getSelectedRowCount() == 0) {
+        if (projTable.getSelectedRowCount() == 0) {
             return;
         }
 
         entityManager.clear(); // clear managed entities to get most actual
 
-        Query query = entityManager.createNamedQuery("Evolution.findByProcId");
+        Query query = entityManager.createNamedQuery("Evolution.findByProject");
 
         //<editor-fold defaultstate="collapsed" desc=" Default XY Dataset ">
 //        DefaultXYDataset dataSet = new DefaultXYDataset();
 //
-//        for (int rowNum : procTable.getSelectedRows()) {
-//            int procId = procTableModel.getData().get(rowNum).getId();
+//        for (int rowNum : projTable.getSelectedRows()) {
+//            int procId = projTableModel.getData().get(rowNum).getId();
 //            query.setParameter("procId", procId);
 //            List<Evolution> evList = query.getResultList();
 //            double[][] data = new double[2][evList.size()];
 //
 //
 //            for (int i = 0; i < evList.size(); i++) {
-//                Evolution ev = evList.get(i);
+//                EvolutionOld ev = evList.get(i);
 //                data[1][i] = ev.getEvolutionPK().getGeneration();
 //                data[0][i] = ev.getFitnessValue();
 //            }
@@ -232,17 +234,17 @@ public class ProcessFrame extends JFrame {
 //                false);
         // </editor-fold>
 
-        XYSeriesCollection dataSet = new XYSeriesCollection();
-
-        for (int rowNum : procTable.getSelectedRows()) {
-            int procId = procTableModel.getData().get(rowNum).getId();
-            query.setParameter("procId", procId);
+        XYSeriesCollection dataSet = new XYSeriesCollection();       
+        
+        for (int rowNum : projTable.getSelectedRows()) {
+            Project proj = projTableModel.getData().get(rowNum);
+            query.setParameter("proj", proj);
             List<Evolution> evList = query.getResultList();
 
-            XYSeries series = new XYSeries(procId);
+            XYSeries series = new XYSeries(proj.getId());
 
             for (Evolution ev : evList) {
-                series.add(ev.getFitnessValue(), ev.getEvolutionPK().getGeneration());
+                series.add(ev.getFitnessValue(), ev.getGeneration());
             }
 
             dataSet.addSeries(series);
@@ -284,7 +286,7 @@ public class ProcessFrame extends JFrame {
         render.setBaseShapesFilled(true);
         render.setUseOutlinePaint(true);
 
-        for (int i = 0; i < procTable.getSelectedRowCount(); i++) {
+        for (int i = 0; i < projTable.getSelectedRowCount(); i++) {
             render.setSeriesOutlinePaint(i, Color.black);
         }
         
@@ -335,8 +337,8 @@ public class ProcessFrame extends JFrame {
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JButton procReloadBtn;
-    private javax.swing.JTable procTable;
     private javax.swing.JToolBar procToolBar;
+    private javax.swing.JTable projTable;
     private javax.swing.JPanel rightPanel;
     private javax.swing.JButton showBtn;
     private javax.swing.JLabel statusLabel;
@@ -349,9 +351,9 @@ public class ProcessFrame extends JFrame {
 
             String res = "Selected values: \n";
 
-            for (int row : procTable.getSelectedRows()) {
-                Process proc = procTableModel.getData().get(row);
-                res += proc.getId() + "\t" + proc.getStartTime() + "\t" + proc.getEndTime() + "\n";
+            for (int row : projTable.getSelectedRows()) {
+                Project proj = projTableModel.getData().get(row);
+                res += proj.getId() + "\t" + proj.getStartTime() + "\t" + proj.getEndTime() + "\n";
             }
 
             jTextPane1.setText(res);
@@ -359,18 +361,20 @@ public class ProcessFrame extends JFrame {
             showBtnActionPerformed(null);
         }
     };
-    ProcessTableModel procTableModel = new ProcessTableModel();
+    ProjectTableModel projTableModel = new ProjectTableModel();
 
-    private class ProcessTableModel extends AbstractTableModel {
+    private class ProjectTableModel extends AbstractTableModel {
+        
+        private String[] colNames = {"Id", "Start time", "End time"};
 
         private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        private List<phd.mrs.heuristic.db.Process> data = new ArrayList<>();
+        private List<Project> data = new ArrayList<>();
 
-        public List<Process> getData() {
+        public List<Project> getData() {
             return data;
         }
 
-        public void setData(List<Process> data) {
+        public void setData(List<Project> data) {
             this.data.clear();
             this.data.addAll(data);
             this.fireTableDataChanged();
@@ -378,14 +382,7 @@ public class ProcessFrame extends JFrame {
 
         @Override
         public String getColumnName(int column) {
-            switch (column) {
-                case 0:
-                    return "Start time";
-                case 1:
-                    return "End time";
-                default:
-                    return "";
-            }
+            return colNames[column];
         }
 
         @Override
@@ -395,7 +392,7 @@ public class ProcessFrame extends JFrame {
 
         @Override
         public int getColumnCount() {
-            return 2;
+            return colNames.length;
         }
 
         @Override
@@ -403,8 +400,10 @@ public class ProcessFrame extends JFrame {
 
             switch (columnIndex) {
                 case 0:
-                    return dateFormat.format(data.get(rowIndex).getStartTime());
+                        return data.get(rowIndex).getId();
                 case 1:
+                    return dateFormat.format(data.get(rowIndex).getStartTime());
+                case 2:
                     if (data.get(rowIndex).getEndTime() != null) {
                         return dateFormat.format(data.get(rowIndex).getEndTime());
                     } else {

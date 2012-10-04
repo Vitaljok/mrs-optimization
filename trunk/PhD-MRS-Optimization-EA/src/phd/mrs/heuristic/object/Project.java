@@ -27,6 +27,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
@@ -37,7 +39,6 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import org.jgap.Chromosome;
 import org.jgap.Configuration;
@@ -64,6 +65,8 @@ import phd.mrs.heuristic.utils.Debug;
  * @author Vitaljok
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Project.findAll", query = "SELECT p FROM Project p")})
 @XmlRootElement
 public class Project implements Serializable {
 

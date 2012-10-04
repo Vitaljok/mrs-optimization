@@ -2,13 +2,22 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
   <persistence-unit name="PhD_MRS_Optimization_PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>phd.mrs.heuristic.db.Evolution</class>
-    <class>phd.mrs.heuristic.db.Process</class>
+    <class>phd.mrs.heuristic.object.Project</class>
+    <class>phd.mrs.heuristic.object.Component</class>
+    <class>phd.mrs.heuristic.object.Requirement</class>
+    <class>phd.mrs.heuristic.mission.AreaCoverageMission</class>
+    <class>phd.mrs.heuristic.mission.Mission</class>
+    <class>phd.mrs.heuristic.mission.TransportationMission</class>
+    <class>phd.mrs.heuristic.object.Agent</class>
+    <class>phd.mrs.heuristic.object.Evolution</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:53306/mrs"/>
-      <property name="javax.persistence.jdbc.password" value="mrs"/>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.user" value="mrs"/>
-    </properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:53306/mrs"/>
+            <property name="javax.persistence.jdbc.password" value="mrs"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="mrs"/>
+            <!-- property name="eclipselink.logging.level.sql" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/ -->               
+                    
+        </properties>
   </persistence-unit>
 </persistence>

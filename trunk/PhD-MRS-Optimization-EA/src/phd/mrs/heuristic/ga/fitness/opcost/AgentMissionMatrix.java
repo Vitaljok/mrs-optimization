@@ -91,10 +91,10 @@ public class AgentMissionMatrix {
         }
 
         // add maintanence costs
-        result += project.costModel.calcSysMaint(this.agents.size()) * maxValue;
+        result += project.getCostModel().calcSysMaint(this.agents.size()) * maxValue;
         
         // add replacement costs
-        result += project.costModel.systemReplRate * maxValue * sysCosts;
+        result += project.getCostModel().getSystemReplRate() * maxValue * sysCosts;
         
         return result;
 

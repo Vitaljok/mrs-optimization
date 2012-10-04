@@ -16,8 +16,22 @@
  */
 package phd.mrs.heuristic.object;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 import phd.mrs.heuristic.utils.CachedProperty;
 import phd.mrs.heuristic.utils.Debug;
 
@@ -25,18 +39,35 @@ import phd.mrs.heuristic.utils.Debug;
  *
  * @author Vitaljok
  */
-public class Agent implements Cloneable {
+@Entity
+public class Agent implements Cloneable, Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
     private Project project;
+    @OneToMany(cascade= CascadeType.ALL)
+    @JoinTable(name = "agent_component",
+    joinColumns = {
+        @JoinColumn(name = "agent_id")
+    },
+    inverseJoinColumns = {
+        @JoinColumn(name = "component_id")
+    })
     private List<Component> components = new ArrayList<>();
+    @Transient
     private CachedProperty<Double> designCosts = new CachedProperty<Double>() {
 
         @Override
         protected Double calculateValue() {
             Debug.log.fine("Calculated cached desing costs");
-            return project.costModel.calcDesign(getComponents().size());
+            return project.getCostModel().calcDesign(getComponents().size());
         }
     };
+    @Transient
     private CachedProperty<Double> productionCosts = new CachedProperty<Double>() {
 
         @Override
@@ -53,10 +84,11 @@ public class Agent implements Cloneable {
             }
 
             // add assembly costs
-            costs += project.costModel.calcAssembly(getComponents().size(), maxComplexity);
+            costs += project.getCostModel().calcAssembly(getComponents().size(), maxComplexity);
             return costs;
         }
     };
+    @Transient
     private CachedProperty<Double> operatingEnergy = new CachedProperty<Double>() {
 
         @Override
@@ -69,10 +101,25 @@ public class Agent implements Cloneable {
             }
 
             // add energy loss
-            energy += project.costModel.calcEnergyLoss(getComponents().size());
+            energy += project.getCostModel().calcEnergyLoss(getComponents().size());
             return energy;
         }
     };
+    
+    @Lob
+    @Column(name="code")
+    private String code;
+
+    @PrePersist
+    private void prePersist(){
+        this.code = "";
+        for (Component comp : components) {
+            this.code += comp.toString()+"\n";
+        }        
+    }
+    
+    public Agent() {
+    }
 
     public Double getOperatingEnergy() {
         return operatingEnergy.getValue();
@@ -81,7 +128,7 @@ public class Agent implements Cloneable {
     public Agent(Project project) {
         this.project = project;
         Debug.log.finest("New agent created");
-    }   
+    }
 
     public List<Component> getComponents() {
         return components;
@@ -104,5 +151,13 @@ public class Agent implements Cloneable {
         new_agent.designCosts = this.designCosts;
 
         return new_agent;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

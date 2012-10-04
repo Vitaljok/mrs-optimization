@@ -85,7 +85,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
         }
         
         // add system design costs (use only active)
-        Qinv +=  project.costModel.calcSysDesign(opAgentList.size());
+        Qinv +=  project.getCostModel().calcSysDesign(opAgentList.size());
         
 
         // check if all components are used in solution
@@ -100,7 +100,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
                 }
             }
 
-            return num * this.project.config.nearInfinity;
+            return num * this.project.getConfig().getNearInfinity();
         }
         
         // TODO: check is mrs able to perform mission???

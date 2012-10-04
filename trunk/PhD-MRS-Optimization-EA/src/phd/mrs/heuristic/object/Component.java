@@ -16,43 +16,102 @@
  */
 package phd.mrs.heuristic.object;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Vitaljok
  */
-@XmlRootElement
-public class Component {
+@Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"project_id", "code"})})
+public class Component implements Serializable {
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "code")
+    private String code;
+    @Column(name = "name")
     private String name;
+    @Column(name = "family")
     private String family;
+    @Column(name = "investment_costs")
     private Double investmentCosts;
+    @Column(name = "operating_power")
     private Double operatingPower;
+    @Column(name = "complexity")
     private Double complexity = 1.0;
-    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<Requirement> required = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "refComponent")
+    private List<Requirement> requiredRef = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="project_id")
+    private Project project;
 
     protected Component() {
     }
 
-    public Component(String id, String name) {
-        this.id = id;
-        this.name = name;                
-    }   
-    
-    @XmlID
-    public String getId() {
+    public Component(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
+    @PrePersist
+    private void prePersist() {
+        for (Requirement req : required) {
+            req.setComponent(this);
+        }
+
+        for (Requirement req : requiredRef) {
+            req.setRefComponent(this);
+        }
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    @XmlTransient
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    @XmlID
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {
@@ -99,10 +158,13 @@ public class Component {
     public List<Requirement> getRequired() {
         return required;
     }
-    
+
+    public void addRequired(Component component, String comment) {
+        this.required.add(new Requirement(this, component, comment));
+    }
 
     @Override
     public String toString() {
-        return "[" + id + "]";
+        return "[" + code + "]";
     }
 }

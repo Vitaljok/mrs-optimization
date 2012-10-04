@@ -12,6 +12,18 @@
                 <comment>Mobile base requires WiFi for receiving control commands</comment>
                 <refComponent>network-wifi</refComponent>
             </required>
+            <required>
+                <comment>Mobile base requires GPS for navigation</comment>
+                <refComponent>gps</refComponent>
+            </required>
+            <required>
+                <comment>Mobile base requires WiFi</comment>
+                <refComponent>network-wifi</refComponent>
+            </required>
+            <required>
+                <comment>Mobile base requires laser for navigation</comment>
+                <refComponent>laser</refComponent>
+            </required>
         </component>
         <component>
             <code>network-wifi</code>
@@ -20,6 +32,10 @@
             <investmentCosts>30.0</investmentCosts>
             <name>Wi-Fi networking</name>
             <operatingPower>2.0</operatingPower>
+            <required>
+                <comment>Wi-Fi should be placed on mobile base</comment>
+                <refComponent>mobile-base</refComponent>
+            </required>
         </component>
         <component>
             <code>mowing-machine</code>
@@ -118,7 +134,7 @@
         <agentInstanceLimit>10</agentInstanceLimit>
         <crossoverRate>0.35</crossoverRate>
         <doubletteChromosomesAllowed>false</doubletteChromosomesAllowed>
-        <generationsLimit>15000</generationsLimit>
+        <generationsLimit>1500</generationsLimit>
         <generationsStep>20</generationsStep>
         <keepPopulationSizeConstant>true</keepPopulationSizeConstant>
         <minimumPopSizePercent>0</minimumPopSizePercent>

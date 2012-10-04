@@ -49,7 +49,7 @@ public class AverageOpCostCalculator extends AbstractOpCostCalculator {
             }
             
             if (totalPerf == 0d) {
-                return this.project.config.nearInfinity;
+                return this.project.getConfig().getNearInfinity();
             }
 
             // set equal amount of work for agents

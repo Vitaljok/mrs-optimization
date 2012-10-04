@@ -16,6 +16,12 @@
  */
 package phd.mrs.heuristic.mission;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import phd.mrs.heuristic.object.Agent;
@@ -27,18 +33,17 @@ import phd.mrs.heuristic.object.Component;
  * @author Vitaljok
  */
 @XmlRootElement
+@Entity
 public class AreaCoverageMission extends Mission {
 
-    private Double areaSizeX;
-    private Double areaSizeY;
-    private Double workDensity;        
-    private Component mobileBase;
-    private Double mobileBaseSpeed;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="work_device_id")
     private Component workDevice;
+    @Column(name="work_device_width")
     private Double workDeviceWidth;
 
-    private AreaCoverageMission() {
-    }    
+    public AreaCoverageMission() {
+    }
 
     /**
      * Creates new mission instance
@@ -51,49 +56,12 @@ public class AreaCoverageMission extends Mission {
         this.areaSizeY = areaSizeY;
     }
 
-    public Double getAreaSizeX() {
-        return areaSizeX;
-    }
-
-    public void setAreaSizeX(Double areaSizeX) {
-        this.areaSizeX = areaSizeX;
-    }
-
-    public Double getAreaSizeY() {
-        return areaSizeY;
-    }
-
-    public void setAreaSizeY(Double areaSizeY) {
-        this.areaSizeY = areaSizeY;
-    }
-
-    public Double getMobileBaseSpeed() {
-        return mobileBaseSpeed;
-    }
-
-    public void setMobileBaseSpeed(Double mobileBaseSpeed) {
-        this.mobileBaseSpeed = mobileBaseSpeed;
-    }
-
-    public Double getWorkDensity() {
-        return workDensity;
-    }
-
-    public void setWorkDensity(Double workDensity) {
-        this.workDensity = workDensity;
-    }
-
     public Double getWorkDeviceWidth() {
         return workDeviceWidth;
     }
 
     public void setWorkDeviceWidth(Double workDeviceWidth) {
         this.workDeviceWidth = workDeviceWidth;
-    }    
-    
-    @XmlIDREF
-    public Component getMobileBase() {
-        return mobileBase;
     }
 
     @XmlIDREF
@@ -101,23 +69,19 @@ public class AreaCoverageMission extends Mission {
         return workDevice;
     }
 
-    public void setMobileBase(Component mobileBase) {
-        this.mobileBase = mobileBase;
-    }
-
     public void setWorkDevice(Component workDevice) {
         this.workDevice = workDevice;
-    }    
+    }
 
     @Override
     public Double getAgentPerformance(Agent agent) {
         if (agent.getComponents().contains(this.mobileBase)
                 && agent.getComponents().contains(this.workDevice)) {
-            return this.mobileBaseSpeed*this.workDeviceWidth;
+            return this.mobileBaseSpeed * this.workDeviceWidth;
         } else {
             return 0d;
         }
-    }    
+    }
 
     @Override
     public Double getAmountOfWork() {
@@ -126,6 +90,6 @@ public class AreaCoverageMission extends Mission {
 
     @Override
     public Integer getMaxTimeEstimation() {
-        return new Integer((int)(Math.ceil(this.getAmountOfWork() / this.mobileBaseSpeed * 1.25)));
+        return new Integer((int) (Math.ceil(this.getAmountOfWork() / this.mobileBaseSpeed * 1.25)));
     }
 }

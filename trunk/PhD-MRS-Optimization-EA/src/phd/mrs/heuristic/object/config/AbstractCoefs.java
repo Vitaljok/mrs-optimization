@@ -16,11 +16,15 @@
  */
 package phd.mrs.heuristic.object.config;
 
+import java.io.Serializable;
+import javax.persistence.Embeddable;
+
 /**
  *
  * @author Vitaljok
  */
-public class AbstractCoefs {
+@Embeddable
+public class AbstractCoefs implements Serializable {
     public double b0;
     public double b1;
     public double b2;

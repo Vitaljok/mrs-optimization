@@ -16,6 +16,12 @@
  */
 package phd.mrs.heuristic.object.config;
 
+import java.io.Serializable;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -24,33 +30,69 @@ import javax.xml.bind.annotation.XmlRootElement;
  * f(x) = b0 + b1*x + b2*x^k    
  * @author Vitaljok
  */
-@XmlRootElement
-public class CostModel {
+@Embeddable
+public class CostModel implements Serializable {
 
     /**
      * Agent design cost coefficients
      */
-    public AbstractCoefs design = new AbstractCoefs(40, 10, 0.5, 2);
+    @AttributeOverrides({
+        @AttributeOverride(name = "b0", column = @Column(name = "design_b0")),
+        @AttributeOverride(name = "b1", column = @Column(name = "design_b1")),
+        @AttributeOverride(name = "b2", column = @Column(name = "design_b2")),
+        @AttributeOverride(name = "k", column = @Column(name = "design_k")),
+    })
+    @Embedded
+    private AbstractCoefs design = new AbstractCoefs(40, 10, 0.5, 2);
     /**
      * Agent assembly cost coefficients
      */
-    public AbstractCoefs assembly = new AbstractCoefs(10, 5, 0.02, 3);
+    @AttributeOverrides({
+        @AttributeOverride(name = "b0", column = @Column(name = "assembly_b0")),
+        @AttributeOverride(name = "b1", column = @Column(name = "assembly_b1")),
+        @AttributeOverride(name = "b2", column = @Column(name = "assembly_b2")),
+        @AttributeOverride(name = "k", column = @Column(name = "assembly_k")),
+    })
+    @Embedded
+    private AbstractCoefs assembly = new AbstractCoefs(10, 5, 0.02, 3);
     /**
      * System design coefficients
      */
-    public AbstractCoefs sysDesign = new AbstractCoefs(280, 20, 2, 2);
+    @AttributeOverrides({
+        @AttributeOverride(name = "b0", column = @Column(name = "sys_design_b0")),
+        @AttributeOverride(name = "b1", column = @Column(name = "sys_design_b1")),
+        @AttributeOverride(name = "b2", column = @Column(name = "sys_design_b2")),
+        @AttributeOverride(name = "k", column = @Column(name = "sys_design_k")),
+    })
+    @Embedded
+    private AbstractCoefs sysDesign = new AbstractCoefs(280, 20, 2, 2);
     /**
      * Agent energy loss coefficients
      */
-    public AbstractCoefs energyLoss = new AbstractCoefs(0, 1, 0.01, 2);
+    @AttributeOverrides({
+        @AttributeOverride(name = "b0", column = @Column(name = "energy_loss_b0")),
+        @AttributeOverride(name = "b1", column = @Column(name = "energy_loss_b1")),
+        @AttributeOverride(name = "b2", column = @Column(name = "energy_loss_b2")),
+        @AttributeOverride(name = "k", column = @Column(name = "energy_loss_k")),
+    })
+    @Embedded
+    private AbstractCoefs energyLoss = new AbstractCoefs(0, 1, 0.01, 2);
     /**
      * System maintenance coefficients
      */
-    public AbstractCoefs sysMaint = new AbstractCoefs(8, 2, 0.1, 2);
+    @AttributeOverrides({
+        @AttributeOverride(name = "b0", column = @Column(name = "sys_maint_b0")),
+        @AttributeOverride(name = "b1", column = @Column(name = "sys_maint_b1")),
+        @AttributeOverride(name = "b2", column = @Column(name = "sys_maint_b2")),
+        @AttributeOverride(name = "k", column = @Column(name = "sys_maint_k")),
+    })
+    @Embedded
+    private AbstractCoefs sysMaint = new AbstractCoefs(8, 2, 0.1, 2);
     /**
      * Eventual replacement rate
      */
-    public Double systemReplRate = 0.005d;
+    @Column(name = "system_repl_rate")
+    private Double systemReplRate = 0.005d;
 
     private double calcFunction(double b0, double b1, double b2, double k, double x) {
         return b0 + b1 * x + b2 * Math.pow(x, k);
@@ -62,7 +104,7 @@ public class CostModel {
      * @return Agent assembly costs
      */
     public double calcAssembly(int N, double cmplx) {
-        return calcFunction(assembly.b0, assembly.b1, assembly.b2, assembly.k, N) * cmplx;
+        return calcFunction(getAssembly().b0, getAssembly().b1, getAssembly().b2, getAssembly().k, N) * cmplx;
     }
 
     /**
@@ -71,7 +113,7 @@ public class CostModel {
      * @return Agent design costs
      */
     public double calcDesign(int N) {
-        return calcFunction(design.b0, design.b1, design.b2, design.k, N);
+        return calcFunction(getDesign().b0, getDesign().b1, getDesign().b2, getDesign().k, N);
     }
 
     /**
@@ -80,7 +122,7 @@ public class CostModel {
      * @return Agent energy costs
      */
     public double calcEnergyLoss(int N) {
-        return calcFunction(energyLoss.b0, energyLoss.b1, energyLoss.b2, energyLoss.k, N);
+        return calcFunction(getEnergyLoss().b0, getEnergyLoss().b1, getEnergyLoss().b2, getEnergyLoss().k, N);
     }
 
     /**
@@ -89,7 +131,7 @@ public class CostModel {
      * @return system design costs
      */
     public double calcSysDesign(int N) {
-        return calcFunction(sysDesign.b0, sysDesign.b1, sysDesign.b2, sysDesign.k, N);
+        return calcFunction(getSysDesign().b0, getSysDesign().b1, getSysDesign().b2, getSysDesign().k, N);
     }
 
     /**
@@ -98,6 +140,54 @@ public class CostModel {
      * @return system maintenence costs
      */
     public double calcSysMaint(int N) {
-        return calcFunction(sysMaint.b0, sysMaint.b1, sysMaint.b2, sysMaint.k, N);
+        return calcFunction(getSysMaint().b0, getSysMaint().b1, getSysMaint().b2, getSysMaint().k, N);
+    }
+
+    public AbstractCoefs getDesign() {
+        return design;
+    }
+
+    public void setDesign(AbstractCoefs design) {
+        this.design = design;
+    }
+
+    public AbstractCoefs getAssembly() {
+        return assembly;
+    }
+
+    public void setAssembly(AbstractCoefs assembly) {
+        this.assembly = assembly;
+    }
+
+    public AbstractCoefs getSysDesign() {
+        return sysDesign;
+    }
+
+    public void setSysDesign(AbstractCoefs sysDesign) {
+        this.sysDesign = sysDesign;
+    }
+
+    public AbstractCoefs getEnergyLoss() {
+        return energyLoss;
+    }
+
+    public void setEnergyLoss(AbstractCoefs energyLoss) {
+        this.energyLoss = energyLoss;
+    }
+
+    public AbstractCoefs getSysMaint() {
+        return sysMaint;
+    }
+
+    public void setSysMaint(AbstractCoefs sysMaint) {
+        this.sysMaint = sysMaint;
+    }
+
+    public Double getSystemReplRate() {
+        return systemReplRate;
+    }
+
+    public void setSystemReplRate(Double systemReplRate) {
+        this.systemReplRate = systemReplRate;
     }
 }

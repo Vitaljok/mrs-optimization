@@ -16,6 +16,13 @@
  */
 package phd.mrs.heuristic.mission;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import phd.mrs.heuristic.object.Agent;
@@ -27,17 +34,17 @@ import phd.mrs.heuristic.utils.CachedProperty;
  * @author Vitaljok
  */
 @XmlRootElement
+@Entity
 public class TransportationMission extends Mission {
 
-    private Double areaSizeX;
-    private Double areaSizeY;
+    @Column(name="target_offset_x")
     private Double targetOffsetX;
+    @Column(name="target_offset_y")
     private Double targetOffsetY;
-    private Double workDensity;
-    private Component mobileBase;
-    private Double mobileBaseSpeed;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="loader_id")
     private Component loader;
-    
+    @Transient
     private CachedProperty<Double> avgDist = new CachedProperty<Double>() {
 
         @Override
@@ -57,8 +64,8 @@ public class TransportationMission extends Mission {
         }
     };
 
-    private TransportationMission() {
-    }       
+    public TransportationMission() {
+    }
 
     public TransportationMission(Double areaSizeX, Double areaSizeY) {
         this.areaSizeX = areaSizeX;
@@ -67,11 +74,10 @@ public class TransportationMission extends Mission {
 
     @Override
     public Double getAgentPerformance(Agent agent) {
-        if (agent.getComponents().contains(this.mobileBase) &&
-                agent.getComponents().contains(this.loader)) {
+        if (agent.getComponents().contains(this.mobileBase)
+                && agent.getComponents().contains(this.loader)) {
             return this.mobileBaseSpeed;
-        } else
-        {
+        } else {
             return 0d;
         }
     }
@@ -84,22 +90,6 @@ public class TransportationMission extends Mission {
     @Override
     public Integer getMaxTimeEstimation() {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Double getAreaSizeX() {
-        return areaSizeX;
-    }
-
-    public void setAreaSizeX(Double areaSizeX) {
-        this.areaSizeX = areaSizeX;
-    }
-
-    public Double getAreaSizeY() {
-        return areaSizeY;
-    }
-
-    public void setAreaSizeY(Double areaSizeY) {
-        this.areaSizeY = areaSizeY;
     }
 
     public Double getTargetOffsetX() {
@@ -118,31 +108,6 @@ public class TransportationMission extends Mission {
         this.targetOffsetY = targetOffsetY;
     }
 
-    public Double getWorkDensity() {
-        return workDensity;
-    }
-
-    public void setWorkDensity(Double workDensity) {
-        this.workDensity = workDensity;
-    }
-
-    @XmlIDREF
-    public Component getMobileBase() {
-        return mobileBase;
-    }
-
-    public void setMobileBase(Component mobileBase) {
-        this.mobileBase = mobileBase;
-    }
-
-    public Double getMobileBaseSpeed() {
-        return mobileBaseSpeed;
-    }
-
-    public void setMobileBaseSpeed(Double mobileBaseSpeed) {
-        this.mobileBaseSpeed = mobileBaseSpeed;
-    }
-
     @XmlIDREF
     public Component getLoader() {
         return loader;
@@ -150,5 +115,5 @@ public class TransportationMission extends Mission {
 
     public void setLoader(Component loader) {
         this.loader = loader;
-    }    
+    }
 }

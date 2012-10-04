@@ -37,7 +37,7 @@ public abstract class AbstractOpCostCalculator {
         this.project = project;
         this.scale = scale;
         
-        this.valueStep = roundUp(project.config.nearZero);
+        this.valueStep = roundUp(project.getConfig().getNearZero());
     }
 
     public abstract Double calcOpCosts(List<Agent> mrs, Double Qinv);

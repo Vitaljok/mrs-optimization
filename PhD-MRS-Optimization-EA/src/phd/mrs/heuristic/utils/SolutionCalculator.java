@@ -104,7 +104,7 @@ public class SolutionCalculator {
         Qoper = timeMatrix.getCosts(Qinv);
 
         //Qmaint = CostModel.calcSysMaint(agents.size()) * timeMatrix.getSysTime();
-        Qrepl = project.costModel.systemReplRate * timeMatrix.getSysTime() * Qinv;
+        Qrepl = project.getCostModel().getSystemReplRate() * timeMatrix.getSysTime() * Qinv;
 
         timeMatrix.print();
 

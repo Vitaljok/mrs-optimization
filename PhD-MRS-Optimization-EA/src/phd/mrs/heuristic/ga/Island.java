@@ -53,9 +53,9 @@ public class Island extends Thread {
         int lastChangeGen = 0;
         double lastFitValue = -1d;
 
-        while (genNum < project.config.generationsLimit) {
-            genotype.evolve(project.config.generationsStep);
-            genNum += project.config.generationsStep;
+        while (genNum < project.getConfig().getGenerationsLimit()) {
+            genotype.evolve(project.getConfig().getGenerationsStep());
+            genNum += project.getConfig().getGenerationsStep();
 
             IChromosome best = genotype.getFittestChromosome();
             if (lastFitValue != best.getFitnessValue()) {

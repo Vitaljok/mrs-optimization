@@ -43,7 +43,7 @@ public class EvenUpDownOpCostCalculator extends AbstractOpCostCalculator {
 
         // fill all work amount on cheapest agent
         for (Mission mis : this.project.getMissions()) {
-            double minCost = project.config.nearInfinity;
+            double minCost = project.getConfig().getNearInfinity();
             Agent minAgent = null;
             for (Agent agent : mrs) {
                 double currCost = agent.getOperatingEnergy() / mis.getAgentPerformance(agent);
@@ -106,7 +106,7 @@ public class EvenUpDownOpCostCalculator extends AbstractOpCostCalculator {
             while (deltaWork > 0) {//-Config.nearZero) {
                 // find cheapest agent to increase 
                 Agent minAgent = null;
-                double minCost = project.config.nearInfinity;
+                double minCost = project.getConfig().getNearInfinity();
 
                 for (Agent agent : agents) {
                     if (agent != maxPair.getValue1()

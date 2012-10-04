@@ -16,27 +16,54 @@
  */
 package phd.mrs.heuristic.object;
 
+import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Vitaljok
  */
-@XmlRootElement
-public class Requirement {
+@Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"component_id", "ref_component_id"})})
+public class Requirement implements Serializable {
     
-    private Component component;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Integer id;
+    
+    @Column(name="comment")
     private String comment;
+    
+    @JoinColumn(name = "component_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, cascade= CascadeType.ALL)
+    private Component component;
+    
+    @JoinColumn(name = "ref_component_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, cascade= CascadeType.ALL)
+    private Component refComponent;        
 
     public Requirement() {
-    }
+    }        
 
-    public Requirement(Component component, String comment) {
-        this.component = component;
+    protected Requirement(Component component, Component refComponent, String comment) {
+        this.component = component;        
         this.comment = comment;
+        this.refComponent = refComponent;        
     }
-
+    
     public String getComment() {
         return comment;
     }
@@ -45,12 +72,29 @@ public class Requirement {
         this.comment = comment;
     }
 
-    @XmlIDREF
+    @XmlTransient  
     public Component getComponent() {
         return component;
     }
 
     public void setComponent(Component component) {
         this.component = component;
-    }    
+    }
+    
+    @XmlIDREF
+    public Component getRefComponent() {
+        return refComponent;
+    }
+
+    public void setRefComponent(Component refComponent) {
+        this.refComponent = refComponent;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }

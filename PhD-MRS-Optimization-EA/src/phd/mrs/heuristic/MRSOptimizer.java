@@ -24,19 +24,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import org.jgap.Gene;
 import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
-import org.jgap.Population;
-import phd.mrs.heuristic.db.Evolution;
-import phd.mrs.heuristic.db.EvolutionPK;
+import phd.mrs.heuristic.ga.AgentGene;
 import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.object.Component;
 import phd.mrs.heuristic.object.Project;
-import phd.mrs.heuristic.object.Requirement;
 import phd.mrs.heuristic.mission.TransportationMission;
+import phd.mrs.heuristic.object.Evolution;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -46,7 +44,6 @@ import phd.mrs.heuristic.utils.Debug;
 public class MRSOptimizer {
 
     Project project;
-    EntityManager entityManager;
 
     private MRSOptimizer() throws InvalidConfigurationException {
         initDefaultProject();
@@ -124,19 +121,20 @@ public class MRSOptimizer {
         project.getComponents().add(compTaskAllocation);
 
 
-        // component requirements               
-        //compWiFi.getRequired().add(new Requirement(compMobileBase, "Wi-Fi should be placed on mobile base"));
-        compMowingMachine.getRequired().add(new Requirement(compMobileBase, "Mowing machine is useless on stationary agent"));
-        compLoader.getRequired().add(new Requirement(compMobileBase, "Loader should be mobile"));
-        compLoader.getRequired().add(new Requirement(compLoad, "Loader should know the weight of cargo"));
-        compLaser.getRequired().add(new Requirement(compMobileBase, "Laser is useless on stationary device"));
-        compGPS.getRequired().add(new Requirement(compMobileBase, "GPS is useless on stationary device"));
-        compNavigation.getRequired().add(new Requirement(compWiFi, "Networking is required for controlling navigation"));
-        compTaskAllocation.getRequired().add(new Requirement(compWiFi, "Tasks should be sent via net"));
-        //compMobileBase.getRequired().add(new Requirement(compGPS, "Mobile base requires GPS for navigation"));
-        //compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi"));
-        //compMobileBase.getRequired().add(new Requirement(compLaser, "Mobile base requires laser for navigation"));
-        compMobileBase.getRequired().add(new Requirement(compWiFi, "Mobile base requires WiFi for receiving control commands"));
+        // component requirements                       
+        compMowingMachine.addRequired(compMobileBase, "Mowing machine is useless on stationary agent");
+        compLoader.addRequired(compMobileBase, "Loader should be mobile");
+        compLoader.addRequired(compLoad, "Loader should know the weight of cargo");
+        compLaser.addRequired(compMobileBase, "Laser is useless on stationary device");
+        compGPS.addRequired(compMobileBase, "GPS is useless on stationary device");
+        compNavigation.addRequired(compWiFi, "Networking is required for controlling navigation");
+        compTaskAllocation.addRequired(compWiFi, "Tasks should be sent via net");
+        compMobileBase.addRequired(compWiFi, "Mobile base requires WiFi for receiving control commands");
+        
+        // additional
+//        compMobileBase.addRequired(compGPS, "Mobile base requires GPS for navigation");
+//        compMobileBase.addRequired(compLaser, "Mobile base requires laser for navigation");
+//        compWiFi.addRequired(compMobileBase, "Wi-Fi should be placed on mobile base");
 
 
         // Missions
@@ -170,7 +168,7 @@ public class MRSOptimizer {
         Unmarshaller unmarsh = xml.createUnmarshaller();
         this.project = (Project) unmarsh.unmarshal(new File(config));
 
-        this.project.configure();
+        this.project.configure();               
     }
 
     public void startEvolution() throws InvalidConfigurationException {
@@ -178,28 +176,28 @@ public class MRSOptimizer {
         Debug.log.info("Connecting to database");
 
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
-        entityManager = factory.createEntityManager();
+
+        EntityManager projectEm = factory.createEntityManager();
+
+        // store project definition
+        projectEm.getTransaction().begin();
+        projectEm.persist(this.project);
+        projectEm.getTransaction().commit();
 
 
-        entityManager.getTransaction().begin();
-        phd.mrs.heuristic.db.Process proc = new phd.mrs.heuristic.db.Process();
-        proc.setStartTime(new Date());
-        entityManager.persist(proc);
-        entityManager.getTransaction().commit();
-
-        Integer procId = proc.getId();
+        EntityManager evolutionEm = factory.createEntityManager();
 
         Debug.log.info("Populating world");
         Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
 
-        Debug.log.info("Starting evolution");
+        Debug.log.info("Starting evolution ("+project.getConfig().getGenerationsLimit()+" generations)");
         int genNum = 0;
         int lastChangeGen = 0;
         double lastFitValue = -1d;
 
         int step = 1;
 
-        while (genNum < project.config.generationsLimit) {
+        while (genNum < project.getConfig().getGenerationsLimit()) {
             world.evolve(step);
             genNum += step;
 
@@ -208,54 +206,39 @@ public class MRSOptimizer {
                 lastChangeGen = genNum;
                 lastFitValue = best.getFitnessValue();
 
-                entityManager.getTransaction().begin();
-                EvolutionPK pk = new EvolutionPK(procId, genNum, (short)0);
-                Evolution ev = new Evolution(pk);
-                ev.setAge(best.getAge());
-                ev.setFitnessValue(best.getFitnessValueDirectly());
-                ev.setBestInd(true);
-                entityManager.persist(ev);
-                entityManager.getTransaction().commit();
-                entityManager.clear(); // detach persisted objects to avoid memory leaks
-            } else if (step < project.config.generationsStep) {
+                evolutionEm.getTransaction().begin();
+                Evolution evo = new Evolution();
+                evo.setFitnessValue(lastFitValue);
+                evo.setGeneration(genNum);
+                evo.setProject(project);
+
+                for (Gene gene : best.getGenes()) {
+                    AgentGene agentGene = (AgentGene) gene;
+                    Integer inst_num = (Integer) agentGene.getAllele();
+                    if (inst_num > 0) {
+                        evo.getAgents().put(agentGene.getAgent(), inst_num);
+                    }
+                }
+
+                evolutionEm.persist(evo);
+                evolutionEm.getTransaction().commit();
+                evolutionEm.clear(); // detach persisted objects to avoid memory leaks
+            } else if (step < project.getConfig().getGenerationsStep()) {
                 step++;
             }
-
-            Debug.log.log(Level.INFO, "{0}\t~{1}\t{2}\tStep: {3}", new Object[]{genNum, lastChangeGen, best.getFitnessValue(), step});
+            
+            Debug.log.info(genNum+" +"+step+"\t~"+lastChangeGen+"\t"+best.getFitnessValue());
         }
 
-        entityManager.getTransaction().begin();
-        proc = entityManager.find(phd.mrs.heuristic.db.Process.class, procId);
-        proc.setEndTime(new Date());
-        entityManager.getTransaction().commit();
-        
-        entityManager.close();
-        
+        // save end time
+        projectEm.getTransaction().begin();
+        //projectEm.refresh(this.project);
+        this.project.setEndTime(new Date());
+        projectEm.getTransaction().commit();
+        projectEm.close();
+
         Debug.log.info("Showing results");
-        new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);       
-    }
-
-    private void writePopulation(phd.mrs.heuristic.db.Process proc, int gen,
-            Population pop, IChromosome best, EntityManager em) {
-
-        em.getTransaction().begin();
-
-        for (short i = 0; i < pop.getChromosomes().size(); i++) {
-            IChromosome chrom = pop.getChromosome(i);
-            EvolutionPK pk = new EvolutionPK(proc.getId(), gen, (short)(i+1));
-            Evolution ev = new Evolution(pk);
-            ev.setAge(chrom.getAge());
-            ev.setFitnessValue(chrom.getFitnessValueDirectly());
-            if (chrom.equals(best)) {
-                ev.setBestInd(true);
-            }
-
-            em.persist(ev);
-        }
-
-        em.getTransaction().commit();
-
-        em.clear(); // detach persisted objects to avoid memory leaks
+        new ChromosomeTestFrame(world.getFittestChromosome(), project).setVisible(true);
     }
 
     /**
@@ -285,10 +268,21 @@ public class MRSOptimizer {
 //
 //            marsh.marshal(opt.project, new File("test.xml"));
 //
+//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
+//            EntityManager em = factory.createEntityManager();
+//
+//            em.getTransaction().begin();
+//            
+//            em.persist(opt.project);
+//            
+//            em.getTransaction().commit();
+//
+//            em.close();
+//
 //        } catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
-//        
+//
 //        System.exit(0);
 
         if (args.length > 0) {

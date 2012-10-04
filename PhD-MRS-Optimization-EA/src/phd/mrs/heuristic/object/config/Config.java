@@ -16,32 +16,147 @@
  */
 package phd.mrs.heuristic.object.config;
 
+import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Vitaljok
  */
-@XmlRootElement
-public class Config {
+@Embeddable
+public class Config implements Serializable {
 
-    @Deprecated
-    public static Integer NUM_ISLANDS = 1;    
-    public Integer agentInstanceLimit = 10;
-    public Integer populationSize = 20;
-    public Integer generationsLimit = 1500;
-    public Integer generationsStep = 20;
-    
-    
-    
-    public int minimumPopSizePercent = 0;
-    public double selectFromPrevGen = 0.95;
-    public boolean keepPopulationSizeConstant = true;
-    public double selectorOriginalRate = 0.90;
-    public boolean doubletteChromosomesAllowed = false;
-    public double crossoverRate = 0.35;
-    public int mutationRate = 15;        
-    
-    public Double nearInfinity = 1.0E12;
-    public Double nearZero = 1.0E-12;
+    @Column(name = "agent_instance_limit")
+    private Short agentInstanceLimit = 10;
+    @Column(name = "population_size")
+    private Short populationSize = 20;
+    @Column(name = "generations_limit")
+    private Integer generationsLimit = 1500;
+    @Column(name = "generations_step")
+    private Short generationsStep = 20;
+    @Column(name = "minimum_pop_size_percent")
+    private Short minimumPopSizePercent = 0;
+    @Column(name = "select_from_prev_gen")
+    private double selectFromPrevGen = 0.95;
+    @Column(name = "keep_population_size_constant")
+    private boolean keepPopulationSizeConstant = true;
+    @Column(name = "selector_original_rate")
+    private double selectorOriginalRate = 0.90;
+    @Column(name = "doublette_chromosomes_allowed")
+    private boolean doubletteChromosomesAllowed = false;
+    @Column(name = "crossover_rate")
+    private double crossoverRate = 0.35;
+    @Column(name = "mutation_rate")
+    private short mutationRate = 15;
+    @Column(name = "near_nfinity")
+    private Double nearInfinity = 1.0E12;
+    @Column(name = "near_zero")
+    private Double nearZero = 1.0E-12;
+
+    public Short getAgentInstanceLimit() {
+        return agentInstanceLimit;
+    }
+
+    public void setAgentInstanceLimit(Short agentInstanceLimit) {
+        this.agentInstanceLimit = agentInstanceLimit;
+    }
+
+    public Short getPopulationSize() {
+        return populationSize;
+    }
+
+    public void setPopulationSize(Short populationSize) {
+        this.populationSize = populationSize;
+    }
+
+    public Integer getGenerationsLimit() {
+        return generationsLimit;
+    }
+
+    public void setGenerationsLimit(Integer generationsLimit) {
+        this.generationsLimit = generationsLimit;
+    }
+
+    public Short getGenerationsStep() {
+        return generationsStep;
+    }
+
+    public void setGenerationsStep(Short generationsStep) {
+        this.generationsStep = generationsStep;
+    }
+
+    public Short getMinimumPopSizePercent() {
+        return minimumPopSizePercent;
+    }
+
+    public void setMinimumPopSizePercent(Short minimumPopSizePercent) {
+        this.minimumPopSizePercent = minimumPopSizePercent;
+    }
+
+    public double getSelectFromPrevGen() {
+        return selectFromPrevGen;
+    }
+
+    public void setSelectFromPrevGen(double selectFromPrevGen) {
+        this.selectFromPrevGen = selectFromPrevGen;
+    }
+
+    public boolean isKeepPopulationSizeConstant() {
+        return keepPopulationSizeConstant;
+    }
+
+    public void setKeepPopulationSizeConstant(boolean keepPopulationSizeConstant) {
+        this.keepPopulationSizeConstant = keepPopulationSizeConstant;
+    }
+
+    public double getSelectorOriginalRate() {
+        return selectorOriginalRate;
+    }
+
+    public void setSelectorOriginalRate(double selectorOriginalRate) {
+        this.selectorOriginalRate = selectorOriginalRate;
+    }
+
+    public boolean isDoubletteChromosomesAllowed() {
+        return doubletteChromosomesAllowed;
+    }
+
+    public void setDoubletteChromosomesAllowed(boolean doubletteChromosomesAllowed) {
+        this.doubletteChromosomesAllowed = doubletteChromosomesAllowed;
+    }
+
+    public double getCrossoverRate() {
+        return crossoverRate;
+    }
+
+    public void setCrossoverRate(double crossoverRate) {
+        this.crossoverRate = crossoverRate;
+    }
+
+    public short getMutationRate() {
+        return mutationRate;
+    }
+
+    public void setMutationRate(short mutationRate) {
+        this.mutationRate = mutationRate;
+    }
+
+    public Double getNearInfinity() {
+        return nearInfinity;
+    }
+
+    public void setNearInfinity(Double nearInfinity) {
+        this.nearInfinity = nearInfinity;
+    }
+
+    public Double getNearZero() {
+        return nearZero;
+    }
+
+    public void setNearZero(Double nearZero) {
+        this.nearZero = nearZero;
+    }
 }

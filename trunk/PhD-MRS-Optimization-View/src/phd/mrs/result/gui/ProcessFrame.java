@@ -12,11 +12,14 @@ package phd.mrs.result.gui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Paint;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -29,16 +32,22 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import phd.mrs.heuristic.object.Agent;
 import phd.mrs.heuristic.object.Evolution;
 import phd.mrs.heuristic.object.Project;
 
@@ -87,7 +96,7 @@ public class ProcessFrame extends JFrame {
         jSplitPane3 = new javax.swing.JSplitPane();
         dataPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        solutionTable = new javax.swing.JTable();
         displayPanel = new javax.swing.JPanel();
         statusPanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
@@ -149,9 +158,13 @@ public class ProcessFrame extends JFrame {
 
         jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+        dataPanel.setPreferredSize(new java.awt.Dimension(452, 150));
         dataPanel.setLayout(new java.awt.BorderLayout());
 
-        jScrollPane2.setViewportView(jTextPane1);
+        solutionTable.setAutoCreateRowSorter(true);
+        solutionTable.setModel(solutionTableModel);
+        solutionTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        jScrollPane2.setViewportView(solutionTable);
 
         dataPanel.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
@@ -183,10 +196,10 @@ public class ProcessFrame extends JFrame {
         entityManager.clear();
         Query query = entityManager.createNamedQuery("Project.findAll");
         this.projTableModel.setData(query.getResultList());
-        
+
         this.projTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
         this.projTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-        
+
     }//GEN-LAST:event_procReloadBtnActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -234,8 +247,8 @@ public class ProcessFrame extends JFrame {
 //                false);
         // </editor-fold>
 
-        XYSeriesCollection dataSet = new XYSeriesCollection();       
-        
+        XYSeriesCollection dataSet = new XYSeriesCollection();
+
         for (int rowNum : projTable.getSelectedRows()) {
             Project proj = projTableModel.getData().get(rowNum);
             query.setParameter("proj", proj);
@@ -244,7 +257,8 @@ public class ProcessFrame extends JFrame {
             XYSeries series = new XYSeries(proj.getId());
 
             for (Evolution ev : evList) {
-                series.add(ev.getFitnessValue(), ev.getGeneration());
+                MyXYDataItem item = new MyXYDataItem(ev, ev.getFitnessValue(), ev.getGeneration());
+                series.add(item);
             }
 
             dataSet.addSeries(series);
@@ -273,30 +287,54 @@ public class ProcessFrame extends JFrame {
 
         plot.setDomainAxis(domainAxis);
         plot.setRangeAxis(rangeAxis);
-        
-        
 
-        XYLineAndShapeRenderer render = (XYLineAndShapeRenderer) plot.getRenderer();
 
-        
-        XYToolTipGenerator gen = new StandardXYToolTipGenerator("{0}: (Cost: {1}; Gen: {2})", NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance());        
-        
-        render.setBaseToolTipGenerator(gen);
-        render.setBaseShapesVisible(true);
-        render.setBaseShapesFilled(true);
-        render.setUseOutlinePaint(true);
 
-        for (int i = 0; i < projTable.getSelectedRowCount(); i++) {
-            render.setSeriesOutlinePaint(i, Color.black);
-        }
-        
+        final MyXYLineAndShapeRenderer render = new MyXYLineAndShapeRenderer();
+
+        plot.setRenderer(render);
+
         ChartPanel chartPanel = new ChartPanel(chart);
         //chartPanel.setMouseWheelEnabled(true);
-        
+
         this.displayPanel.removeAll();
         this.displayPanel.add(chartPanel);
         this.displayPanel.getParent().validate();
+
+        chartPanel.addChartMouseListener(new ChartMouseListener() {
+
+            @Override
+            public void chartMouseClicked(ChartMouseEvent event) {
+                if (!(event.getEntity() instanceof XYItemEntity)) {
+                    render.setSelect(-1, -1);
+                } else {
+                    XYItemEntity entity = (XYItemEntity) event.getEntity();
+                    XYSeriesCollection dataSet = (XYSeriesCollection) entity.getDataset();
+                    MyXYDataItem item = (MyXYDataItem) dataSet.getSeries(entity.getSeriesIndex()).getDataItem(entity.getItem());
+
+                    showSolution((Evolution) item.getData());
+
+                    render.setSelect(entity.getSeriesIndex(), entity.getItem());
+                }
+            }
+
+            @Override
+            public void chartMouseMoved(ChartMouseEvent event) {
+                if (!(event.getEntity() instanceof XYItemEntity)) {
+                    render.setHighlight(-1, -1);
+                } else {
+                    XYItemEntity entity = (XYItemEntity) event.getEntity();
+                    render.setHighlight(entity.getSeriesIndex(), entity.getItem());
+                }
+            }
+        });
     }//GEN-LAST:event_showBtnActionPerformed
+
+    public void showSolution(Evolution evo) {
+        this.solutionTableModel.setData(evo.getAgents());
+        
+        this.solutionTable.getColumnModel().getColumn(0).setMaxWidth(50);
+    }
 
     /**
      * @param args the command line arguments
@@ -334,13 +372,13 @@ public class ProcessFrame extends JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JButton procReloadBtn;
     private javax.swing.JToolBar procToolBar;
     private javax.swing.JTable projTable;
     private javax.swing.JPanel rightPanel;
     private javax.swing.JButton showBtn;
+    private javax.swing.JTable solutionTable;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables
@@ -348,25 +386,89 @@ public class ProcessFrame extends JFrame {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-
-            String res = "Selected values: \n";
-
-            for (int row : projTable.getSelectedRows()) {
-                Project proj = projTableModel.getData().get(row);
-                res += proj.getId() + "\t" + proj.getStartTime() + "\t" + proj.getEndTime() + "\n";
-            }
-
-            jTextPane1.setText(res);
-
             showBtnActionPerformed(null);
         }
     };
     ProjectTableModel projTableModel = new ProjectTableModel();
+    SolutionTableModel solutionTableModel = new SolutionTableModel();
+
+    private class MyXYDataItem extends XYDataItem {
+
+        Object data;
+
+        public MyXYDataItem(Object data, Number x, Number y) {
+            super(x, y);
+            this.data = data;
+        }
+
+        public Object getData() {
+            return data;
+        }
+
+        public void setData(Object data) {
+            this.data = data;
+        }
+    }
+
+    private class MyXYLineAndShapeRenderer extends XYLineAndShapeRenderer {
+
+        int highlightSeries;
+        int highlightItem;
+        int selectSeries;
+        int selectItem;
+
+        public void setHighlight(int series, int item) {
+            if (this.highlightItem == item && this.highlightSeries == series) {
+                return;
+            } else {
+                this.highlightSeries = series;
+                this.highlightItem = item;
+
+                notifyListeners(new RendererChangeEvent(this));
+            }
+        }
+
+        public void setSelect(int series, int item) {
+            if (this.selectItem == item && this.selectSeries == series) {
+                return;
+            } else {
+                this.selectSeries = series;
+                this.selectItem = item;
+
+                notifyListeners(new RendererChangeEvent(this));
+            }
+        }
+
+        public MyXYLineAndShapeRenderer() {
+            super(true, true);
+            highlightSeries = -1;
+            highlightItem = -1;
+            selectSeries = -1;
+            selectItem = -1;
+
+            XYToolTipGenerator gen = new StandardXYToolTipGenerator("{0}: (Cost: {1}; Gen: {2})", NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance());
+
+            this.setBaseToolTipGenerator(gen);
+            this.setBaseShapesVisible(true);
+            this.setBaseShapesFilled(true);
+            this.setUseOutlinePaint(true);
+        }
+
+        @Override
+        public Paint getItemOutlinePaint(int row, int column) {
+            if (row == this.highlightSeries && column == this.highlightItem) {
+                return Color.yellow;
+            } else if (row == this.selectSeries && column == this.selectItem) {
+                return Color.white;
+            } else {
+                return Color.black;//super.getItemOutlinePaint(row, column);
+            }
+        }
+    }
 
     private class ProjectTableModel extends AbstractTableModel {
-        
-        private String[] colNames = {"Id", "Start time", "End time"};
 
+        private String[] colNames = {"Id", "Start time", "End time"};
         private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         private List<Project> data = new ArrayList<>();
 
@@ -400,7 +502,7 @@ public class ProcessFrame extends JFrame {
 
             switch (columnIndex) {
                 case 0:
-                        return data.get(rowIndex).getId();
+                    return data.get(rowIndex).getId();
                 case 1:
                     return dateFormat.format(data.get(rowIndex).getStartTime());
                 case 2:
@@ -409,6 +511,54 @@ public class ProcessFrame extends JFrame {
                     } else {
                         return "<running>";
                     }
+                default:
+                    return null;
+            }
+        }
+    }
+
+    private class SolutionTableModel extends AbstractTableModel {
+
+        private String[] colNames = {"Inst.", "Solution"};
+        
+        private List<Agent> agents = new ArrayList<>();
+        private List<Integer> instances = new ArrayList<>();                
+
+        public void setData(Map<Agent, Integer> data) {
+            this.agents.clear();
+            this.instances.clear();
+            
+            for (Agent agent : data.keySet()) {
+                this.agents.add(agent);
+                this.instances.add(data.get(agent));
+            }
+                        
+            this.fireTableDataChanged();
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return colNames[column];
+        }
+
+        @Override
+        public int getRowCount() {
+            return agents.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return colNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+
+            switch (columnIndex) {
+                case 0:
+                    return instances.get(rowIndex);
+                case 1:
+                    return agents.get(rowIndex).getCode();
                 default:
                     return null;
             }

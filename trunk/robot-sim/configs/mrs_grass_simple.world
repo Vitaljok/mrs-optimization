@@ -1,0 +1,166 @@
+resolution 0.02
+interval_sim 100
+
+threads 4
+
+window (
+  size [ 862 683 ]
+  scale 9.495
+  
+  center [ -5.535  1.801 ]
+  rotate [ 26.000 19.000 ]
+  
+  show_data 1
+  show_flags 1
+  show_footprints 1
+  show_blocks 1
+)
+
+#========================
+# lawn and walls
+#========================
+ # include "lawn.def"
+
+ # lawn (
+   # size [ 70.000 80.000 0.001 ]
+ # )
+
+define wall_V model (
+  color "grey30"  
+  size [ 0.25 82 2 ]
+  gui_move 0
+) 
+
+define wall_H model (
+  color "grey30"  
+  size [ 80 0.25 2 ]
+  gui_move 0
+) 
+
+wall_V ( pose [ -45 0 0 0] )
+wall_V ( pose [  36 0 0 0] )
+
+wall_H ( pose [  -5  41 0 0] )
+wall_H ( pose [  -5 -41 0 0] )
+ 
+
+#========================
+# house
+#========================
+
+define roof model (
+  color_rgba [ 0.65 0.05 0.05 1 ] #Dark Red
+  gui_move 0
+)
+
+define house model (
+  color_rgba [ 0.53 0.81 0.98 1 ] #Light Sky Blue  
+  gui_move 1
+  obstacle_return 1
+)
+
+house (
+  size [ 12.000 15.000 4.000 ]
+  pose [ 27.500 -34.000 0.000 90.000]
+  name "house1"
+  
+  roof(
+    size [ 12.000 15.000 1.000 ]
+    roof(
+      size [ 6.000 15.000 1.000 ]
+      roof(
+        size [ 1.000 15.000 1.000 ]
+      )
+    )    
+  )  
+)
+
+house (
+  size [ 6.000 18.000 3.000 ]
+  pose [ -10.000 15.000 0.000 0.000 ]
+  name "house2"
+  
+  roof(
+    size [ 6.000 18.000 1.000 ]
+    roof(
+      size [ 3.000 18.000 1.000 ]
+      roof(
+        size [ 1.000 18.000 1.000 ]
+      )
+    )    
+  )  
+)
+
+
+#========================
+# grass
+#========================
+include "grass.def"
+include "grass_simple.inc"
+
+#========================
+# straw
+#========================
+include "straw.def"
+include "straw_pool.inc"
+
+#========================
+# dumpster
+#========================
+
+include "dumpster.def"
+
+dumpster (
+  pose [ -40.000 -35.000 0.000 0.000 ]
+)
+
+#========================
+# robots
+#========================
+
+include "robot.def"
+
+robot_mower(
+  name "rob_mower1"
+  pose [ -40.000 0.000 0.000 0.000]
+)
+
+robot_mower(
+  name "rob_mower2"
+  pose [ -40.000 2.000 0.000 0.000]
+)
+
+robot_mower(
+  name "rob_mower3"
+  pose [ -40.000 4.000 0.000 0.000]
+)
+
+robot_transp(
+  name "rob_transp1"
+  pose [ -40.000 6.000 0.000 0.000]
+)
+
+robot_transp(
+  name "rob_transp2"
+  pose [ -40.000 8.000 0.000 0.000]
+)
+
+robot_transp(
+  name "rob_transp3"
+  pose [ -40.000 10.000 0.000 0.000]
+)
+
+robot_univ(
+  name "rob_univ1"
+  pose [ -40.000 12.000 0.000 0.000]
+)
+
+robot_univ(
+  name "rob_univ2"
+  pose [ -40.000 14.000 0.000 0.000]
+)
+
+robot_univ(
+  name "rob_univ3"
+  pose [ -40.000 16.000 0.000 0.000]
+)

@@ -1,0 +1,7 @@
+
+define lawn model (
+  gui_move 0
+  color_rgba [ 0.7 1 0.7 1 ]
+  obstacle_return 0
+  ranger_return -1
+)

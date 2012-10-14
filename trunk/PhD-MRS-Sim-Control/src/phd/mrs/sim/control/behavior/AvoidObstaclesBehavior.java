@@ -45,7 +45,7 @@ public class AvoidObstaclesBehavior extends CachedBehavior<PositionSignal> imple
         }
 
         if (rangerSignal.getFront() < frontDist) {
-            output.setSpeed(0d);
+            output.setSpeed(-avoidSpeed / 2d);
 
             if (rangerSignal.getFrontLeft() > rangerSignal.getFrontRight()) {
                 output.setCourse(avoidCourse);

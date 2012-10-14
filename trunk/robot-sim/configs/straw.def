@@ -1,0 +1,9 @@
+
+define straw model (
+  size [ 0.500 0.500 0.500 ]
+  color "yellow"
+  gui_move 0
+  
+  fiducial_key 20
+  obstacle_return 1  
+)

@@ -43,7 +43,7 @@ public class RobotWander extends AbstractPlayerCtrl {
         
         if (fid.isDataReady()) {
             for (PlayerFiducialItem f : fid.getData().getFiducials()) {
-                world.addGrassItemToMow("grass"+f.getId());
+                world.addGrassItemToQueue("grass"+f.getId());
             }
         }
         

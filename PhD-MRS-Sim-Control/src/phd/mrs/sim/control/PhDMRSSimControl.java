@@ -15,18 +15,15 @@ public class PhDMRSSimControl {
      */
     public static void main(String[] args) throws InterruptedException {
 
-        //        WorldCtrl world = new WorldCtrl("192.168.56.101", 6650);          
-        //        world.start();
-        //        
-        //        RobotWanderCtrl robot = new RobotWanderCtrl("192.168.56.101", 6665, world);
-        //        robot.start();
-        
-        RobotMowerCtrl robot1 = new RobotMowerCtrl("192.168.56.101", 6665);
-        //RobotMowerCtrl robot2 = new RobotMowerCtrl("192.168.56.101", 6666);
-        //RobotMowerCtrl robot3 = new RobotMowerCtrl("192.168.56.101", 6667);
+        WorldCtrl world = new WorldCtrl("192.168.56.101", 6650);
+        world.start();
+
+        RobotMowerCtrl robot1 = new RobotMowerCtrl("192.168.56.101", 6661, world);
+        RobotMowerCtrl robot2 = new RobotMowerCtrl("192.168.56.101", 6662, world);
+        RobotMowerCtrl robot3 = new RobotMowerCtrl("192.168.56.101", 6663, world);
         robot1.start();
-        //robot2.start();
-        //robot3.start();
+        robot2.start();
+        robot3.start();
 
     }
 }

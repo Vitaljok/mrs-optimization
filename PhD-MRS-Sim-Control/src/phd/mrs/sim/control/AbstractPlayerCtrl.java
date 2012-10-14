@@ -5,7 +5,6 @@
 package phd.mrs.sim.control;
 
 import phd.mrs.sim.control.util.ProcessingException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaclient3.PlayerClient;

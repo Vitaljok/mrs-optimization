@@ -22,17 +22,28 @@ public class WorldCtrl extends AbstractPlayerCtrl {
 
     private SimulationInterface simulation;
     private BlockingQueue<String> grassQueue;
-    private BlockingQueue<StageObject> stackQueue;
+    private BlockingQueue<StageObject> strawQueue;
     private Integer strawCounter = 1;
+    private BlockingQueue<String> strawPool;
 
     public WorldCtrl(String host, Integer port) {
         super(host, port, 150);
         simulation = client.requestInterfaceSimulation(0, PlayerConstants.PLAYER_OPEN_MODE);
         grassQueue = new LinkedBlockingQueue<String>();
-        stackQueue = new LinkedBlockingQueue<StageObject>();
+        strawQueue = new LinkedBlockingQueue<StageObject>();
+        strawPool = new LinkedBlockingQueue<String>(100);
+
+        for (int i = 0; i < 100; i++) {
+            try {
+                strawPool.put("straw" + (i + 1));
+            } catch (InterruptedException ex) {
+                Logger.getLogger(WorldCtrl.class.getName()).log(Level.SEVERE, "Error creating straw pool", ex);
+            }
+        }
+
     }
 
-    public void addGrassItemToMow(String item) {
+    public void addGrassItemToQueue(String item) {
         try {
             grassQueue.put(item);
         } catch (InterruptedException ex) {
@@ -40,31 +51,32 @@ public class WorldCtrl extends AbstractPlayerCtrl {
         }
     }
 
-    public void addStackItemToShow(PlayerPose2d pose) {
+    public void addStrawItemToQueue(PlayerPose2d pose) {
         try {
-            stackQueue.put(new StageObject("stack" + strawCounter++, pose));
+            strawQueue.put(new StageObject(strawPool.poll(), pose));
         } catch (InterruptedException ex) {
-            Logger.getLogger(WorldCtrl.class.getName()).log(Level.SEVERE, "Error adding straw item [stack" + strawCounter + "] to queue.", ex);
+            Logger.getLogger(WorldCtrl.class.getName()).log(Level.SEVERE, "Error adding straw item [straw" + strawCounter + "] to queue.", ex);
         }
     }
 
     private void mowGrass() {
         while (!grassQueue.isEmpty()) {
-            simulation.set2DPose(grassQueue.poll(), new PlayerPose2d(-100, -100, 0));
+            simulation.set2DPose(grassQueue.poll(), new PlayerPose2d(-50, -0, 0));
         }
     }
 
-    private void showStack() {
-        while (!stackQueue.isEmpty()) {
-            StageObject obj = stackQueue.poll();
+    private void showStraw() {
+        while (!strawQueue.isEmpty()) {
+            StageObject obj = strawQueue.poll();
             simulation.set2DPose(obj.getName(), obj.getPose());
+            
+            
         }
     }
 
     @Override
     public void process() throws ProcessingException {
-
         mowGrass();
-        showStack();
+        showStraw();
     }
 }

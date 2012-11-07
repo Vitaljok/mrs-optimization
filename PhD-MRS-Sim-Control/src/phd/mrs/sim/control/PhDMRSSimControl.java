@@ -15,12 +15,17 @@ public class PhDMRSSimControl {
      */
     public static void main(String[] args) throws InterruptedException {
 
-        WorldCtrl world = new WorldCtrl("192.168.56.101", 6650);
+        if (args.length == 0) {
+            System.err.println("Please, specify simulation host!");
+            System.exit(1);
+        }
+        
+        WorldCtrl world = new WorldCtrl(args[0], 6650);
         world.start();
 
-        RobotMowerCtrl robot1 = new RobotMowerCtrl("192.168.56.101", 6661, world);
-        RobotMowerCtrl robot2 = new RobotMowerCtrl("192.168.56.101", 6662, world);
-        RobotMowerCtrl robot3 = new RobotMowerCtrl("192.168.56.101", 6663, world);
+        RobotMowerCtrl robot1 = new RobotMowerCtrl(args[0], 6661, world);
+        RobotMowerCtrl robot2 = new RobotMowerCtrl(args[0], 6662, world);
+        RobotMowerCtrl robot3 = new RobotMowerCtrl(args[0], 6663, world);
         robot1.start();
         robot2.start();
         robot3.start();

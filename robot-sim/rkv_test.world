@@ -1,0 +1,64 @@
+
+resolution 0.02
+interval_sim 100
+
+window (
+  size [ 600 600 ]
+  scale 58.949
+  center [  1.658  -0.481 ]
+  rotate [ 0.000  0.000 ]
+  			
+  show_data 1
+  show_flags 1
+  show_footprints 1
+)
+
+#robot
+define robot position (
+  stack_children 0
+  size [0.500 0.500 0.300]
+  
+  blobfinder (
+    colors_count 2
+    colors [ "green" "blue" ]
+    image [ 320 240 ]
+    range 12.0
+    fov 60
+  )
+  
+  fiducial (
+    fov 120    
+    range_min 0.0
+    range_max 8.0
+    range_max_id 8.0
+  )
+  
+  gripper (
+    size [0.300 0.500 0.500]
+    pose [0.400 0.000 0.000 0.000 ]
+    paddle_size [ 0.900 0.100 0.400 ]
+  )
+)
+
+robot (
+  pose [0.000 0.000 0.000 0.000]
+  name "rob1"
+)
+
+#object
+model (
+  pose [2.000 1.000 0.000 0.000]
+  size [0.100 0.100 0.800]
+  color "green"
+  gripper_return 1
+  fiducial_return 10
+)
+
+#zone
+model (
+  pose [ 3.000 -2.000 0.000 0.000 ]
+  size [ 1.000 1.000 0.010 ]
+  obstacle_return 0
+  fiducial_return 11
+  color "yellow"
+)

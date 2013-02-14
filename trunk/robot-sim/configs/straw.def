@@ -5,5 +5,5 @@ define straw model (
   gui_move 0
   
   fiducial_key 20
-  obstacle_return 1  
+  obstacle_return 0  
 )

@@ -1,0 +1,58 @@
+resolution 0.02
+interval_sim 100
+
+threads 4
+
+window (
+  size [ 862 683 ]
+  scale 93.524
+  
+  center [ 1.600  -0.007 ]
+  rotate [ 58.000 47.500 ]
+  
+  show_data 1
+  show_flags 1
+  show_footprints 1
+  show_blocks 1
+)
+
+# antena
+
+model (
+  color "blue"
+  size [0.400 0.400 0.800]
+  pose [ 2.5 -2 0.000 90 ]
+  stack_children 0
+  
+  model (
+    color "green"
+    size [0.100 0.100 2.500]
+    pose [0.250 0.000 0.000 0.000]
+  )
+)
+
+#========================
+# robots
+#========================
+
+include "robot.def"
+
+robot_mower(
+  name "rob_mower1"
+  pose [ 0.000 -3.000 0.000 0.000]
+)
+
+robot_mower(
+  name "rob_mower2"
+  pose [ -2.000 0.000  0.000 0.000]
+)
+
+robot_mower(
+  name "rob_mower3"
+  pose [ 0.000 3.000 0.000 0.000]
+)
+
+robot_transp(
+  name "rob_transp2"
+  pose [ 3.000 1.500 0.000 0.000]
+)

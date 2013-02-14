@@ -21,13 +21,15 @@ public class PhDMRSSimControl {
         }
         
         WorldCtrl world = new WorldCtrl(args[0], 6650);
-        world.start();
+        world.start();        
 
         RobotMowerCtrl robot1 = new RobotMowerCtrl(args[0], 6661, world);
         RobotMowerCtrl robot2 = new RobotMowerCtrl(args[0], 6662, world);
         RobotMowerCtrl robot3 = new RobotMowerCtrl(args[0], 6663, world);
-        robot1.start();
         robot2.start();
+        Thread.sleep(4000);
+        robot1.start();
+        Thread.sleep(4000);
         robot3.start();
 
     }

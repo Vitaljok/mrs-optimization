@@ -8,7 +8,7 @@ window (
   scale 9.495
   
   center [ -5.535  1.801 ]
-  rotate [ 0.000 0.000 ]
+  rotate [ 26.000 19.000 ]
   
   show_data 1
   show_flags 1
@@ -27,21 +27,21 @@ window (
 
 define wall_V model (
   color "grey30"  
-  size [ 0.250 82.000 2.000 ]
+  size [ 0.25 82 2 ]
   gui_move 0
 ) 
 
 define wall_H model (
   color "grey30"  
-  size [ 80.000 0.250 2.000 ]
+  size [ 80 0.25 2 ]
   gui_move 0
 ) 
 
-wall_V ( pose [ -45.000 0.000 0.000 0.000] )
-wall_V ( pose [  36.000 0.000 0.000 0.000] )
+wall_V ( pose [ -45 0 0 0] )
+wall_V ( pose [  36 0 0 0] )
 
-wall_H ( pose [  -5.000  41.000 0.000 0.000] )
-wall_H ( pose [  -5.000 -41.000 0.000 0.000] )
+wall_H ( pose [  -5  41 0 0] )
+wall_H ( pose [  -5 -41 0 0] )
  
 
 #========================
@@ -122,45 +122,45 @@ include "robot.def"
 
 robot_mower(
   name "rob_mower1"
-  pose [ -40.000 2.000 0.000 0.000]
+  pose [ -40.000 0.000 0.000 0.000]
 )
 
 robot_mower(
   name "rob_mower2"
-  pose [ -40.000 4.000 0.000 0.000]
+  pose [ -40.000 2.000 0.000 0.000]
 )
 
 robot_mower(
   name "rob_mower3"
-  pose [ -40.000 6.000 0.000 0.000]
+  pose [ -40.000 4.000 0.000 0.000]
 )
 
 robot_transp(
   name "rob_transp1"
-  pose [ -50.000 8.000 0.000 0.000]
+  pose [ -40.000 6.000 0.000 0.000]
 )
 
 robot_transp(
   name "rob_transp2"
-  pose [ -50.000 10.000 0.000 0.000]
+  pose [ -40.000 8.000 0.000 0.000]
 )
 
 robot_transp(
   name "rob_transp3"
-  pose [ -50.000 12.000 0.000 0.000]
+  pose [ -40.000 10.000 0.000 0.000]
 )
 
 robot_univ(
   name "rob_univ1"
-  pose [ -50.000 14.000 0.000 0.000]
+  pose [ -40.000 12.000 0.000 0.000]
 )
 
 robot_univ(
   name "rob_univ2"
-  pose [ -50.000 16.000 0.000 0.000]
+  pose [ -40.000 14.000 0.000 0.000]
 )
 
 robot_univ(
   name "rob_univ3"
-  pose [ -50.000 18.000 0.000 0.000]
+  pose [ -40.000 16.000 0.000 0.000]
 )

@@ -4,6 +4,8 @@
  */
 package phd.mrs.sim.control;
 
+import java.util.HashSet;
+import java.util.Set;
 import phd.mrs.sim.control.util.ProcessingException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,6 +27,15 @@ public class WorldCtrl extends AbstractPlayerCtrl {
     private BlockingQueue<StageObject> strawQueue;
     private Integer strawCounter = 1;
     private BlockingQueue<String> strawPool;
+    private Set<String> grass = new HashSet<String>();
+    private long start;
+
+    @Override
+    public void beforeStart() {
+        start = System.currentTimeMillis();
+    }
+    
+    
 
     public WorldCtrl(String host, Integer port) {
         super(host, port, 150);
@@ -46,6 +57,10 @@ public class WorldCtrl extends AbstractPlayerCtrl {
     public void addGrassItemToQueue(String item) {
         try {
             grassQueue.put(item);
+            grass.add(item);
+            if (grass.size() % 100 == 0) {
+                System.out.println("Mowed: " + grass.size() + " @ "+Math.round((System.currentTimeMillis() - start) / 1000.0));
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(WorldCtrl.class.getName()).log(Level.SEVERE, "Error adding grass item [" + item + "] to queue.", ex);
         }
@@ -69,8 +84,8 @@ public class WorldCtrl extends AbstractPlayerCtrl {
         while (!strawQueue.isEmpty()) {
             StageObject obj = strawQueue.poll();
             simulation.set2DPose(obj.getName(), obj.getPose());
-            
-            
+
+
         }
     }
 

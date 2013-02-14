@@ -102,7 +102,7 @@ public class ProcessFrame extends JFrame {
         statusLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("MRS evlution results");
+        setTitle("MRS evaluation results");
         setName("mrsFrame"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -131,7 +131,6 @@ public class ProcessFrame extends JFrame {
         });
         procToolBar.add(procReloadBtn);
 
-        showBtn.setText("Show chart -->");
         showBtn.setFocusable(false);
         showBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         showBtn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

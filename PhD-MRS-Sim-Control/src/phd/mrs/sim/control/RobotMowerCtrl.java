@@ -3,6 +3,8 @@
  */
 package phd.mrs.sim.control;
 
+import java.util.HashSet;
+import java.util.Set;
 import javaclient3.BlobfinderInterface;
 import javaclient3.FiducialInterface;
 import javaclient3.Position2DInterface;
@@ -26,6 +28,7 @@ public class RobotMowerCtrl extends AbstractPlayerCtrl {
     private RobotMowerBrains brains;
     private RobotMowerFrame robotFrame;
     private WorldCtrl world;
+    private Set<String> grassCache;
 
     public RobotMowerCtrl(String host, Integer port, WorldCtrl world) {
         super(host, port, 50);
@@ -34,6 +37,8 @@ public class RobotMowerCtrl extends AbstractPlayerCtrl {
         this.robotFrame.setLocation(10, (port % 10) * 150);
         this.robotFrame.setVisible(true);
         this.world = world;
+
+        this.grassCache = new HashSet<String>();
     }
 
     @Override
@@ -71,14 +76,17 @@ public class RobotMowerCtrl extends AbstractPlayerCtrl {
         if (brains.getOutGrassMowWorldControlSignal() != null) {
             for (String item : brains.getOutGrassMowWorldControlSignal().getObjects()) {
                 world.addGrassItemToQueue(item);
+                grassCache.add(item);
             }
         }
 
+        this.robotFrame.setGrass(grassCache.size());
+
         if (brains.getOutStrawCreateWorldControlSignal() != null) {
-            
+
             double dx = Math.cos(this.pos.getYaw());
             double dy = Math.sin(this.pos.getYaw());
-            
+
             world.addStrawItemToQueue(new PlayerPose2d(this.pos.getX() - dx, this.pos.getY() - dy, this.pos.getYaw()));
         }
 

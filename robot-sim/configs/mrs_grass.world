@@ -18,17 +18,15 @@ window (
 
 
 include "boundaries.inc"
-
 include "lawn.inc"
 
-include "grass_def.inc"
+#include "grass_def.inc"
 # include "grass.inc"
 #include "grass_simple.inc"
 
 include "dumpsters.inc"
-
- include "objects_def.inc"
- include "objects.inc"
+include "objects_def.inc"
+include "objects.inc"
 
 #flowerbed ( pose [  4.000    1.000 0   0.000 ] )
 
@@ -39,10 +37,10 @@ include "dumpsters.inc"
   # obstacle_return 0
 # )
 
-include "robots_def.inc"
+include "robot.def"
 
 robot_mower(
-  name "rob1"
+   name "rob1"
 )
 
 # model (

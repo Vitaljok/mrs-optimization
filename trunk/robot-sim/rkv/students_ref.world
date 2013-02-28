@@ -1,0 +1,115 @@
+
+resolution 0.02
+interval_sim 100
+
+window (
+  size [ 600 600 ]
+  scale 25
+  center [ 0  0 ]
+  rotate [ 0  0 ]
+  			
+  show_data 1
+  show_flags 1
+  show_footprints 1
+)
+
+#map
+model (
+  color "gray30"
+
+  size [20.000 20.000 0.800]
+  pose [0 0 0 0]
+  bitmap "bitmaps/cave.png"
+
+  boundary 1
+
+  gui_nose 0
+  gui_grid 0
+  gui_move 0
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  ranger_return 1
+)
+
+#objects
+define obj_green model (
+  size [0.2 0.2 0.7]
+  color "green"
+)
+
+define obj_yellow model (
+  size [0.3 0.3 1.5]
+  color "yellow"
+)
+
+obj_green (
+  pose [-6 -6 0 0]
+)
+
+obj_green (
+  pose [-8 -5 0 0]
+)
+
+obj_yellow (
+  pose [-7 -5 0 0]
+)
+
+#robot
+define robot position (
+  size [0.5 0.5 0.3]
+  
+  block (
+    points 6
+    point[0] [-1.0 -1.0 ]
+    point[1] [ 0.3 -1.0 ]
+    point[2] [ 1.0 -0.25]
+    point[3] [ 1.0  0.25]
+    point[4] [ 0.3  1.0 ]
+    point[5] [-1.0  1.0 ]
+    z [0 1]
+  )
+  
+  ranger (
+    
+    pose [0.1 0 0 0]
+    size [0.1 0.4 0.1]
+    block (
+      points 3
+      point[0] [0.0 0.0]
+      point[1] [1.0 0.5]
+      point[2] [0.0 1.0]
+      z [0 1]
+    )
+    
+    sensor (
+      range [0.0 8.0]
+      fov 120.0
+      samples 120
+    )
+  )
+  
+  blobfinder (
+    colors_count 2
+    colors [ "green" "yellow" ]
+    image [320 240]
+    range 8.0
+    fov 120   
+  )
+)
+
+robot (
+  pose [-8.0 -8.0 0 65]
+  name "rob1"
+)
+
+robot (
+  pose [8.0 8.0 0 -25]
+  name "rob2"
+)
+
+robot (
+  pose [6.0 -4.0 0 -90]
+  name "rob3"
+)
+

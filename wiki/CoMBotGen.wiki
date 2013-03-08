@@ -6,6 +6,8 @@
 
 = Details =
 
+https://code.google.com/p/mrs-optimization/source/browse/#svn%2Ftrunk%2FPhD%20Combinations
+
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists

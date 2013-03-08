@@ -6,7 +6,8 @@
 
 = Details =
 
-Source code and Netbeans project are available at {{{
+Source code and Netbeans project are available in SVN repository
+{{{
 /trunk/PhD Combinations
 }}}
 

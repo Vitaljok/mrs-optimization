@@ -6,7 +6,9 @@
 
 = Details =
 
-https://code.google.com/p/mrs-optimization/source/browse/#svn%2Ftrunk%2FPhD%20Combinations
+Source code and Netbeans project are available at {{{
+/trunk/PhD Combinations
+}}}
 
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_

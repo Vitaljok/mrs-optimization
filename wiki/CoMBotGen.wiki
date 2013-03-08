@@ -2,7 +2,7 @@
 
 = Introduction =
 
-
+CoMBot-Gen utility is used to generate agent combinations 
 
 = Details =
 

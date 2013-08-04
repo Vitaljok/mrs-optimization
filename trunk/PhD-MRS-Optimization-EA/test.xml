@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<project>
+    <components>
+        <component>
+            <code>greenhouse</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Greenhouse should be stationary</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <investmentCosts>1000.0</investmentCosts>
+            <name>Greenhouse (construction)</name>
+            <operatingPower>5.0</operatingPower>
+        </component>
+        <component>
+            <code>ranger-laser</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Only one ranger is needed</comment>
+                <refComponents>ranger-optical</refComponents>
+                <refComponents>ranger-radio</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <constraints>
+                <comment>Ranger should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Ranger - laser</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>ranger-radio</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Only one ranger is needed</comment>
+                <refComponents>ranger-optical</refComponents>
+                <refComponents>ranger-laser</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <constraints>
+                <comment>Ranger should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Ranger - radio</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>ranger-optical</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Only one ranger is needed</comment>
+                <refComponents>ranger-laser</refComponents>
+                <refComponents>ranger-radio</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <constraints>
+                <comment>Ranger should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Ranger - optical</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>camera</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Camera should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>HD Camera</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>limit-switch</code>
+            <complexity>1.0</complexity>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Limit switch</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>platform-light</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Only one platform is needed</comment>
+                <refComponents>platform-heavy</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Light robot platform</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>platform-heavy</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Only one platform is needed</comment>
+                <refComponents>platform-light</refComponents>
+                <type>Exclude</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Heavy robot platform</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>actuator-spray</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Spray should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Actuator spray</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>actuator-harvester</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Harvester should be mobile</comment>
+                <refComponents>platform-heavy</refComponents>
+                <refComponents>platform-light</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Actuator harvester</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>tank</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Tank should be placed on heavy platform</comment>
+                <refComponents>platform-heavy</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Tank for chemicals</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>container</code>
+            <complexity>1.0</complexity>
+            <constraints>
+                <comment>Container should be placed on heavy platform</comment>
+                <refComponents>platform-heavy</refComponents>
+                <type>DependAny</type>
+            </constraints>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Container for yield</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+        <component>
+            <code>processor</code>
+            <complexity>1.0</complexity>
+            <investmentCosts>100.0</investmentCosts>
+            <name>Computing processor</name>
+            <operatingPower>2.0</operatingPower>
+        </component>
+    </components>
+    <config>
+        <agentInstanceLimit>10</agentInstanceLimit>
+        <crossoverRate>0.35</crossoverRate>
+        <doubletteChromosomesAllowed>false</doubletteChromosomesAllowed>
+        <generationsLimit>1500</generationsLimit>
+        <generationsStep>20</generationsStep>
+        <keepPopulationSizeConstant>true</keepPopulationSizeConstant>
+        <minimumPopSizePercent>0</minimumPopSizePercent>
+        <mutationRate>15</mutationRate>
+        <nearInfinity>1.0E12</nearInfinity>
+        <nearZero>1.0E-12</nearZero>
+        <populationSize>20</populationSize>
+        <selectFromPrevGen>0.95</selectFromPrevGen>
+        <selectorOriginalRate>0.9</selectorOriginalRate>
+    </config>
+    <costModel>
+        <assembly>
+            <b0>10.0</b0>
+            <b1>5.0</b1>
+            <b2>0.02</b2>
+            <k>3.0</k>
+        </assembly>
+        <design>
+            <b0>40.0</b0>
+            <b1>10.0</b1>
+            <b2>0.5</b2>
+            <k>2.0</k>
+        </design>
+        <energyLoss>
+            <b0>0.0</b0>
+            <b1>1.0</b1>
+            <b2>0.01</b2>
+            <k>2.0</k>
+        </energyLoss>
+        <sysDesign>
+            <b0>280.0</b0>
+            <b1>20.0</b1>
+            <b2>2.0</b2>
+            <k>2.0</k>
+        </sysDesign>
+        <sysMaint>
+            <b0>8.0</b0>
+            <b1>2.0</b1>
+            <b2>0.1</b2>
+            <k>2.0</k>
+        </sysMaint>
+        <systemReplRate>0.005</systemReplRate>
+    </costModel>
+    <groups/>
+    <missions/>
+    <name>Greenhouse project</name>
+</project>

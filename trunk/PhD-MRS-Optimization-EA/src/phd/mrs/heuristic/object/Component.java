@@ -18,7 +18,6 @@ package phd.mrs.heuristic.object;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -62,11 +61,9 @@ public class Component implements Serializable {
     @Column(name = "complexity")
     private Double complexity = 1.0;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
-    private List<Requirement> required = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "refComponent")
-    private List<Requirement> requiredRef = new ArrayList<>();
+    private List<Constraint> constraints = new ArrayList<>();
     @ManyToOne
-    @JoinColumn(name="project_id")
+    @JoinColumn(name = "project_id")
     private Project project;
 
     protected Component() {
@@ -79,12 +76,8 @@ public class Component implements Serializable {
 
     @PrePersist
     private void prePersist() {
-        for (Requirement req : required) {
+        for (Constraint req : constraints) {
             req.setComponent(this);
-        }
-
-        for (Requirement req : requiredRef) {
-            req.setRefComponent(this);
         }
     }
 
@@ -155,12 +148,12 @@ public class Component implements Serializable {
     }
 
     @XmlElement
-    public List<Requirement> getRequired() {
-        return required;
+    public List<Constraint> getConstraints() {
+        return constraints;
     }
 
-    public void addRequired(Component component, String comment) {
-        this.required.add(new Requirement(this, component, comment));
+    public void addConstraint(ConstraintType type, String comment, Component... components) {        
+        this.constraints.add(new Constraint(this, type, comment, components));
     }
 
     @Override

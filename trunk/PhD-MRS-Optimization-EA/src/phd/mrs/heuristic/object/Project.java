@@ -18,6 +18,7 @@ package phd.mrs.heuristic.object;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -91,10 +92,12 @@ public class Project implements Serializable {
     @Embedded
     private CostModel costModel = new CostModel();
     // private
-    @OneToMany(mappedBy = "project", cascade= CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Agent> agents = new ArrayList<>();
     @Transient
     private Configuration gaConfig;
+    @Transient
+    private List<ComponentGroup> groups = new ArrayList<>();
 
     public Project() {
         this.startTime = new Date();
@@ -105,7 +108,7 @@ public class Project implements Serializable {
         for (Component comp : components) {
             comp.setProject(this);
         }
-        
+
         for (Mission mis : missions) {
             mis.setProject(this);
         }
@@ -135,24 +138,49 @@ public class Project implements Serializable {
         return missions;
     }
 
+    @XmlElementRefs({
+        @XmlElementRef(type = RequiredGroup.class)
+    })
+    @XmlElementWrapper(name = "groups")
+    public List<ComponentGroup> getGroups() {
+        return groups;
+    }
+
     public List<Agent> getAgents() {
         return agents;
     }
 
     private boolean isAgentValid(Agent agent) {
         for (Component comp : agent.getComponents()) {
-            List<Requirement> refList = comp.getRequired();
+            List<Constraint> constrList = comp.getConstraints();
 
-            if (!refList.isEmpty()) {
-                for (Requirement ref : refList) {
-                    if (!agent.getComponents().contains(ref.getRefComponent())) {
-                        return false;
+            if (!constrList.isEmpty()) {
+                for (Constraint constr : constrList) {
+
+                    if (constr.getType() == ConstraintType.Exclude) {
+                        // if agent contains of exclusive componennts
+                        for (Component refComp : constr.getRefComponents()) {                            
+                            if (agent.getComponents().contains(refComp)) {
+                                //System.out.println("Excluded component: "+refComp);
+                                return false;
+                            }
+                        }
+
+                    } else if (constr.getType() == ConstraintType.DependAny){
+                        // if agent does not have all dependent component                                               
+                        
+                        if (Collections.disjoint(agent.getComponents(), constr.getRefComponents())) {
+                            //System.out.println("None of required components: "+constr.getRefComponents());
+                            return false;
+                        }                        
                     }
+
                 }
 
             }
         }
-
+        
+        //System.out.println("OK");
         return true;
     }
 
@@ -162,10 +190,10 @@ public class Project implements Serializable {
 
         int inv = 0;
 
-        for (int i = 1; i <= (1 << compNum); i++) {
+        for (int i = 1; i < (1 << compNum); i++) {
             String pattern = String.format("%" + compNum + "s",
                     Integer.toBinaryString(i)).replaceAll("\\s", "0");
-
+          
             Agent agent = new Agent(this);
 
             for (int j = 0; j < compNum; j++) {
@@ -174,8 +202,11 @@ public class Project implements Serializable {
                 }
             }
 
+            
+
             if (this.isAgentValid(agent)) {
                 this.getAgents().add(agent);
+                //System.out.println(agent.getComponents());
             } else {
                 inv++;
             }
@@ -275,5 +306,5 @@ public class Project implements Serializable {
 
     public void setCostModel(CostModel costModel) {
         this.costModel = costModel;
-    }           
+    }
 }

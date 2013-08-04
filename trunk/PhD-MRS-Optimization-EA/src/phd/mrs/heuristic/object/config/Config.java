@@ -17,10 +17,8 @@
 package phd.mrs.heuristic.object.config;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -36,7 +34,7 @@ public class Config implements Serializable {
     @Column(name = "generations_limit")
     private Integer generationsLimit = 1500;
     @Column(name = "generations_step")
-    private Short generationsStep = 20;
+    private Short generationsStep = 50;
     @Column(name = "minimum_pop_size_percent")
     private Short minimumPopSizePercent = 0;
     @Column(name = "select_from_prev_gen")

@@ -17,6 +17,9 @@
 package phd.mrs.heuristic.object;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +27,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -36,8 +41,9 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"component_id", "ref_component_id"})})
-public class Requirement implements Serializable {
+    @UniqueConstraint(columnNames = {"component_id", "ref_component_id"})},
+        name = "Comp_Constraints")
+public class Constraint implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,21 +53,30 @@ public class Requirement implements Serializable {
     @Column(name="comment")
     private String comment;
     
+    private ConstraintType type;
+    
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false, cascade= CascadeType.ALL)
     private Component component;
     
-    @JoinColumn(name = "ref_component_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, cascade= CascadeType.ALL)
-    private Component refComponent;        
+    @ManyToMany(cascade= CascadeType.ALL)
+    @JoinTable(
+      name="Comp_Constraints_refs",
+      joinColumns={@JoinColumn(name="constraint_id", referencedColumnName="ID")},
+      inverseJoinColumns={@JoinColumn(name="ref_component_id", referencedColumnName="ID")})
+    private List<Component> refComponents = new ArrayList<>();        
 
-    public Requirement() {
+    public Constraint() {
     }        
 
-    protected Requirement(Component component, Component refComponent, String comment) {
+    protected Constraint(Component component, ConstraintType type, String comment, Component... refComponents) {
         this.component = component;        
+        this.type = type;
         this.comment = comment;
-        this.refComponent = refComponent;        
+        this.refComponents.addAll(Arrays.asList(refComponents));
+        
+        if (this.refComponents.contains(this.component))
+            throw new Error("Self reference in constraint components: "+component.getCode());
     }
     
     public String getComment() {
@@ -82,12 +97,12 @@ public class Requirement implements Serializable {
     }
     
     @XmlIDREF
-    public Component getRefComponent() {
-        return refComponent;
+    public List<Component> getRefComponents() {
+        return refComponents;
     }
 
-    public void setRefComponent(Component refComponent) {
-        this.refComponent = refComponent;
+    public void addRefComponent(Component refComponent) {
+        this.refComponents.add(refComponent);
     }
 
     public Integer getId() {
@@ -97,4 +112,12 @@ public class Requirement implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public ConstraintType getType() {
+        return type;
+    }
+
+    public void setType(ConstraintType type) {
+        this.type = type;
+    }        
 }

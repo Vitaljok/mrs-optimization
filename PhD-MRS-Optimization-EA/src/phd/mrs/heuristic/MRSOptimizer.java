@@ -18,12 +18,12 @@ package phd.mrs.heuristic;
 
 import java.io.File;
 import java.util.Date;
-import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.jgap.Gene;
 import org.jgap.Genotype;
@@ -35,6 +35,9 @@ import phd.mrs.heuristic.object.Component;
 import phd.mrs.heuristic.object.Project;
 import phd.mrs.heuristic.mission.TransportationMission;
 import phd.mrs.heuristic.object.Evolution;
+import phd.mrs.heuristic.object.ExclusiveGroup;
+import phd.mrs.heuristic.object.ComponentGroup;
+import phd.mrs.heuristic.object.ConstraintType;
 import phd.mrs.heuristic.utils.Debug;
 
 /**
@@ -46,7 +49,8 @@ public class MRSOptimizer {
     Project project;
 
     private MRSOptimizer() throws InvalidConfigurationException {
-        initDefaultProject();
+        //initDefaultProject();
+        initGreenhouseProject();
         project.configure();
     }
 
@@ -122,15 +126,15 @@ public class MRSOptimizer {
 
 
         // component requirements                       
-        compMowingMachine.addRequired(compMobileBase, "Mowing machine is useless on stationary agent");
-        compLoader.addRequired(compMobileBase, "Loader should be mobile");
-        compLoader.addRequired(compLoad, "Loader should know the weight of cargo");
-        compLaser.addRequired(compMobileBase, "Laser is useless on stationary device");
-        compGPS.addRequired(compMobileBase, "GPS is useless on stationary device");
-        compNavigation.addRequired(compWiFi, "Networking is required for controlling navigation");
-        compTaskAllocation.addRequired(compWiFi, "Tasks should be sent via net");
-        compMobileBase.addRequired(compWiFi, "Mobile base requires WiFi for receiving control commands");
-        
+//        compMowingMachine.addRequired(compMobileBase, "Mowing machine is useless on stationary agent");
+//        compLoader.addRequired(compMobileBase, "Loader should be mobile");
+//        compLoader.addRequired(compLoad, "Loader should know the weight of cargo");
+//        compLaser.addRequired(compMobileBase, "Laser is useless on stationary device");
+//        compGPS.addRequired(compMobileBase, "GPS is useless on stationary device");
+//        compNavigation.addRequired(compWiFi, "Networking is required for controlling navigation");
+//        compTaskAllocation.addRequired(compWiFi, "Tasks should be sent via net");
+//        compMobileBase.addRequired(compWiFi, "Mobile base requires WiFi for receiving control commands");
+
         // additional
 //        compMobileBase.addRequired(compGPS, "Mobile base requires GPS for navigation");
 //        compMobileBase.addRequired(compLaser, "Mobile base requires laser for navigation");
@@ -158,8 +162,136 @@ public class MRSOptimizer {
         project.getMissions().add(transportationMission);
     }
 
+    private void initGreenhouseProject() {
+        // creating project
+        project = new Project();
+        project.setName("Greenhouse project");
+
+        // defining components
+
+        Component compGreenhouse = new Component("greenhouse", "Greenhouse (construction)");
+        compGreenhouse.setInvestmentCosts(1000d);
+        compGreenhouse.setOperatingPower(5d);
+        project.getComponents().add(compGreenhouse);
+
+        Component compRangerLaser = new Component("ranger-laser", "Ranger - laser");
+        compRangerLaser.setInvestmentCosts(100d);
+        compRangerLaser.setOperatingPower(2d);
+        project.getComponents().add(compRangerLaser);
+
+        Component compRangerRadio = new Component("ranger-radio", "Ranger - radio");
+        compRangerRadio.setInvestmentCosts(100d);
+        compRangerRadio.setOperatingPower(2d);
+        project.getComponents().add(compRangerRadio);
+
+        Component compRangerOptical = new Component("ranger-optical", "Ranger - optical");
+        compRangerOptical.setInvestmentCosts(100d);
+        compRangerOptical.setOperatingPower(2d);
+        project.getComponents().add(compRangerOptical);
+
+        Component compCamera = new Component("camera", "HD Camera");
+        compCamera.setInvestmentCosts(100d);
+        compCamera.setOperatingPower(2d);
+        project.getComponents().add(compCamera);
+
+        Component compLimitSwitch = new Component("limit-switch", "Limit switch");
+        compLimitSwitch.setInvestmentCosts(100d);
+        compLimitSwitch.setOperatingPower(2d);
+        project.getComponents().add(compLimitSwitch);
+
+        Component compPlatformLight = new Component("platform-light", "Light robot platform");
+        compPlatformLight.setInvestmentCosts(100d);
+        compPlatformLight.setOperatingPower(2d);
+        project.getComponents().add(compPlatformLight);
+
+        Component compPlatformHeavy = new Component("platform-heavy", "Heavy robot platform");
+        compPlatformHeavy.setInvestmentCosts(100d);
+        compPlatformHeavy.setOperatingPower(2d);
+        project.getComponents().add(compPlatformHeavy);
+
+        Component compSpray = new Component("actuator-spray", "Actuator spray");
+        compSpray.setInvestmentCosts(100d);
+        compSpray.setOperatingPower(2d);
+        project.getComponents().add(compSpray);
+
+        Component compHarvester = new Component("actuator-harvester", "Actuator harvester");
+        compHarvester.setInvestmentCosts(100d);
+        compHarvester.setOperatingPower(2d);
+        project.getComponents().add(compHarvester);
+
+        Component compTank = new Component("tank", "Tank for chemicals");
+        compTank.setInvestmentCosts(100d);
+        compTank.setOperatingPower(2d);
+        project.getComponents().add(compTank);
+
+        Component compContiner = new Component("container", "Container for yield");
+        compContiner.setInvestmentCosts(100d);
+        compContiner.setOperatingPower(2d);
+        project.getComponents().add(compContiner);
+
+        Component compPorcessor = new Component("processor", "Computing processor");
+        compPorcessor.setInvestmentCosts(100d);
+        compPorcessor.setOperatingPower(2d);
+        project.getComponents().add(compPorcessor);
+
+        /*
+         atsijāt pēc parametriem (masa)
+         veikspēja robežas (darba apjoms)
+
+         Uzdevumi:
+         apsekošana ???
+         apstrāde
+         transportēšana
+         tehniskā apkope ???
+         */
+
+        // component constraints     
+        compGreenhouse.addConstraint(ConstraintType.Exclude, "Greenhouse should be stationary", compPlatformHeavy, compPlatformLight);
+
+        compPlatformHeavy.addConstraint(ConstraintType.Exclude, "Only one platform is needed", compPlatformLight);
+        compPlatformLight.addConstraint(ConstraintType.Exclude, "Only one platform is needed", compPlatformHeavy);
+
+        compRangerLaser.addConstraint(ConstraintType.Exclude, "Only one ranger is needed", compRangerOptical, compRangerRadio);
+        compRangerOptical.addConstraint(ConstraintType.Exclude, "Only one ranger is needed", compRangerLaser, compRangerRadio);
+        compRangerRadio.addConstraint(ConstraintType.Exclude, "Only one ranger is needed", compRangerOptical, compRangerLaser);
+
+        compCamera.addConstraint(ConstraintType.DependAny, "Camera should be mobile", compPlatformHeavy, compPlatformLight);
+
+        compRangerLaser.addConstraint(ConstraintType.DependAny, "Ranger should be mobile", compPlatformHeavy, compPlatformLight);
+        compRangerOptical.addConstraint(ConstraintType.DependAny, "Ranger should be mobile", compPlatformHeavy, compPlatformLight);
+        compRangerRadio.addConstraint(ConstraintType.DependAny, "Ranger should be mobile", compPlatformHeavy, compPlatformLight);
+
+        compSpray.addConstraint(ConstraintType.DependAny, "Spray should be mobile", compPlatformHeavy, compPlatformLight);
+        compHarvester.addConstraint(ConstraintType.DependAny, "Harvester should be mobile", compPlatformHeavy, compPlatformLight);
+
+        compTank.addConstraint(ConstraintType.DependAny, "Tank should be placed on heavy platform", compPlatformHeavy);
+        compContiner.addConstraint(ConstraintType.DependAny, "Container should be placed on heavy platform", compPlatformHeavy);
+
+
+        // Missions
+//        AreaCoverageMission areaCoverageMission = new AreaCoverageMission(120d, 150d);
+//        areaCoverageMission.setWorkDensity(0.9);
+//        areaCoverageMission.setMobileBase(compMobileBase);
+//        areaCoverageMission.setMobileBaseSpeed(2d); // moves 2m/s
+//        areaCoverageMission.setWorkDevice(compMowingMachine);
+//        areaCoverageMission.setWorkDeviceWidth(1.2); // trims 1.2 m wide area        
+//
+//        project.getMissions().add(areaCoverageMission);
+//
+//        TransportationMission transportationMission = new TransportationMission(120d, 150d);
+//        transportationMission.setWorkDensity(0.04); // package should be collected after every 25 units of area coverage mission
+//        transportationMission.setTargetOffsetX(20d);
+//        transportationMission.setTargetOffsetY(10d);
+//        transportationMission.setMobileBase(compMobileBase);
+//        transportationMission.setMobileBaseSpeed(8d);
+//        transportationMission.setLoader(compLoader);
+//
+//        project.getMissions().add(transportationMission);
+    }
+
     /**
      * Creates new MRS Optimizer instance and loads configuration from file
+     *
      * @param config XML file to load
      */
     private MRSOptimizer(String config) throws JAXBException, InvalidConfigurationException {
@@ -168,7 +300,7 @@ public class MRSOptimizer {
         Unmarshaller unmarsh = xml.createUnmarshaller();
         this.project = (Project) unmarsh.unmarshal(new File(config));
 
-        this.project.configure();               
+        this.project.configure();
     }
 
     public void startEvolution() throws InvalidConfigurationException {
@@ -190,7 +322,7 @@ public class MRSOptimizer {
         Debug.log.info("Populating world");
         Genotype world = Genotype.randomInitialGenotype(this.project.getGaConfig());
 
-        Debug.log.info("Starting evolution ("+project.getConfig().getGenerationsLimit()+" generations)");
+        Debug.log.info("Starting evolution (" + project.getConfig().getGenerationsLimit() + " generations)");
         int genNum = 0;
         int lastChangeGen = 0;
         double lastFitValue = -1d;
@@ -226,8 +358,8 @@ public class MRSOptimizer {
             } else if (step < project.getConfig().getGenerationsStep()) {
                 step++;
             }
-            
-            Debug.log.info(genNum+" +"+step+"\t~"+lastChangeGen+"\t"+best.getFitnessValue());
+
+            Debug.log.info(genNum + " +" + step + "\t~" + lastChangeGen + "\t" + best.getFitnessValue());
         }
 
         // save end time
@@ -259,31 +391,29 @@ public class MRSOptimizer {
             Debug.log.warning("Error loading \"Nimbus\" look and feel.");
         }
 
-//        try {
-//            MRSOptimizer opt = new MRSOptimizer();
-//
-//            JAXBContext xml = JAXBContext.newInstance(Project.class);
-//            Marshaller marsh = xml.createMarshaller();
-//            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//
-//            marsh.marshal(opt.project, new File("test.xml"));
-//
-//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
-//            EntityManager em = factory.createEntityManager();
-//
-//            em.getTransaction().begin();
-//            
-//            em.persist(opt.project);
-//            
-//            em.getTransaction().commit();
-//
-//            em.close();
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//
-//        System.exit(0);
+        if (args.length > 1) {
+
+            try {
+                MRSOptimizer opt = new MRSOptimizer();
+
+                JAXBContext xml = JAXBContext.newInstance(Project.class);
+                Marshaller marsh = xml.createMarshaller();
+                marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+                marsh.marshal(opt.project, new File("test.xml"));
+
+                EntityManagerFactory factory = Persistence.createEntityManagerFactory("PhD_MRS_Optimization_PU");
+                EntityManager em = factory.createEntityManager();
+                em.getTransaction().begin();
+                em.persist(opt.project);
+                em.getTransaction().commit();
+                em.close();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
 
         if (args.length > 0) {
             String xmlFileName = args[0];

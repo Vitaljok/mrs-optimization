@@ -10,6 +10,11 @@
     <class>phd.mrs.heuristic.object.Agent</class>
     <class>phd.mrs.heuristic.object.Evolution</class>
     <class>phd.mrs.heuristic.object.Constraint</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseInspectionMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseSprayingMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseTransportingMission</class>
+    <class>phd.mrs.heuristic.mission.DummyMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseMission</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:53306/mrs"/>
       <property name="javax.persistence.jdbc.password" value="mrs"/>
@@ -17,7 +22,6 @@
       <property name="javax.persistence.jdbc.user" value="mrs"/>
       <!-- property name="eclipselink.logging.level.sql" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/ -->
-      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
     </properties>
   </persistence-unit>
 </persistence>

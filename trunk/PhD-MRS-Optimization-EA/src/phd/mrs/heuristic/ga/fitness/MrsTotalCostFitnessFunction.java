@@ -44,7 +44,7 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
     public MrsTotalCostFitnessFunction(Project project) {
         this.project = project;        
         
-        this.compsMap = new HashMap<Component, Integer>();
+        this.compsMap = new HashMap<>();
         for (Component c : this.project.getComponents()) {
             this.compsMap.put(c, 0);
         }
@@ -85,25 +85,9 @@ public class MrsTotalCostFitnessFunction extends FitnessFunction {
         }
         
         // add system design costs (use only active)
-        Qinv +=  project.getCostModel().calcSysDesign(opAgentList.size());
+        Qinv +=  project.getCostModel().calcSysDesign(opAgentList.size());        
         
-
-        // check if all components are used in solution
-        if (comps.containsValue(0)) {
-            Debug.log.fine("Found non-complete solution, ignoring");
-
-            int num = 0;
-
-            for (int v : comps.values()) {
-                if (v == 0) {
-                    num++;
-                }
-            }
-
-            return num * this.project.getConfig().getNearInfinity();
-        }
         
-        // TODO: check is mrs able to perform mission???
                  
         // calculate operational costs
         double Qoper = opCostCalc.calcOpCosts(opAgentList, Qinv);

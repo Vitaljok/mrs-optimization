@@ -41,7 +41,13 @@ import phd.mrs.heuristic.object.Project;
  *
  * @author Vitaljok
  */
-@XmlSeeAlso({AreaCoverageMission.class, TransportationMission.class})
+@XmlSeeAlso({AreaCoverageMission.class,
+    TransportationMission.class,
+    GreenhouseInspectionMission.class,
+    GreenhouseSprayingMission.class,
+    GreenhouseTransportingMission.class,
+    GreenhouseMission.class,
+    DummyMission.class})
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "mission_type")
@@ -63,16 +69,14 @@ public abstract class Mission implements Serializable {
     @Column(name = "work_density")
     protected Double workDensity;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="mobile_base_id")
+    @JoinColumn(name = "mobile_base_id")
     protected Component mobileBase;
-    @Column(name="mobile_base_speed")
+    @Column(name = "mobile_base_speed")
     protected Double mobileBaseSpeed;
 
     public abstract Double getAgentPerformance(Agent agent);
 
     public abstract Double getAmountOfWork();
-
-    public abstract Integer getMaxTimeEstimation();
 
     public Integer getId() {
         return id;
@@ -129,5 +133,5 @@ public abstract class Mission implements Serializable {
 
     public void setMobileBaseSpeed(Double mobileBaseSpeed) {
         this.mobileBaseSpeed = mobileBaseSpeed;
-    }    
+    }
 }

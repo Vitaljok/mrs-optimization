@@ -28,9 +28,9 @@ import javax.persistence.Embeddable;
 public class Config implements Serializable {
 
     @Column(name = "agent_instance_limit")
-    private Short agentInstanceLimit = 10;
+    private Short agentInstanceLimit = 20;
     @Column(name = "population_size")
-    private Short populationSize = 20;
+    private Short populationSize = 30;
     @Column(name = "generations_limit")
     private Integer generationsLimit = 1500;
     @Column(name = "generations_step")
@@ -50,9 +50,9 @@ public class Config implements Serializable {
     @Column(name = "mutation_rate")
     private short mutationRate = 15;
     @Column(name = "near_nfinity")
-    private Double nearInfinity = 1.0E12;
+    private Double nearInfinity = 1.0E14;
     @Column(name = "near_zero")
-    private Double nearZero = 1.0E-12;
+    private Double nearZero = 1.0E-14;
 
     public Short getAgentInstanceLimit() {
         return agentInstanceLimit;

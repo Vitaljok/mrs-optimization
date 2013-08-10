@@ -10,6 +10,11 @@
     <class>phd.mrs.heuristic.object.Agent</class>
     <class>phd.mrs.heuristic.object.Evolution</class>
     <class>phd.mrs.heuristic.object.Constraint</class>
+    <class>phd.mrs.heuristic.mission.DummyMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseInspectionMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseSprayingMission</class>
+    <class>phd.mrs.heuristic.mission.GreenhouseTransportingMission</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:53306/mrs"/>
       <property name="javax.persistence.jdbc.password" value="mrs"/>

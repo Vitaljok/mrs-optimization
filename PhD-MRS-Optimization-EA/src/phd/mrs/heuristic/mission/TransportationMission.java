@@ -18,7 +18,6 @@ package phd.mrs.heuristic.mission;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -85,11 +84,6 @@ public class TransportationMission extends Mission {
     @Override
     public Double getAmountOfWork() {
         return this.areaSizeX * this.areaSizeY * this.workDensity * this.avgDist.getValue();
-    }
-
-    @Override
-    public Integer getMaxTimeEstimation() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public Double getTargetOffsetX() {

@@ -18,7 +18,6 @@ package phd.mrs.heuristic.mission;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -88,8 +87,8 @@ public class AreaCoverageMission extends Mission {
         return this.areaSizeX * this.areaSizeY / this.workDeviceWidth * this.workDensity;
     }
 
-    @Override
-    public Integer getMaxTimeEstimation() {
-        return new Integer((int) (Math.ceil(this.getAmountOfWork() / this.mobileBaseSpeed * 1.25)));
-    }
+//    @Override
+//    public Integer getMaxTimeEstimation() {
+//        return new Integer((int) (Math.ceil(this.getAmountOfWork() / this.mobileBaseSpeed * 1.25)));
+//    }
 }

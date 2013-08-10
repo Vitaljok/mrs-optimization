@@ -155,11 +155,6 @@ class MissionA extends Mission {
     public Double getAmountOfWork() {
         return 23d;
     }
-
-    @Override
-    public Integer getMaxTimeEstimation() {
-        return 0;
-    }
 }
 
 class MissionB extends Mission {
@@ -181,10 +176,5 @@ class MissionB extends Mission {
     @Override
     public Double getAmountOfWork() {
         return 19d;
-    }
-
-    @Override
-    public Integer getMaxTimeEstimation() {
-        return 0;
     }
 }

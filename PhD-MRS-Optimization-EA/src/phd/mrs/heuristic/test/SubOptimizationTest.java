@@ -25,7 +25,6 @@ import org.jgap.Genotype;
 import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
-import phd.mrs.heuristic.ga.AgentGene;
 
 /**
  *

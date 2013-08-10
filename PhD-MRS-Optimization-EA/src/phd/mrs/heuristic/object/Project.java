@@ -51,9 +51,7 @@ import org.jgap.impl.CrossoverOperator;
 import org.jgap.impl.GABreeder;
 import org.jgap.impl.MutationOperator;
 import org.jgap.impl.StockRandomGenerator;
-import phd.mrs.heuristic.mission.AreaCoverageMission;
 import phd.mrs.heuristic.mission.Mission;
-import phd.mrs.heuristic.mission.TransportationMission;
 import phd.mrs.heuristic.object.config.Config;
 import phd.mrs.heuristic.object.config.CostModel;
 import phd.mrs.heuristic.ga.AgentGene;
@@ -129,10 +127,11 @@ public class Project implements Serializable {
         return components;
     }
 
-    @XmlElementRefs({
-        @XmlElementRef(type = AreaCoverageMission.class),
-        @XmlElementRef(type = TransportationMission.class)
-    })
+//    @XmlElementRefs({
+//        @XmlElementRef(type = AreaCoverageMission.class),
+//        @XmlElementRef(type = TransportationMission.class)
+//    })
+    @XmlElementRef
     @XmlElementWrapper(name = "missions")
     public List<Mission> getMissions() {
         return missions;
@@ -151,37 +150,49 @@ public class Project implements Serializable {
     }
 
     private boolean isAgentValid(Agent agent) {
+                
+        // check components
         for (Component comp : agent.getComponents()) {
             List<Constraint> constrList = comp.getConstraints();
-
+            
             if (!constrList.isEmpty()) {
                 for (Constraint constr : constrList) {
 
                     if (constr.getType() == ConstraintType.Exclude) {
                         // if agent contains of exclusive componennts
-                        for (Component refComp : constr.getRefComponents()) {                            
+                        for (Component refComp : constr.getRefComponents()) {
                             if (agent.getComponents().contains(refComp)) {
-                                //System.out.println("Excluded component: "+refComp);
+                                //System.out.println("\tExcluded component: "+refComp);
                                 return false;
                             }
                         }
 
-                    } else if (constr.getType() == ConstraintType.DependAny){
+                    } else if (constr.getType() == ConstraintType.DependAny) {
                         // if agent does not have all dependent component                                               
-                        
+
                         if (Collections.disjoint(agent.getComponents(), constr.getRefComponents())) {
-                            //System.out.println("None of required components: "+constr.getRefComponents());
+                            //System.out.println("\tNone of required components: "+constr.getRefComponents());
                             return false;
-                        }                        
+                        }
                     }
 
                 }
 
             }
         }
+
+
+        // check performance
+        for (Mission mis : this.missions) {
+            if (mis.getAgentPerformance(agent) > 0) {
+                // agent can perform at least one mission
+                return true;
+            }
+        }        
         
-        //System.out.println("OK");
-        return true;
+        //System.out.println(agent.getComponents());
+        // total performance is 0, agent is useless for the system
+        return false;
     }
 
     private Integer generateAgents() {
@@ -193,7 +204,7 @@ public class Project implements Serializable {
         for (int i = 1; i < (1 << compNum); i++) {
             String pattern = String.format("%" + compNum + "s",
                     Integer.toBinaryString(i)).replaceAll("\\s", "0");
-          
+
             Agent agent = new Agent(this);
 
             for (int j = 0; j < compNum; j++) {
@@ -202,7 +213,7 @@ public class Project implements Serializable {
                 }
             }
 
-            
+
 
             if (this.isAgentValid(agent)) {
                 this.getAgents().add(agent);
@@ -218,6 +229,8 @@ public class Project implements Serializable {
     }
 
     public void configure() throws InvalidConfigurationException {
+        Configuration.reset("mrsGA");
+
         Debug.log.info("Configuring GA");
         this.generateAgents();
 

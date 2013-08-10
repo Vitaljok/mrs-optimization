@@ -1,0 +1,1 @@
+java -Xms64m -Xmx256m -jar dist\PhD-MRS-Optimization-EA.jar -config greenhouse.xml

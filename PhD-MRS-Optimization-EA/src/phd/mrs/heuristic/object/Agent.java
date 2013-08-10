@@ -18,7 +18,9 @@ package phd.mrs.heuristic.object;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -163,5 +165,27 @@ public class Agent implements Cloneable, Serializable {
 
     public String getCode() {
         return code;
-    }        
+    }    
+    
+    @Transient
+    private CachedProperty<Map<String, Component>> componentMap = new CachedProperty<Map<String, Component>>() {
+
+        @Override
+        protected Map<String, Component> calculateValue() {
+            Map<String, Component> map = new HashMap<>();
+            
+            for (Component comp : components) {
+                map.put(comp.getFamily(), comp);
+            }
+            
+            return map;
+        }
+    };
+
+    public Map<String, Component> getComponentMap() {
+        return componentMap.getValue();
+    }
+    
+    
+    
 }

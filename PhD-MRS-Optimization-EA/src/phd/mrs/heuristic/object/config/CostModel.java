@@ -22,7 +22,6 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Cost estimation model.
@@ -43,7 +42,7 @@ public class CostModel implements Serializable {
         @AttributeOverride(name = "k", column = @Column(name = "design_k")),
     })
     @Embedded
-    private AbstractCoefs design = new AbstractCoefs(40, 10, 0.5, 2);
+    private AbstractCoefs design = new AbstractCoefs(400d, 100d, 0.5, 4d);
     /**
      * Agent assembly cost coefficients
      */
@@ -54,7 +53,7 @@ public class CostModel implements Serializable {
         @AttributeOverride(name = "k", column = @Column(name = "assembly_k")),
     })
     @Embedded
-    private AbstractCoefs assembly = new AbstractCoefs(10, 5, 0.02, 3);
+    private AbstractCoefs assembly = new AbstractCoefs(20d, 15d, 0.3, 3d);
     /**
      * System design coefficients
      */
@@ -65,7 +64,7 @@ public class CostModel implements Serializable {
         @AttributeOverride(name = "k", column = @Column(name = "sys_design_k")),
     })
     @Embedded
-    private AbstractCoefs sysDesign = new AbstractCoefs(280, 20, 2, 2);
+    private AbstractCoefs sysDesign = new AbstractCoefs(2800d, 1000d, 10d, 3d);
     /**
      * Agent energy loss coefficients
      */
@@ -76,7 +75,7 @@ public class CostModel implements Serializable {
         @AttributeOverride(name = "k", column = @Column(name = "energy_loss_k")),
     })
     @Embedded
-    private AbstractCoefs energyLoss = new AbstractCoefs(0, 1, 0.01, 2);
+    private AbstractCoefs energyLoss = new AbstractCoefs(0, 0.000000015, 0.000000015, 4);
     /**
      * System maintenance coefficients
      */
@@ -87,12 +86,12 @@ public class CostModel implements Serializable {
         @AttributeOverride(name = "k", column = @Column(name = "sys_maint_k")),
     })
     @Embedded
-    private AbstractCoefs sysMaint = new AbstractCoefs(8, 2, 0.1, 2);
+    private AbstractCoefs sysMaint = new AbstractCoefs(0.001388889, 0.000138889, 2.77778e-05, 2);
     /**
      * Eventual replacement rate
      */
     @Column(name = "system_repl_rate")
-    private Double systemReplRate = 0.005d;
+    private Double systemReplRate = 1.584438233281084e-8; // once per 2 years
 
     private double calcFunction(double b0, double b1, double b2, double k, double x) {
         return b0 + b1 * x + b2 * Math.pow(x, k);

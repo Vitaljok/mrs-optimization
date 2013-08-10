@@ -207,17 +207,17 @@
         </component>
     </components>
     <config>
-        <agentInstanceLimit>20</agentInstanceLimit>
+        <agentInstanceLimit>30</agentInstanceLimit>
         <crossoverRate>0.35</crossoverRate>
         <doubletteChromosomesAllowed>false</doubletteChromosomesAllowed>
-        <generationsLimit>1500</generationsLimit>
+        <generationsLimit>2000</generationsLimit>
         <generationsStep>50</generationsStep>
         <keepPopulationSizeConstant>true</keepPopulationSizeConstant>
         <minimumPopSizePercent>0</minimumPopSizePercent>
         <mutationRate>15</mutationRate>
-        <nearInfinity>1.0E16</nearInfinity>
-        <nearZero>1.0E-16</nearZero>
-        <populationSize>30</populationSize>
+        <nearInfinity>1.0E14</nearInfinity>
+        <nearZero>1.0E-14</nearZero>
+        <populationSize>100</populationSize>
         <selectFromPrevGen>0.95</selectFromPrevGen>
         <selectorOriginalRate>0.9</selectorOriginalRate>
     </config>

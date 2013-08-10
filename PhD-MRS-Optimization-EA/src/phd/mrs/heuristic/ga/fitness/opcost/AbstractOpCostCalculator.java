@@ -21,7 +21,6 @@ import java.math.RoundingMode;
 import java.util.List;
 import phd.mrs.heuristic.object.Agent;
 import phd.mrs.heuristic.object.Project;
-import phd.mrs.heuristic.object.config.Config;
 
 /**
  *

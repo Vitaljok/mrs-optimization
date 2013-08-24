@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<serverConfig>
+    <autoStartPlayer>true</autoStartPlayer>
+    <autoStartVLan>false</autoStartVLan>
+    <rmiRegistryPort>36667</rmiRegistryPort>
+    <rmiBindName>lv/llu/RemBotService</rmiBindName>
+</serverConfig>

@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /** Basic interface code for the NAV200, player interface provided in
@@ -33,12 +33,15 @@ interfaces was later added by Toby Collett.
 #include <libplayercore/playercore.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#if !defined (WIN32)
+#if !defined (WIN32) || defined (__MINGW32__)
   #include <sys/time.h>
-  #include <termios.h>
   #include <strings.h>
   #include <unistd.h>
 #endif
+#if !defined (WIN32)
+  #include <termios.h>
+#endif
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +51,7 @@ interfaces was later added by Toby Collett.
 #include <math.h>
 //#include <stdint.h>
 
-#if defined (WIN32)
+#if defined (WIN32) && !defined (__MINGW32__)
   typedef unsigned int ssize_t;
 #endif
 

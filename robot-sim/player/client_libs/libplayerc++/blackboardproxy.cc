@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /********************************************************************
@@ -33,12 +33,12 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  ********************************************************************/
 
 /*
- * $Id: blackboardproxy.cc 7944 2009-07-03 00:31:32Z gbiggs $
+ * $Id: blackboardproxy.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  */
 
 #include <cstddef>
@@ -71,12 +71,12 @@ void BlackBoardProxy::Subscribe(uint32_t aIndex)
   mDevice = playerc_blackboard_create(mClient, aIndex);
   if (NULL==mDevice)
   {
-    throw PlayerError("BlackBoardProxy::Subscribe(uint aIndex)", "could not create");
+    throw PlayerError("BlackBoardProxy::Subscribe(uint32_t aIndex)", "could not create");
   }
 
   if (0 != playerc_blackboard_subscribe(mDevice, PLAYER_OPEN_MODE))
   {
-    throw PlayerError("BlackBoardProxy::Subscribe(uint aIndex)", "could not subscribe");
+    throw PlayerError("BlackBoardProxy::Subscribe(uint32_t aIndex)", "could not subscribe");
   }
   
   mDevice->on_blackboard_event = NULL;

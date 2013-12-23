@@ -15,14 +15,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /**************************************************************************
  * Desc: Sensor model for GPS.
  * Author: Andrew Howard
  * Date: 8 Aug 2003
- * CVS: $Id: gps.h 1685 2003-08-17 18:51:44Z inspectorg $
+ * CVS: $Id: gps.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *************************************************************************/
 
 #ifndef GPS_H

@@ -16,12 +16,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /*
- * $Id: clodbuster.h 7208 2008-12-19 02:10:56Z gbiggs $
+ * $Id: clodbuster.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  *   the clodbuster device.   there's a thread here that
  *   actually interacts with grasp board via the serial line.  the other

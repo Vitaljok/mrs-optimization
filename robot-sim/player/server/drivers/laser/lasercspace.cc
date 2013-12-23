@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@
 // Desc: Driver for computing the config space for a laser scan.
 // Author: Andrew Howard
 // Date: 1 Sep 2002
-// CVS: $Id: lasercspace.cc 8003 2009-07-13 10:34:37Z thjc $
+// CVS: $Id: lasercspace.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 // Theory of operation - Shortens each range reading in the laser scan
 // such that the new scan delimits the boundary of free configuration

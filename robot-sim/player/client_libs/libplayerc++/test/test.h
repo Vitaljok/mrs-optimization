@@ -15,13 +15,13 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /***************************************************************************
  * Desc: Test program for the Player C++ client
  * Author: Andrew Howard, Brian Gerkey, Richard Vaughan
  * Date: 28 May 2002
- * CVS: $Id: test.h 8106 2009-07-23 19:14:37Z thjc $
+ * CVS: $Id: test.h 9120 2013-01-07 00:18:52Z jpgr87 $
  **************************************************************************/
 
 #ifndef TEST_H
@@ -82,7 +82,7 @@ int test_gripper_holdsubscribe(PlayerClient* client, int index);
 int test_actarray(PlayerClient* client, int index);
 int test_aio(PlayerClient* client, int index);
 int test_ranger(PlayerClient* client, int index);
-
+int test_coopobject(PlayerClient* client, int index);
 //int test_bps(PlayerClient* client, int index);
 
 #endif // TEST_H

@@ -16,14 +16,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /*
  Desc: Driver for the SICK S3000 laser
  Author: Toby Collett (based on lms200 by Andrew Howard)
  Date: 7 Nov 2000
- CVS: $Id: sicks3000.cc 9087 2012-01-01 03:47:04Z jpgr87 $
+ CVS: $Id: sicks3000.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 */
 
 /** @ingroup drivers Drivers */
@@ -114,7 +114,7 @@ driver
 // 1 second of data at 500kbaud
 #define DEFAULT_RX_BUFFER_SIZE 500*1024/8
 
-#if defined (WIN32)
+#if defined (WIN32) && !defined (__MINGW32__)
   typedef unsigned int ssize_t;
 #endif
 

@@ -16,14 +16,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /* Copyright (C) 2002
  *   John Sweeney, UMASS, Amherst, Laboratory for Perceptual Robotics
  *
- * $Id: reb.h 7297 2009-01-24 23:14:21Z thjc $
+ * $Id: reb.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * Header for the REB device.  This is the K-Team Robotics Extension
  * Board attached to their Kameleon 376BC.  We connect to it via

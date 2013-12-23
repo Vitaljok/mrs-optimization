@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /*
  Desc: Driver for the INSIDE M-300/R-300 2G RFID reader
  Author: Radu Bogdan Rusu
  Date: 25 Jan 2006
- CVS: $Id: insideM300.cc 7208 2008-12-19 02:10:56Z gbiggs $
+ CVS: $Id: insideM300.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  Fixes by Alexis Maldonado <maldonad //at// cs.tum.edu>. April/2008.
 */
 

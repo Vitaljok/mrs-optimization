@@ -14,12 +14,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /*
- * $Id: mapcspace.cc 7324 2009-02-10 03:58:02Z gbiggs $
+ * $Id: mapcspace.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * A driver to read an occupancy grid map from another map device and
  * convolve it with a robot to create the C-space.

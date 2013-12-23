@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /********************************************************************
@@ -33,7 +33,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  ********************************************************************/
 
@@ -42,7 +42,7 @@
  * Authors: Brad Kratochvil, Toby Collett
  *
  * Date: 23 Sep 2005
- # CVS: $Id: playerc++.h 9078 2011-11-01 00:00:59Z jpgr87 $
+ # CVS: $Id: playerc++.h 9124 2013-10-06 17:06:38Z jpgr87 $
  **************************************************************************/
 
 
@@ -592,6 +592,171 @@ class PLAYERCC_EXPORT CameraProxy : public ClientProxy
 
 };
 
+/**
+The @p CoopObjectProxy class is used to control a @ref interface_coopobject device. */
+
+class PLAYERCC_EXPORT CoopObjectProxy : public ClientProxy
+{
+
+  private:
+
+    void Subscribe(uint32_t aIndex); 
+    void Unsubscribe();
+
+    // libplayerc data structure
+    playerc_coopobject_t *mDevice;
+
+    uint16_t id;
+
+  public:
+    /// Constructor
+    CoopObjectProxy(PlayerClient *aPc, uint32_t aIndex = 0);
+    /// Destructor
+    ~CoopObjectProxy();
+
+    /// @brief Message type
+    /// Possible values include
+    /// - @ref PLAYER_COOPOBJECT_MSG_NONE 
+    /// - @ref PLAYER_COOPOBJECT_MSG_HEALTH
+    /// - @ref PLAYER_COOPOBJECT_MSG_POSITION
+    /// - @ref PLAYER_COOPOBJECT_MSG_RSSI
+    /// - @ref PLAYER_COOPOBJECT_MSG_SENSOR
+    /// - @ref PLAYER_COOPOBJECT_MSG_ALARM
+    /// - @ref PLAYER_COOPOBJECT_MSG_REQUEST
+    /// - @ref PLAYER_COOPOBJECT_MSG_COMMAND
+    /// or user defined messages with ID > 6
+    int MessageType	() const { return GetVar(mDevice->messageType); };
+
+    /// @brief Cooperating Object type
+    /// Possible values include
+    /// - @ref PLAYER_COOPOBJECT_ORIGIN_STATICBASE
+    /// - @ref PLAYER_COOPOBJECT_ORIGIN_MOBILEBASE
+    /// - @ref PLAYER_COOPOBJECT_ORIGIN_MOTE
+    /// - @ref PLAYER_COOPOBJECT_ORIGIN_ROBOT
+    uint32_t GetOrigin	() const { return GetVar(mDevice->origin); };
+    
+    /// @brief Cooperating Object ID
+    uint32_t GetID     	() const { return GetVar(mDevice->id); };
+    
+    /// @brief Cooperating Object Parent ID
+    uint32_t GetParentID() const { return GetVar(mDevice->parent_id); };
+    
+    /// @brief Get robot ID
+    uint32_t GetProxyID	() const { return id; };
+    
+    /// @brief Set robot ID
+    void SetProxyID	(uint32_t value) { id = value; };
+    
+    /// @brief Get number of sensors included in the message
+    uint32_t GetSensorNumber	() const { return GetVar(mDevice->sensor_data_count);    };
+    
+    // int *GetAllSensorData	() const { return GetVar(mDevice->sensor_data);    };
+    
+    /// @brief Sensor type
+    /// Possible values include
+    /// - @ref PLAYER_COOPOBJECT_TEMPERATURE
+    /// - @ref PLAYER_COOPOBJECT_HUMIDITY
+    /// - @ref PLAYER_COOPOBJECT_PRESSURE
+    /// - @ref PLAYER_COOPOBJECT_LIGHT_1
+    /// - @ref PLAYER_COOPOBJECT_LIGHT_2
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_X
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_Y
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_Z
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_X
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_Y
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_Z
+    /// - @ref PLAYER_COOPOBJECT_COMPASS
+    /// - @ref PLAYER_COOPOBJECT_CO
+    /// - @ref PLAYER_COOPOBJECT_CO2
+    /// - @ref PLAYER_COOPOBJECT_H2  
+    uint8_t GetSensorType	(uint32_t index) const { if ( index < GetSensorNumber() ) return GetVar(mDevice->sensor_data[index].type); else return -1; };
+    
+    /// @brief Sensor value
+    uint16_t GetSensorData	(uint32_t index) const { if ( index < GetSensorNumber() ) return GetVar(mDevice->sensor_data[index].value); else return -1; };
+
+    /// @brief Get number of alarms included in the message
+    uint32_t GetAlarmNumber	() const { return GetVar(mDevice->alarm_data_count);    };
+    
+//	int *GetAllAlarmData	() const { return GetVar(mDevice->alarm_data);    };
+
+    /// @brief Alarm type
+    /// Possible values include
+    /// - @ref PLAYER_COOPOBJECT_TEMPERATURE
+    /// - @ref PLAYER_COOPOBJECT_HUMIDITY
+    /// - @ref PLAYER_COOPOBJECT_PRESSURE
+    /// - @ref PLAYER_COOPOBJECT_LIGHT_1
+    /// - @ref PLAYER_COOPOBJECT_LIGHT_2
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_X
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_Y
+    /// - @ref PLAYER_COOPOBJECT_ACCEL_Z
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_X
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_Y
+    /// - @ref PLAYER_COOPOBJECT_MAGNETOMETER_Z
+    /// - @ref PLAYER_COOPOBJECT_COMPASS
+    /// - @ref PLAYER_COOPOBJECT_CO
+    /// - @ref PLAYER_COOPOBJECT_CO2
+    /// - @ref PLAYER_COOPOBJECT_H2
+    /// - @ref PLAYER_COOPOBJECT_SMOKE
+    /// - @ref PLAYER_COOPOBJECT_OPTSWITCH
+    uint8_t GetAlarmType	(uint32_t index) const { if ( index < GetAlarmNumber() ) return GetVar(mDevice->alarm_data[index].type); else return -1; };
+
+    /// @brief Alarm value
+    uint16_t GetAlarmData	(uint32_t index) const { if ( index < GetAlarmNumber() ) return GetVar(mDevice->alarm_data[index].value); else return -1; };
+    
+    /// @brief Get number of bytes of user defined data
+    uint32_t GetUserDataNumber	() const { return GetVar(mDevice->user_data_count);    };
+    
+    /// @brief User defined data array
+    uint8_t *GetAllUserData	() const { return GetVar(mDevice->user_data);    };
+    
+    /// @brief Indexed user defined byte
+    uint8_t GetUserData	(uint32_t index) const { if ( index < GetUserDataNumber() ) return GetVar(mDevice->user_data[index]); else return 0xFF; };
+
+    /// @brief Radio Signal Strength sender ID
+    uint16_t GetRSSIsenderId	() const { return GetVar(mDevice->RSSIsender);    };
+    /// @brief Radio Signal Strength value
+    uint16_t GetRSSIvalue	() const { return GetVar(mDevice->RSSIvalue);    };
+    /// @brief Radio Signal Strength message timestamp
+    uint16_t GetRSSIstamp	() const { return GetVar(mDevice->RSSIstamp);    };
+    /// @brief Radio Signal Strength Cooperating Object timestamp
+    double GetRSSInodeTime	() const { return (double)(mDevice->RSSInodeTimeHigh + 10e-6*mDevice->RSSInodeTimeLow);    };
+    
+    /// @brief Cooperating Object X position
+    float GetX	() const { return GetVar(mDevice->x);    };
+    /// @brief Cooperating Object Y position
+    float GetY	() const { return GetVar(mDevice->y);    };
+    /// @brief Cooperating Object Z position
+    float GetZ	() const { return GetVar(mDevice->z);    };
+    /// @brief Cooperating Object status
+    uint8_t GetStatus () const { return GetVar(mDevice->status);    };
+    
+    /// @brief Request type
+    uint32_t GetRequest	() const { return GetVar(mDevice->request);    };
+    /// @brief Command type
+    uint32_t GetCommand	() const { return GetVar(mDevice->command);    };
+    /// @brief Request/Command parameter array size (in bytes)
+    uint32_t GetParametersSize	() const { return GetVar(mDevice->parameters_count);    };
+    /// @brief Request/Command parameter array
+    uint8_t *GetAllParameters	() const { return GetVar(mDevice->parameters);    };
+    /// @brief Indexed user defined byte
+    uint8_t GetParameter	(uint32_t index) const { if ( index < GetParametersSize() ) return GetVar(mDevice->parameters[index]); else return 0xFF; };
+
+    /// @brief Send user data to Cooperating Object
+    void SendData(int destID, int sourceID, player_pose2d_t pos, int status);
+    /// @brief Send user data to Cooperating Object
+    void SendData(int destID, int sourceID, int extradata_type, uint32_t extradata_size, uint8_t *extradata);
+    /// @brief Send command to Cooperating Object
+    void SendCommand(int destID, int sourceID, int command, uint32_t cmd_parameters_size = 0, uint8_t *cmd_parameters = NULL);
+    /// @brief Send request to Cooperating Object
+    void SendRequest(int destID, int sourceID, int request, uint32_t req_parameters_size = 0, uint8_t *req_parameters = NULL);
+
+
+};
+
+/**
+The @p DioProxy class is used to read from a @ref interface_dio
+(digital I/O) device.
+*/
 
 /**
 The @p DioProxy class is used to read from a @ref interface_dio
@@ -710,6 +875,13 @@ class PLAYERCC_EXPORT GpsProxy : public ClientProxy
 
     /// Altitude, in meters.
     double GetAltitude() const { return GetVar(mDevice->alt); };
+
+    /// Spped over ground, in m/s.
+    double GetSpeed() const { return GetVar(mDevice->speed); };
+
+    /** Course made good (heading if the robot moves along its longitudinal
+     * axis), in radians. */
+    double GetCourse() const { return GetVar(mDevice->course); };
 
     /// Number of satellites in view.
     uint32_t GetSatellites() const { return GetVar(mDevice->sat_count); };
@@ -2833,7 +3005,7 @@ namespace std
   //PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::BlinkenLightProxy& c);
   PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::BlobfinderProxy& c);
   PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::BumperProxy& c);
-  PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::CameraProxy& c);
+  PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::CameraProxy& c);PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::CoopObjectProxy& c);
   PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::DioProxy& c);
   PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::FiducialProxy& c);
   PLAYERCC_EXPORT std::ostream& operator << (std::ostream& os, const PlayerCc::GpsProxy& c);

@@ -15,10 +15,10 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /*
- * $Id: test_misc.cc 8106 2009-07-23 19:14:37Z thjc $
+ * $Id: test_misc.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * a test for the C++ SonarProxy
  */

@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 // Desc: Adaptive Monte-Carlo localization
 // Author: Andrew Howard
 // Date: 6 Feb 2003
-// CVS: $Id: amcl_sensor.h 6443 2008-05-15 19:46:11Z gerkey $
+// CVS: $Id: amcl_sensor.h 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 ///////////////////////////////////////////////////////////////////////////
 

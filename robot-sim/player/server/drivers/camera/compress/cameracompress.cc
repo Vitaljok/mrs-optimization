@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 // Desc: jpeg compression and decompression routines
 // Author: Nate Koenig, Andrew Howard
 // Date: 31 Aug 2004
-// CVS: $Id: cameracompress.cc 8844 2010-08-06 14:51:55Z jpgr87 $
+// CVS: $Id: cameracompress.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 ///////////////////////////////////////////////////////////////////////////
 

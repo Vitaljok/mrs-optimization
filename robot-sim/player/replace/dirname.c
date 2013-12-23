@@ -15,11 +15,11 @@
 
    You should have received a copy of the GNU Library General Public
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /*
- * $Id: dirname.c 8000 2009-07-12 10:53:35Z gbiggs $
+ * $Id: dirname.c 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * taken from glibc, modified slightly for standalone compilation, and used as
  * a fallback implementation when dirname() is not available. - BPG

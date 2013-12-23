@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /********************************************************************
@@ -33,11 +33,16 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  ********************************************************************/
 #ifndef _ADDR_UTIL_H
 #define _ADDR_UTIL_H
+
+/** @ingroup libplayerinterface
+    @defgroup addrutil Address Utilities
+Utilities for converting between IP address formats.
+*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,10 +61,20 @@ extern "C" {
 #else
   #define PLAYERINTERFACE_EXPORT
 #endif
-
+/** @ingroup addrutil
+@{
+*/
+/// Convert a packed address to a dotted IP address string
+/// @param dest The destination buffer for the IP address string
+/// @param len The length of the destination buffer
+/// @param addr The packed address to be converted
 PLAYERINTERFACE_EXPORT void packedaddr_to_dottedip(char* dest, size_t len, uint32_t addr);
+/// Convert a hostname to a packed IP address
+/// @param dest The destination for the packed IP address
+/// @param hostname The null-terminated string containing the host name.
+//  @return 0 if successful, nonzero otherwise
 PLAYERINTERFACE_EXPORT int hostname_to_packedaddr(uint32_t* dest, const char* hostname);
-
+/** @} */
 #ifdef __cplusplus
 }
 #endif

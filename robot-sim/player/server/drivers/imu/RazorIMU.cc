@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -198,7 +198,7 @@ void RazorIMU::uart_init() {
 	struct termios newtio;
 	
 	imufd = open(serialPort, O_RDWR | O_NOCTTY);
-	bzero(&newtio, sizeof(newtio));
+	memset(&newtio, 0, sizeof(newtio));
 
 	if (baudRate == 4800)
 		newtio.c_cflag = B4800 | CS8 | CLOCAL | CREAD;

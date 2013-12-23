@@ -22,6 +22,7 @@ SET (playercSrcs    playerc.h
                     dev_bumper.c
                     dev_blobfinder.c
                     dev_camera.c
+                    dev_coopobject.c
                     dev_dio.c
                     dev_fiducial.c
                     dev_gps.c
@@ -80,7 +81,7 @@ ELSEIF (PLAYER_OS_SOLARIS)
     PLAYERC_ADD_LINK_LIB (socket nsl rt)
 ENDIF (PLAYER_OS_QNX)
 IF (PLAYER_OS_WIN)
-    PLAYERC_ADD_LINK_LIB (Ws2_32)
+    PLAYERC_ADD_LINK_LIB (ws2_32)
 ENDIF (PLAYER_OS_WIN)
 
 LINK_DIRECTORIES (${PLAYERC_EXTRA_LINK_DIRS})

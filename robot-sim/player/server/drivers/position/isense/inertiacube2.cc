@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@
 // Desc: Driver ISense InertiaCube2 orientation sensor.
 // Author: Andrew Howard
 // Date: 20 Aug 2002
-// CVS: $Id: inertiacube2.cc 8952 2010-11-01 01:36:32Z gbiggs $
+// CVS: $Id: inertiacube2.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 // Theory of operation:
 //  Uses an inertial orientation sensor to correct the odometry coming

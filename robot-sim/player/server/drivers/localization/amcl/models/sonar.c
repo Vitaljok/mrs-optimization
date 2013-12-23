@@ -15,14 +15,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /**************************************************************************
  * Desc: Sensor model the sonar sensor.
  * Author: Andrew Howard
  * Date: 15 Dec 2002
- * CVS: $Id: sonar.c 8004 2009-07-13 14:03:44Z thjc $
+ * CVS: $Id: sonar.c 9120 2013-01-07 00:18:52Z jpgr87 $
  * Notes:
  *   This is just a sketch of the sensor model; much work needs to be done
  * to make this model genuinely useful.

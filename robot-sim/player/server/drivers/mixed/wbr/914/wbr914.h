@@ -16,12 +16,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /*
- * $Id: wbr914.h 7297 2009-01-24 23:14:21Z thjc $
+ * $Id: wbr914.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  *   the P2OS device.  it's the parent device for all the P2 'sub-devices',
  *   like gripper, position, sonar, etc.  there's a thread here that

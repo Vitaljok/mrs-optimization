@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -24,7 +24,7 @@
 /*
  * a utility to print out data from any of a number of interfaces
  *
- * $Id: playerprint.cc 8846 2010-08-07 22:22:20Z jpgr87 $
+ * $Id: playerprint.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  */
 
@@ -102,7 +102,7 @@ playerprint can print out data for the following kinds of devices:
 #include <stdlib.h>  // for atoi(3)
 //#include <libplayerc/playerc.h>      // for libplayerc client stuff
 #include <libplayerc++/playerc++.h>  // for libplayerc++ client stuff
-#if !defined (WIN32)
+#if !defined (WIN32) || defined (__MINGW32__)
   #include <unistd.h>
   #include <sys/time.h>
 #endif

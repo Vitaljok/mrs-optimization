@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /*
@@ -34,13 +34,13 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /***************************************************************************
  * Desc: Camera proxy.
  * Author: Andrew Howard
  * Date: 26 May 2002
- * CVS: $Id: dev_camera.c 8831 2010-07-25 20:00:24Z jpgr87 $
+ * CVS: $Id: dev_camera.c 9120 2013-01-07 00:18:52Z jpgr87 $
  **************************************************************************/
 #include <config.h>
 
@@ -127,7 +127,7 @@ void playerc_camera_putmsg(playerc_camera_t *device, player_msghdr_t *header,
       if (device->image)
         memcpy(device->image, data->image, device->image_count);
       else
-        PLAYERC_ERR1("failed to allocate memory for image, needed %u bytes\n", sizeof(device->image[0])*device->image_count);
+        PLAYERC_ERR1("failed to allocate memory for image, needed %lu bytes\n", sizeof(device->image[0])*device->image_count);
     } else
     {
       if (device->image) free(device->image);
@@ -163,7 +163,7 @@ void playerc_camera_decompress(playerc_camera_t *device)
     if (device->image)
       memcpy(device->image, dst, dst_size);
     else
-      PLAYERC_ERR1("failed to allocate memory for image, needed %u bytes\n", (sizeof device->image[0]) * device->image_count);
+      PLAYERC_ERR1("failed to allocate memory for image, needed %lu bytes\n", (sizeof device->image[0]) * device->image_count);
     free(dst);
 
     // Pixels are now raw
@@ -290,7 +290,7 @@ playerc_camera_get_image(playerc_camera_t *device)
     if (device->image)
       memcpy(device->image, data->image, device->image_count);
     else
-      PLAYERC_ERR1("failed to allocate memory for image, needed %u bytes\n", (sizeof device->image[0]) * device->image_count);
+      PLAYERC_ERR1("failed to allocate memory for image, needed %lu bytes\n", (sizeof device->image[0]) * device->image_count);
   } else
   {
     if (device->image) free(device->image);

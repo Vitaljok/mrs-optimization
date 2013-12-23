@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /********************************************************************
@@ -33,12 +33,12 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  ********************************************************************/
 
 /*
-  $Id: playerclient.h 8307 2009-10-18 15:01:34Z thjc $
+  $Id: playerclient.h 9120 2013-01-07 00:18:52Z jpgr87 $
 */
 
 #ifndef PLAYERCLIENT_H
@@ -71,6 +71,11 @@
   #include <boost/thread/thread.hpp>
   #include <boost/thread/xtime.hpp>
   #include <boost/bind.hpp>
+  #include <boost/version.hpp>
+  #if BOOST_VERSION < 105000
+    #define TIME_UTC_ TIME_UTC
+  #endif
+
 #else
   // we have to define this so we don't have to
   // comment out all the instances of scoped_lock
@@ -166,10 +171,13 @@ class PLAYERCC_EXPORT PlayerClient
     /// destructor
     ~PlayerClient();
 
-    /// Are we currently connected?
+    /// @brief Query connection to Player server
+    ///
+    /// Check if the PlayerClient is currently connected to the server.
+    /// @return true if connected, false if not.
     bool Connected() { return (NULL!=mClient && mClient->connected == 1) ? true : false; } 
 
-    /// A mutex for handling synchronization
+    /// @brief A mutex for handling synchronization
     mutex_t mMutex;
 
     // ideally, we'd use the read_write mutex, but I was having some problems
@@ -268,7 +276,7 @@ class PLAYERCC_EXPORT PlayerClient
     ///          This can be used to set the replace rule for all members of a
     ///          certain interface type.  See @ref interfaces.
     ///
-    /// @exception throws PlayerError if unsuccessfull
+    /// @exception throws PlayerError if unsuccessful
     ///
     /// @see ClientProxy::SetReplaceRule, PlayerClient::SetDataMode
     void SetReplaceRule(bool aReplace,

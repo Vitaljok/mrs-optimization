@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /***************************************************************************
  * Desc: PTZ device interface
  * Author: Andrew Howard
  * Date: 26 May 2002
- * CVS: $Id: pv_dev_ptz.c 4325 2008-01-09 11:45:37Z thjc $
+ * CVS: $Id: pv_dev_ptz.c 9126 2013-10-06 17:19:18Z jpgr87 $
  ***************************************************************************/
 
 #include <assert.h>

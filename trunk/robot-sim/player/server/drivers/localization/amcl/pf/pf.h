@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -25,7 +25,7 @@
  * Desc: Simple particle filter for localization.
  * Author: Andrew Howard
  * Date: 10 Dec 2002
- * CVS: $Id: pf.h 8108 2009-07-23 23:03:37Z thjc $
+ * CVS: $Id: pf.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *************************************************************************/
 
 #ifndef PF_H

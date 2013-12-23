@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -123,7 +123,7 @@ void ColorImageCallback(freenect_device *dev, void *rgb, uint32_t timestamp);
 // Storage for image data and metadata
 static uint16_t* DepthImage;
 static uint8_t* ColorImage;
-static pthread_mutex_t kinect_mutex;
+pthread_mutex_t kinect_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int newcdata, newddata;
 static freenect_frame_mode colorImageMode;
 static freenect_frame_mode depthImageMode;
@@ -304,7 +304,7 @@ KinectDriver::KinectDriver(ConfigFile* cf, int section)
 int KinectDriver::MainSetup()
 {
 	PLAYER_MSG0(1,"Kinect driver initializing...");
-	kinect_mutex = PTHREAD_MUTEX_INITIALIZER;
+	memset(&kinect_mutex, 0, sizeof(pthread_mutex_t));
 
 	if (freenect_init(&fctx, NULL) < 0)
 	{

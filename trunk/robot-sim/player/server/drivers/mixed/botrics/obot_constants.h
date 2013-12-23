@@ -16,12 +16,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /*
- * $Id: obot_constants.h 3308 2005-12-09 01:25:10Z gerkey $
+ * $Id: obot_constants.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * Relevant constants for the so-called "Trogdor" robots, by Botrics.
  * These values are taken from the 'cerebellum' module of CARMEN; thanks to

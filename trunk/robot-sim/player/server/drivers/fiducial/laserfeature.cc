@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@
 // Desc: Driver for extracting line/corner features from a laser scan.
 // Author: Andrew Howard
 // Date: 29 Aug 2002
-// CVS: $Id: laserfeature.cc 9087 2012-01-01 03:47:04Z jpgr87 $
+// CVS: $Id: laserfeature.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 // Theory of operation - Uses an EKF to segment the scan into line
 // segments, then does a best-fit for each segment.  The EKF is based
@@ -122,7 +122,7 @@ driver
 #include <math.h>
 #include <stdlib.h>       // for atoi(3)
 // needed for usleep, no unistd.h on windows.
-#if WIN32
+#if WIN32 && !__MINGW32__
 #include <replace/replace.h>
 #else
 #include <unistd.h>

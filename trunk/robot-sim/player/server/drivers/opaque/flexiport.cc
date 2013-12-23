@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -89,6 +89,7 @@ driver
 #include <flexiport/flexiport.h>
 #include <flexiport/port.h>
 #include <string>
+#include <unistd.h> // for usleep
 
 const int DEFAULT_OPAQUE_BUFFER_SIZE    = 4096;
 
@@ -158,7 +159,7 @@ int Flexiport::CreatePort (void)
 		_port = flexiport::CreatePort (_portOptions.GetValue ());
 		_port->Open ();
 	}
-	catch (flexiport::PortException e)
+	catch (flexiport::PortException & e)
 	{
 		PLAYER_ERROR1 ("flexiport: Failed to create port instance: %s", e.what ());
 		return 1;
@@ -249,7 +250,7 @@ int Flexiport::ProcessMessage (QueuePointer &respQueue, player_msghdr *hdr, void
 								recv->data_count);
 			}
 		}
-		catch (flexiport::PortException e)
+		catch (flexiport::PortException & e)
 		{
 			PLAYER_ERROR1 ("flexiport: Error writing to port: %s", e.what ());
 		}

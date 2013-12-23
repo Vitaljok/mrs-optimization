@@ -15,11 +15,11 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /*
- * $Id: ptu46.cc 8455 2009-12-13 11:51:05Z thjc $
+ * $Id: ptu46.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * methods for initializing, commanding, and getting data out of
  * the directed perceptions ptu-46 pan tilt unit camera

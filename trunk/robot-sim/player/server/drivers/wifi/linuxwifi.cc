@@ -16,14 +16,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /* Copyright (C) 2002
  *   John Sweeney, UMASS, Amherst, Laboratory for Perceptual Robotics
  *
- * $Id: linuxwifi.cc 8062 2009-07-21 03:47:16Z gbiggs $
+ * $Id: linuxwifi.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  */
 

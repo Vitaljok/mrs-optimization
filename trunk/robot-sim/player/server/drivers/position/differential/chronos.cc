@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <cerrno>
@@ -25,7 +25,10 @@
 #include <stdexcept>
 // needed for gettimeofday, no sys/time.h on windows
 #if WIN32
-#include "Winsock2.h"        // for struct timeval definition
+#include "winsock2.h"        // for struct timeval definition
+#endif
+
+#if defined WIN32 && !defined __MINGW32__
 #include "replace/replace.h" // for gettimeofday definition
 #else
 #include <sys/time.h>

@@ -16,14 +16,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
 /* Desc: Driver for getting signal strengths from access points.
  * Author: Andrew Howard ahoward@usc.edu
  * Date: 26 Nov 2002
- * $Id: iwspy.cc 8062 2009-07-21 03:47:16Z gbiggs $
+ * $Id: iwspy.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * This driver works like iwspy; it uses the linux wireless extensions
  * to get signal strengths to wireless NICS.

@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /********************************************************************
@@ -32,7 +32,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  ********************************************************************/
 
@@ -41,7 +41,7 @@
 #include <string.h>
 #include <stdlib.h>
 #if defined (WIN32)
-  #if defined (HAVE_SETDLLDIRECTORY)
+  #if defined (HAVE_SETDLLDIRECTORY) && !defined (__MINGW32__)
     #define _WIN32_WINNT 0x0502
   #endif
   #include <windows.h>
@@ -123,14 +123,23 @@ LoadPlugin(const char* pluginname, const char* cfgfile)
       free(tmp);
     }
 
-    // add $PLAYER_INSTALL_PREFIX/lib
+    // Add the global plugin install directory
+    char plugindir[ PATH_MAX ];
+    strncpy( plugindir, PLAYER_INSTALL_PREFIX, PATH_MAX);
+    strncat( plugindir, "/", PATH_MAX);
+    strncat( plugindir, PLAYER_PLUGIN_INSTALL_DIR, PATH_MAX);
+    strncat( plugindir, "/", PATH_MAX);
+    if( lt_dladdsearchdir( plugindir ) )
+      PLAYER_ERROR1( "failed to add system plugin directory %s to the plugin path", plugindir );
+
+    // add $PLAYER_INSTALL_PREFIX/lib<qual>
     char installdir[ PATH_MAX ];
     strncpy( installdir, PLAYER_INSTALL_PREFIX, PATH_MAX);
     strncat( installdir, "/", PATH_MAX);
     strncat( installdir, PLAYER_LIBRARY_INSTALL_DIR, PATH_MAX);
     strncat( installdir, "/", PATH_MAX);
     if( lt_dladdsearchdir( installdir ) )
-      PLAYER_ERROR1( "failed to add working directory %s to the plugin path", installdir );
+      PLAYER_ERROR1( "failed to add library installation directory %s to the plugin path", installdir );
   }
 
   PLAYER_MSG1(3, "loading plugin %s", pluginname);
@@ -164,7 +173,7 @@ LoadPlugin(const char* pluginname, const char* cfgfile)
   }
   else
   {
-#if defined (HAVE_SETDLLDIRECTORY)
+#if defined (HAVE_SETDLLDIRECTORY) && !defined (__MINGW32__)
     // Add the various search paths to the list
     // Start with $PLAYERPATH, if set
     char playerpath[PATH_MAX];
@@ -232,7 +241,7 @@ LoadPlugin(const char* pluginname, const char* cfgfile)
       LPVOID buffer = NULL;
       FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
                      GetLastError(), 0, reinterpret_cast<LPTSTR> (&buffer), 0, NULL );
-      PLAYER_ERROR2( "Failed to load plugin: %s\n", reinterpret_cast<LPTSTR> (buffer) );
+      PLAYER_ERROR1( "Failed to load plugin: %s\n", reinterpret_cast<LPTSTR> (buffer) );
       LocalFree( buffer );
       return NULL;
     }

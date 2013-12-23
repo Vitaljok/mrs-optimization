@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 // Desc: Adaptive Monte-Carlo localization
 // Author: Andrew Howard
 // Date: 6 Feb 2003
-// CVS: $Id: amcl.cc 9087 2012-01-01 03:47:04Z jpgr87 $
+// CVS: $Id: amcl.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 // Theory of operation:
 //  TODO
@@ -286,7 +286,7 @@ changed to match your particular configuration.
 #include <math.h>
 #include <stdlib.h>       // for atoi(3)
 #include <sys/types.h>
-#if !defined (WIN32)
+#if !defined (WIN32) || defined (__MINGW32__)
   #include <unistd.h>
   #include <sys/time.h>
 #endif
@@ -295,7 +295,9 @@ changed to match your particular configuration.
 #define PLAYER_ENABLE_MSG 1
 
 #include <libplayercore/playercore.h>
-
+#if !HAVE_NANOSLEEP
+  #include <replace/replace.h>
+#endif
 #include "amcl.h"
 // Sensors
 #include "amcl_odom.h"

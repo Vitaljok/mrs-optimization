@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -25,7 +25,7 @@
  * Also demonstrates use of a driver as a loadable object.
  * Author: Andrew Howard
  * Date: 25 July 2004
- * CVS: $Id: multidriver.cc 8000 2009-07-12 10:53:35Z gbiggs $
+ * CVS: $Id: multidriver.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  */
 
 
@@ -35,8 +35,10 @@
 #include <config.h>
 */
 
-#if !defined (WIN32)
+#if !defined (WIN32) || defined (__MINGW32__)
   #include <unistd.h>
+#endif
+#if !defined (WIN32)
   #include <netinet/in.h>
 #endif
 #include <string.h>

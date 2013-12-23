@@ -15,14 +15,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /**************************************************************************
  * Desc: Sensor models for wifi.
  * Author: Andrew Howard
  * Date: 30 May 2003
- * CVS: $Id: wifi.h 1512 2003-06-02 15:33:45Z inspectorg $
+ * CVS: $Id: wifi.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *************************************************************************/
 
 #ifndef WIFI_H

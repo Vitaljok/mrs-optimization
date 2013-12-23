@@ -14,14 +14,14 @@
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
 */
 
 /*
   Desc: Laser-odometry (incremental SLAM) package
   Author: Andrew Howard
   Date: 19 Nov 2004
-  CVS: $Id: lodo.cpp 8974 2010-11-22 18:20:31Z jpgr87 $
+  CVS: $Id: lodo.cpp 9120 2013-01-07 00:18:52Z jpgr87 $
 */
 
 #include "pmapconfig.h"

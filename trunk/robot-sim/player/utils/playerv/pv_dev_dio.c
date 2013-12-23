@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /***************************************************************************
  * Desc: Digital I/O
  * Author: Brad Kratochvil
  * Date: 30.4.2006
- * CVS: $Id: pv_dev_dio.c 7807 2009-06-07 07:44:40Z thjc $
+ * CVS: $Id: pv_dev_dio.c 9126 2013-10-06 17:19:18Z jpgr87 $
  ***************************************************************************/
 
 #include <assert.h>

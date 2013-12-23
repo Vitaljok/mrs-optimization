@@ -15,13 +15,13 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /*
  Desc: Driver for the SICK RFI341 (Radio Frequency Interrogator) unit
  Author: Nico Blodow and Radu Bogdan Rusu
  Date: 9 Mar 2007
- CVS: $Id: sickrfi341.cc 8003 2009-07-13 10:34:37Z thjc $
+ CVS: $Id: sickrfi341.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 */
 /** @ingroup drivers */
 /** @{ */

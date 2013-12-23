@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /**************************************************************************
  * Desc: PlayerCam
  * Author: Brad Kratochvil
  * Date: 20050902
- * CVS: $Id: playercam.c 8968 2010-11-15 03:06:34Z jpgr87 $
+ * CVS: $Id: playercam.c 9120 2013-01-07 00:18:52Z jpgr87 $
  *************************************************************************/
 
 /** @ingroup utils */

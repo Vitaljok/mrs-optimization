@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@
 // Desc: Driver for detecting laser barcodes.
 // Author: Andrew Howard
 // Date: 29 Jan 2001
-// CVS: $Id: laserbarcode.cc 9087 2012-01-01 03:47:04Z jpgr87 $
+// CVS: $Id: laserbarcode.cc 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 // Theory of operation:
 //  Will detect binary coded beacons (i.e. bar-codes) in laser data.

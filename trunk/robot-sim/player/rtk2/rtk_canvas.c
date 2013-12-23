@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 
@@ -22,7 +22,7 @@
  * Desc: Rtk canvas functions
  * Author: Andrew Howard
  * Contributors: Richard Vaughan
- * CVS: $Id: rtk_canvas.c 8001 2009-07-13 08:11:58Z gbiggs $
+ * CVS: $Id: rtk_canvas.c 9120 2013-01-07 00:18:52Z jpgr87 $
  */
 
 #include <config.h>

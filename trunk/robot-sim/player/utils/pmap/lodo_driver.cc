@@ -16,14 +16,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /*
  * Desc: Player driver for laser-stabilized odometry
  * Author: Andrew Howard
  * Date: 24 Nov 2004
- * CVS: $Id: lodo_driver.cc 8743 2010-06-02 06:57:33Z gbiggs $
+ * CVS: $Id: lodo_driver.cc 9120 2013-01-07 00:18:52Z jpgr87 $
  */
 
 /** @defgroup lodo_driver Laser-stabilized odometry (lodo_driver)

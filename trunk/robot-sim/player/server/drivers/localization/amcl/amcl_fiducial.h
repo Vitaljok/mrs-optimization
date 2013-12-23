@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 // Desc: FIDUCIAL sensor model for AMCL
 // Author: David Feil-Seifer
 // Date: 17 Aug 2003
-// CVS: $Id: amcl_fiducial.h 2951 2005-08-19 00:48:20Z gerkey $
+// CVS: $Id: amcl_fiducial.h 9120 2013-01-07 00:18:52Z jpgr87 $
 //
 ///////////////////////////////////////////////////////////////////////////
 

@@ -14,13 +14,13 @@
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
 */
 /*
   Desc: Occupancy grid map
   Author: Andrew Howard
   Date: 19 Nov 2004
-  CVS: $Id: omap.cpp 7165 2008-11-21 17:03:54Z gerkey $
+  CVS: $Id: omap.cpp 9120 2013-01-07 00:18:52Z jpgr87 $
  */
 
 

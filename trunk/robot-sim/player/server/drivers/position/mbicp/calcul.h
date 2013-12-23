@@ -1,6 +1,6 @@
 /***************************************************/
 /* Last Revised: 
-$Id: calcul.h 8411 2009-11-15 15:17:19Z thjc $
+$Id: calcul.h 9120 2013-01-07 00:18:52Z jpgr87 $
 */
 /***************************************************/
 /*
@@ -16,7 +16,7 @@ $Id: calcul.h 8411 2009-11-15 15:17:19Z thjc $
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 #ifndef Calcul

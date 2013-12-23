@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /*
@@ -34,13 +34,13 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /***************************************************************************
  * Desc: bumper proxy
  * Author: Toby Collett (based on sonar proxy by Andrew Howard)
  * Date: 13 Feb 2004
- * CVS: $Id: dev_bumper.c 7305 2009-01-27 01:18:55Z gbiggs $
+ * CVS: $Id: dev_bumper.c 9120 2013-01-07 00:18:52Z jpgr87 $
  **************************************************************************/
 
 #include <assert.h>

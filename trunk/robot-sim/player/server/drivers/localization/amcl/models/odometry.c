@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  *
  */
 /**************************************************************************
  * Desc: Sensor/action model odometry.
  * Author: Andrew Howard
  * Date: 15 Dec 2002
- * CVS: $Id: odometry.c 1713 2003-08-23 04:03:43Z inspectorg $
+ * CVS: $Id: odometry.c 9120 2013-01-07 00:18:52Z jpgr87 $
  *************************************************************************/
 
 #include <assert.h>

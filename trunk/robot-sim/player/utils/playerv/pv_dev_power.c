@@ -14,14 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  *
  */
 /***************************************************************************
  * Desc:
  * Author:
  * Date:
- * CVS: $Id: pv_dev_power.c 7608 2009-05-01 07:10:59Z gbiggs $
+ * CVS: $Id: pv_dev_power.c 9126 2013-10-06 17:19:18Z jpgr87 $
  ***************************************************************************/
 
 #include <assert.h>

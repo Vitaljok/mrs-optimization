@@ -1,4 +1,4 @@
-/*  $Id: replace.h 8000 2009-07-12 10:53:35Z gbiggs $
+/*  $Id: replace.h 9120 2013-01-07 00:18:52Z jpgr87 $
  *
  * replacement function prototypes
  */
@@ -25,8 +25,8 @@
 
    You should have received a copy of the GNU Library General Public
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 #ifdef __cplusplus
 extern "C" {
@@ -117,13 +117,7 @@ PLAYERREPLACE_EXPORT double rint (double x);
 PLAYERREPLACE_EXPORT unsigned long compressBound (unsigned long sourceLen);
 #endif // HAVE_COMPRESSBOUND
 
-#if !HAVE_CLOCK_GETTIME
-  #include <time.h>
-  #define CLOCK_REALTIME 0
-PLAYERREPLACE_EXPORT int clock_gettime(int clk_id, struct timespec *tp);
-#endif // !HAVE_CLOCK_GETTIME
-
-#if !HAVE_STRUCT_TIMESPEC
+#ifndef HAVE_STRUCT_TIMESPEC
   struct timespec
   {
     long tv_sec;
@@ -132,6 +126,12 @@ PLAYERREPLACE_EXPORT int clock_gettime(int clk_id, struct timespec *tp);
   // Must define it here to stop Win32 pthreads from complaining, since that defines it as well
   #define HAVE_STRUCT_TIMESPEC 1
 #endif
+
+#if !HAVE_CLOCK_GETTIME
+  #include <time.h>
+  #define CLOCK_REALTIME 0
+PLAYERREPLACE_EXPORT int clock_gettime(int clk_id, struct timespec *tp);
+#endif // !HAVE_CLOCK_GETTIME
 
 #if !HAVE_USLEEP
 PLAYERREPLACE_EXPORT int usleep (int usec);

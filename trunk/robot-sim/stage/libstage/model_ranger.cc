@@ -81,7 +81,7 @@ Option ModelRanger::Vis::showTransducers( "Ranger transducers", "show_ranger_tra
 Option ModelRanger::Vis::showArea( "Ranger area", "show_ranger_ranges", "", true, NULL );
 Option ModelRanger::Vis::showStrikes( "Ranger strikes", "show_ranger_strikes", "", false, NULL );
 Option ModelRanger::Vis::showFov( "Ranger FOV", "show_ranger_fov", "", false, NULL );
-Option ModelRanger::Vis::showBeams( "Ranger beams", "show_ranger_beams", "", false, NULL );
+//Option ModelRanger::Vis::showBeams( "Ranger beams", "show_ranger_beams", "", false, NULL );
 
 
 ModelRanger::ModelRanger( World* world, 
@@ -128,35 +128,25 @@ void ModelRanger::Shutdown( void )
   Model::Shutdown();
 }
 
+
 void ModelRanger::LoadSensor( Worldfile* wf, int entity )
 {
-  //static int c=0;
-  // printf( "ranger %s loading sensor %d\n", token.c_str(), c++ );
   Sensor s;
   s.Load( wf, entity );
-  sensors.push_back(s);
+  sensors.push_back(s); 
 }
 
 
 void ModelRanger::Sensor::Load( Worldfile* wf, int entity )
 {
-  //static int c=0;
-  // printf( "ranger %s loading sensor %d\n", token.c_str(), c++ );
-	
   pose.Load( wf, entity, "pose" );
   size.Load( wf, entity, "size" );
   range.Load( wf, entity, "range" );
-  col.Load( wf, entity );		
   fov = wf->ReadAngle( entity, "fov", fov );
   sample_count = wf->ReadInt( entity, "samples", sample_count );	
-  //ranges.resize(sample_count);
-  //intensities.resize(sample_count);
+  color.Load( wf, entity );
 }
 
-void ModelRanger::Load( void )
-{
-  Model::Load();
-}
 
 static bool ranger_match( Model* hit, 
 			  Model* finder,
@@ -184,17 +174,19 @@ void ModelRanger::Update( void )
 
 void ModelRanger::Sensor::Update( ModelRanger* mod )
 {
+  // these sizes change very rarely, so this is very cheap
   ranges.resize( sample_count );
   intensities.resize( sample_count );
   bearings.resize( sample_count );
 
   //printf( "update sensor, has ranges size %u\n", (unsigned int)ranges.size() );
   // make the first and last rays exactly at the extremes of the FOV
-  double sample_incr( fov / std::max(sample_count-1, (unsigned int)1) );
+  const double sample_incr( fov / std::max(sample_count-1, (unsigned int)1) );
   
   // find the global origin of our first emmitted ray
-  double start_angle = (sample_count > 1 ? -fov/2.0 : 0.0);
+  const double start_angle = (sample_count > 1 ? -fov/2.0 : 0.0);
 
+  // find the origin and heading of the first ray
   Pose rayorg(pose);
   rayorg.a += start_angle;
   rayorg.z += size.z/2.0;
@@ -202,35 +194,25 @@ void ModelRanger::Sensor::Update( ModelRanger* mod )
   
   // set up a ray to trace
   Ray ray( mod, rayorg, range.max, ranger_match, NULL, true );
-  
-  World* world = mod->GetWorld();
 
   // trace the ray, incrementing its heading for each sample
   for( size_t t(0); t<sample_count; t++ )
     {
-      const RaytraceResult& r ( world->Raytrace( ray ) );
-      ranges[t] = r.range;
-      intensities[t] = r.mod ? r.mod->vis.ranger_return : 0.0;
+      const RaytraceResult res = mod->world->Raytrace( ray); 
+      ranges[t] = res.range;
+      intensities[t] = res.mod ? res.mod->vis.ranger_return : 0.0;
       bearings[t] = start_angle + ((double)t) * sample_incr;
 		
-      // point the ray to the next angle
+      // point the ray to the next angle:
       ray.origin.a += sample_incr;			
-
-      //printf( "ranger %s sensor %p pose %s sample %d range %.2f ref %.2f\n",
-      //			mod->Token(), 
-      //			this, 
-      //			pose.String().c_str(),
-      //			t, 
-      //			ranges[t].range, 
-      //			ranges[t].reflectance );
     }
 }
 
 std::string ModelRanger::Sensor::String() const
 {
   char buf[256];
-  snprintf( buf, 256, "[ samples %u, range [%.2f %.2f] ]", 
-	    sample_count, range.min, range.max );
+  snprintf( buf, 256, "[ samples %u, range [%.2f %.2f] fov %.2f color [%.2f %.2f %.2f %.2f]", 
+	    sample_count, range.min, range.max, fov, color.r, color.g, color.b, color.a );
   return( std::string( buf ) );
 }
 
@@ -246,7 +228,7 @@ void ModelRanger::Sensor::Visualize( ModelRanger::Vis* vis, ModelRanger* rgr ) c
 	
   pts[0] = 0.0;
   pts[1] = 0.0;
-	
+  
   glDepthMask( GL_FALSE );
   glPointSize( 2 );
 	
@@ -256,31 +238,52 @@ void ModelRanger::Sensor::Visualize( ModelRanger::Vis* vis, ModelRanger* rgr ) c
 
   if( vis->showTransducers )
     {
-      // draw the sensor body as a rectangle
-      rgr->PushColor( col );
+      // draw the sensor body as a rectangle in a darker version of the body color
+      // Color col( rgr->color );
+      // col.r /= 3.0;
+      // col.g /= 3.0;
+      // col.b /= 3.0;
+      rgr->PushColor( color );
+
       glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );			
       glRectf( -size.x/2.0, -size.y/2.0, size.x/2.0, size.y/2.0 );
       rgr->PopColor();
     }
 
-  Color c( col );
-  c.a = 0.15; // transparent version of sensor color
-  rgr->PushColor( c );
-  glPolygonMode( GL_FRONT, GL_FILL );			
-	
+  if( vis->showFov )
+    {
+      for( size_t s(0); s<sample_count; s++ )
+	{
+	  double ray_angle((s * (fov / (sample_count-1))) - fov/2.0);
+	  pts[2*s+2] = (float)(range.max * cos(ray_angle) );
+	  pts[2*s+3] = (float)(range.max * sin(ray_angle) );			 
+	}
+			
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+      Color c = color;
+      c.a = 0.5;
+      rgr->PushColor( c );		
+      glDrawArrays( GL_POLYGON, 0, sample_count+1 );
+      rgr->PopColor();
+    }			 	
+
   if( ranges.size()  ) // if we have some data
     {
+      rgr->PushColor( color );
+      glPolygonMode( GL_FRONT, GL_FILL );			
+      
       if( sample_count == 1 )
 	{
 	  // only one sample, so we fake up some beam width for beauty
 	  const double sidelen = ranges[0];
 	  const double da = fov/2.0;
-					
+	  
 	  sample_count = 3;
-					
+	  
 	  pts[2] = sidelen*cos(-da );
 	  pts[3] = sidelen*sin(-da );
-					
+	  
 	  pts[4] = sidelen*cos(+da );
 	  pts[5] = sidelen*sin(+da );
 	}	
@@ -293,78 +296,64 @@ void ModelRanger::Sensor::Visualize( ModelRanger::Vis* vis, ModelRanger* rgr ) c
 	      pts[2*s+3] = (float)(ranges[s] * sin(ray_angle) );
 	    }
 	}
-    }
-			
-  if( vis->showArea )
-    {
-      if( sample_count > 1 )
-	// draw the filled polygon in transparent blue
-	glDrawArrays( GL_POLYGON, 0, sample_count );
-    }
-	
-  glDepthMask( GL_TRUE );
-	
-  if( vis->showStrikes )
-    {
-      // TODO - paint the stike point in a color based on intensity
-      // 			// if the sample is unusually bright, draw a little blob
-      // 			if( intensities[s] > 0.0 )
-      // 				{
-      // 					// this happens rarely so we can do it in immediate mode
-      // 					glBegin( GL_POINTS );
-      // 					glVertex2f( pts[2*s+2], pts[2*s+3] );
-      // 					glEnd();
-      // 				}			 
-			
-      // draw the beam strike points
-      c.a = 0.8;
-      rgr->PushColor( c );
-      glDrawArrays( GL_POINTS, 0, sample_count+1 );
-      rgr->PopColor();
-    }
-	
-  if( vis->showFov )
-    {
-      for( size_t s(0); s<sample_count; s++ )
+      
+      if( vis->showArea )
 	{
-	  double ray_angle((s * (fov / (sample_count-1))) - fov/2.0);
-	  pts[2*s+2] = (float)(range.max * cos(ray_angle) );
-	  pts[2*s+3] = (float)(range.max * sin(ray_angle) );			 
+	  if( sample_count > 1 )
+	    // draw the filled polygon in transparent blue
+	    glDrawArrays( GL_POLYGON, 0, sample_count );
 	}
-			
-      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-      c.a = 0.5;
-      rgr->PushColor( c );		
-      glDrawArrays( GL_POLYGON, 0, sample_count+1 );
-      rgr->PopColor();
-    }			 
-	
-  if( vis->showBeams )
-    {
-      // darker version of the same color
-      c.r /= 2.0;
-      c.g /= 2.0;
-      c.b /= 2.0;
-      c.a = 1.0;
-
-      rgr->PushColor( c );		
-      glBegin( GL_LINES );
-			
-      for( size_t s(0); s<sample_count; s++ )
+      
+      glDepthMask( GL_TRUE );
+      
+      if( vis->showStrikes )
 	{
-					
-	  glVertex2f( 0,0 );
-	  double ray_angle( sample_count == 1 ? 0 : (s * (fov / (sample_count-1))) - fov/2.0 );
-	  glVertex2f( ranges[s] * cos(ray_angle), 
-		      ranges[s] * sin(ray_angle) );
-					
+	  // TODO - paint the stike point in a color based on intensity
+	  // 			// if the sample is unusually bright, draw a little blob
+	  // 			if( intensities[s] > 0.0 )
+	  // 				{
+	  // 					// this happens rarely so we can do it in immediate mode
+	  // 					glBegin( GL_POINTS );
+	  // 					glVertex2f( pts[2*s+2], pts[2*s+3] );
+	  // 					glEnd();
+	  // 				}			 
+	  
+	  // draw the beam strike points
+	  //c.a = 0.8;
+	  rgr->PushColor( Color::blue );
+	  glDrawArrays( GL_POINTS, 0, sample_count+1 );
+	  rgr->PopColor();
 	}
-      glEnd();
-      rgr->PopColor();
-    }	
+      
+      // if( vis->showBeams )
+      // 	{
+      // 	  Color c = color;
+	  
+      // 	  // darker version of the same color
+      // 	  c.r /= 2.0;
+      // 	  c.g /= 2.0;
+      // 	  c.b /= 2.0;
+      // 	  c.a = 1.0;
+	  
+      // 	  rgr->PushColor( c );		
+      // 	  glBegin( GL_LINES );
+	  
+      // 	  for( size_t s(0); s<sample_count; s++ )
+      // 	    {    
+      // 	      glVertex2f( 0,0 );
+      // 	      double ray_angle( sample_count == 1 ? 0 : (s * (fov / (sample_count-1))) - fov/2.0 );
+      // 	      glVertex2f( ranges[s] * cos(ray_angle), 
+      // 			  ranges[s] * sin(ray_angle) );
+	      
+      // 	    }
+      // 	  glEnd();
 	
-  rgr->PopColor();
+      // 	  rgr->PopColor();
+      // 	}	
 
+      rgr->PopColor();
+    }
+  
   glPopMatrix();
 }
 	
@@ -404,7 +393,7 @@ ModelRanger::Vis::Vis( World* world )
   world->RegisterOption( &showArea );
   world->RegisterOption( &showStrikes );
   world->RegisterOption( &showFov );
-  world->RegisterOption( &showBeams );		  
+  //world->RegisterOption( &showBeams );		  
   world->RegisterOption( &showTransducers );
 }
 

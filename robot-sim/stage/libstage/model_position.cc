@@ -133,12 +133,11 @@ ModelPosition::ModelPosition( World* world,
       acceleration_bounds[i].max =  1.0;
     }
 
-      velocity_bounds[3].min = -M_PI/2.0;
-      velocity_bounds[3].max =  M_PI/2.0;
+  velocity_bounds[3].min = -M_PI/2.0;
+  velocity_bounds[3].max =  M_PI/2.0;
 
-      acceleration_bounds[3].min = -M_PI/2.0;
-      acceleration_bounds[3].max =  M_PI/2.0;
-
+  acceleration_bounds[3].min = -M_PI/2.0;
+  acceleration_bounds[3].max =  M_PI/2.0;
 
   this->SetBlobReturn( true );
   
@@ -158,6 +157,38 @@ void ModelPosition::SetVelocity( const Velocity& val )
   CallCallbacks( CB_VELOCITY );
 }
 
+// get the model's velocity in the global frame
+Velocity ModelPosition::GetGlobalVelocity() const
+{
+  Pose gpose = GetGlobalPose();
+
+  double cosa = cos( gpose.a );
+  double sina = sin( gpose.a );
+
+  Velocity gv;
+  gv.x = velocity.x * cosa - velocity.y * sina;
+  gv.y = velocity.x * sina + velocity.y * cosa;
+  gv.a = velocity.a;
+
+  return gv;
+} 
+
+// set the model's velocity in the global frame
+void ModelPosition::SetGlobalVelocity( const Velocity& gv
+                             )
+{
+  Pose gpose = GetGlobalPose();
+
+  double cosa = cos( gpose.a );
+  double sina = sin( gpose.a );
+
+  Velocity lv;
+  lv.x = gv.x * cosa + gv.y * sina;
+  lv.y = -gv.x * sina + gv.y * cosa;
+  lv.a = gv.a;
+
+  this->SetVelocity( lv );
+}
 
 void ModelPosition::Load( void )
 {
@@ -489,31 +520,37 @@ void ModelPosition::Update( void  )
     {
     case LOCALIZATION_GPS:
       {
-	// compute our localization pose based on the origin and true pose
-	Pose gpose = this->GetGlobalPose();
+	est_pose = this->GetGlobalPose();
+
+	/*
+	// report our compute our localization pose based on the
+	// origin and true pose Issue #36 reports that this gives
+	// inaccurate poses. I can't see what's wrong so I'm disabling
+	// the local origin transform 
+	const Pose gpose = this->GetGlobalPose();
 
 	est_pose.a = normalize( gpose.a - est_origin.a );
-	double cosa = cos(est_origin.a);
-	double sina = sin(est_origin.a);
-	double dx = gpose.x - est_origin.x;
-	double dy = gpose.y - est_origin.y;
+	const double cosa = cos(est_origin.a);
+	const double sina = sin(est_origin.a);
+	const double dx = gpose.x - est_origin.x;
+	const double dy = gpose.y - est_origin.y;
 	est_pose.x = dx * cosa + dy * sina;
 	est_pose.y = dy * cosa - dx * sina;
-
+	*/
       }
       break;
 
     case LOCALIZATION_ODOM:
       {
 	// integrate our velocities to get an 'odometry' position estimate.
-	double dt = world->sim_interval / 1e6; // update interval convert to seconds
+	const double dt = world->sim_interval / 1e6; // update interval convert to seconds
 		  
 	est_pose.a = normalize( est_pose.a + (vel.a * dt) * (1.0 +integration_error.a) );
 		  
-	double cosa = cos(est_pose.a);
-	double sina = sin(est_pose.a);
-	double dx = (vel.x * dt) * (1.0 + integration_error.x );
-	double dy = (vel.y * dt) * (1.0 + integration_error.y );
+	const double cosa = cos(est_pose.a);
+	const double sina = sin(est_pose.a);
+	const double dx = (vel.x * dt) * (1.0 + integration_error.x );
+	const double dy = (vel.y * dt) * (1.0 + integration_error.y );
 		  
 	est_pose.x += dx * cosa + dy * sina;
 	est_pose.y -= dy * cosa - dx * sina;
@@ -542,15 +579,15 @@ void ModelPosition::Move( void )
 
   // convert usec to sec
   const double interval( (double)world->sim_interval / 1e6 );
-
+  
   // find the change of pose due to our velocity vector
-  const Pose p( velocity.x * interval,
-		velocity.y * interval,
-		velocity.z * interval,
-		normalize( velocity.a * interval ));
+  const Pose dp( velocity.x * interval,
+		 velocity.y * interval,
+		 velocity.z * interval,
+		 normalize( velocity.a * interval ));
   
   // the pose we're trying to achieve (unless something stops us)
-  const Pose newpose( pose + p );
+  const Pose newpose( pose + dp );
   
   // stash the original pose so we can put things back if we hit
   const Pose startpose( pose );
@@ -558,7 +595,7 @@ void ModelPosition::Move( void )
   pose = newpose; // do the move provisionally - we might undo it below
   
   const unsigned int layer( world->UpdateCount()%2 );
-  
+    // @todo th
   UnMapWithChildren( layer ); // remove from all blocks
   MapWithChildren( layer ); // render into new blocks
   
@@ -574,7 +611,6 @@ void ModelPosition::Move( void )
     }
   else
     {
-      //      world->dirty = true; // need redraw	
       SetStall(false);
     }
 }

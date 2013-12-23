@@ -248,8 +248,7 @@ Model::Model( World* world,
   mapped(false),
   drawOptions(),
   alwayson(false),
-  blockgroup(),
-  blocks_dl(0),
+  blockgroup(*this),
   boundary(false),
   callbacks(__CB_TYPE_COUNT), // one slot in the vector for each type
   color( 1,0,0 ), // red
@@ -420,8 +419,7 @@ Model::Flag* Model::PopFlag()
 
 void Model::ClearBlocks()
 {
-  blockgroup.UnMap(0);
-  blockgroup.UnMap(1);  
+  UnMap();
   blockgroup.Clear();
   //no need to Map() -  we have no blocks
   NeedRedraw();
@@ -435,18 +433,18 @@ void Model::LoadBlock( Worldfile* wf, int entity )
       has_default_block = false;
     }
   
-  blockgroup.LoadBlock( this, wf, entity );  
+  blockgroup.LoadBlock( wf, entity );  
 }
 
 
-Block* Model::AddBlockRect( meters_t x, 
-			    meters_t y, 
-			    meters_t dx, 
-			    meters_t dy,
-			    meters_t dz )
+void Model::AddBlockRect( meters_t x, 
+			  meters_t y, 
+			  meters_t dx, 
+			  meters_t dy,
+			  meters_t dz )
 {  
   UnMap();
-
+  
   std::vector<point_t> pts(4);
   pts[0].x = x;
   pts[0].y = y;
@@ -457,69 +455,14 @@ Block* Model::AddBlockRect( meters_t x,
   pts[3].x = x;
   pts[3].y = y + dy;
   
-  Block* newblock =  new Block( this,
-				pts,
-				0, dz, 
-				color,
-				true, 
-				false );
-  
-  blockgroup.AppendBlock( newblock );
-  
-  Map();
-  
-  return newblock;
+  blockgroup.AppendBlock( Block( &blockgroup,
+				 pts,
+				 Bounds(0,dz) ));
+
+  Map(); 
 }
 
 
-RaytraceResult Model::Raytrace( const Pose &pose,
-				const meters_t range, 
-				const ray_test_func_t func,
-				const void* arg,
-				const bool ztest )
-{
-  return world->Raytrace( LocalToGlobal(pose),
-			  range,
-			  func,
-			  this,
-			  arg,
-			  ztest );
-}
-
-RaytraceResult Model::Raytrace( const radians_t bearing,
-				const meters_t range, 
-				const ray_test_func_t func,
-				const void* arg,
-				const bool ztest )
-{
-  return world->Raytrace( LocalToGlobal(Pose(0,0,0,bearing)),
-			  range,
-			  func,
-			  this,
-			  arg,
-			  ztest );
-}
-
-
-void Model::Raytrace( const radians_t bearing,
-		      const meters_t range, 
-		      const radians_t fov,
-		      const ray_test_func_t func,
-		      const void* arg,
-		      RaytraceResult* samples,
-		      const uint32_t sample_count,
-		      const bool ztest )
-{
-  world->Raytrace( LocalToGlobal(Pose( 0,0,0,bearing)),
-		   range,		   
-		   fov,
-		   func,
-		   this,
-		   arg,
-		   samples,
-		   sample_count,
-		   ztest );
-}
 
 // convert a global pose into the model's local coordinate system
 Pose Model::GlobalToLocal( const Pose& pose ) const
@@ -579,7 +522,7 @@ bool Model::IsRelated( const Model* that ) const
     {
       // shortcut out if we found it on the way up the tree
       if( candidate->parent == that )
-	return true;
+      	return true;
       
       candidate = candidate->parent;      
     }
@@ -599,16 +542,19 @@ point_t Model::LocalToGlobal( const point_t& pt) const
 
 std::vector<point_int_t> Model::LocalToPixels( const std::vector<point_t>& local ) const
 {
-  std::vector<point_int_t> global;
+  const size_t sz = local.size();
+  
+  std::vector<point_int_t> global( sz );
   
   const Pose gpose( GetGlobalPose() + geom.pose );
   Pose ptpose;
   
-  FOR_EACH( it, local )
+  for( size_t i=0; i<sz; i++ )
     {
-      ptpose = gpose + Pose( it->x, it->y, 0, 0 );
-      global.push_back( point_int_t( (int32_t)floor( ptpose.x * world->ppm) ,
-				     (int32_t)floor( ptpose.y * world->ppm) ));
+      ptpose = gpose + Pose( local[i].x, local[i].y, 0, 0 );
+      
+      global[i].x = (int32_t)floor( ptpose.x * world->ppm);
+      global[i].y = (int32_t)floor( ptpose.y * world->ppm);
     }
 
   return global;
@@ -616,7 +562,6 @@ std::vector<point_int_t> Model::LocalToPixels( const std::vector<point_t>& local
 
 void Model::MapWithChildren( unsigned int layer )
 {
-  UnMap(layer);
   Map(layer);
 
   // recursive call for all the model's children
@@ -664,18 +609,10 @@ void Model::Unsubscribe( void )
 
   //printf( "unsubscribe from %s %d\n", Token(), subs );
 
-  // if this is the last sub, call shutdown
+  // if this is the last remaining subscriber, shutdown
   if( subs == 0 )
-    this->Shutdown();
+    Shutdown();
 }
-
-
-// void pose_invert( Pose* pose )
-// {
-//   pose->x = -pose->x;
-//   pose->y = -pose->y;
-//   // pose->a = pose->a;
-// }
 
 void Model::Print( char* prefix ) const
 {
@@ -735,8 +672,6 @@ void Model::Shutdown( void )
 void Model::Update( void )
 { 
   //printf( "Q%d model %p %s update\n", event_queue_num, this, Token() );
-
-  //	CallCallbacks( CB_UPDATE );
 	
   last_update = world->sim_time;  
 	
@@ -770,18 +705,18 @@ meters_t Model::ModelHeight() const
 
 void Model::AddToPose( double dx, double dy, double dz, double da )
 {
-  Pose p( this->pose );
+  Pose p( pose );
   p.x += dx;
   p.y += dy;
   p.z += dz;
   p.a += da;
   
-  this->SetPose( p );
+  SetPose( p );
 }
 
 void Model::AddToPose( const Pose& pose )
 {
-  this->AddToPose( pose.x, pose.y, pose.z, pose.a );
+  AddToPose( pose.x, pose.y, pose.z, pose.a );
 }
 
 void Model::PlaceInFreeSpace( meters_t xmin, meters_t xmax, 
@@ -898,7 +833,7 @@ Model* Model::GetUnsubscribedModelOfType( const std::string& type ) const
 
 void Model::NeedRedraw( void )
 {
-  this->rebuild_displaylist = true;
+  rebuild_displaylist = true;
 
   if( parent )
     parent->NeedRedraw();
@@ -926,7 +861,7 @@ Model* Model::GetUnusedModelOfType( const std::string& type )
     {
       Model* found = (*it)->GetUnusedModelOfType( type );
       if( found )
-	return found;
+      	return found;
     }
   
   // nothing matching below this model
@@ -949,23 +884,15 @@ kg_t Model::GetMassOfChildren() const
   return( GetTotalMass() - mass);
 }
 
+// render all blocks in the group at my global pose and size
 void Model::Map( unsigned int layer )
 {
-  if( ! mapped )
-    {
-      // render all blocks in the group at my global pose and size
-      blockgroup.Map( layer );
-      mapped = true;
-    }
+  blockgroup.Map( layer );
 } 
 
 void Model::UnMap( unsigned int layer )
 {
-  if( mapped )
-    {
-      blockgroup.UnMap(layer);
-      mapped = false;
-    }
+  blockgroup.UnMap(layer);
 }
 
 void Model::BecomeParentOf( Model* child )
@@ -1249,6 +1176,8 @@ void Model::SetGeom( const Geom& val )
   
   blockgroup.CalcSize();
   
+  //printf( "model %s SetGeom size [%.3f %.3f %.3f]\n", Token(), geom.size.x, geom.size.y, geom.size.z ); 
+
   NeedRedraw();
   
   MapWithChildren(0);
@@ -1396,7 +1325,7 @@ Pose Model::GetGlobalPose() const
 void Model::SetPose( const Pose& newpose )
 {
   // if the pose has changed, we need to do some work
-  if( memcmp( &pose, &newpose, sizeof(Pose) ) != 0 )
+  if( pose != newpose )
     {
       pose = newpose;
       pose.a = normalize(pose.a);
@@ -1540,7 +1469,7 @@ void Model::Load()
 	  has_default_block = false;
 	}
 		
-      blockgroup.LoadBitmap( this, bitmapfile, wf );
+      blockgroup.LoadBitmap( bitmapfile, wf );
     }
   
   if( wf->PropertyExists( wf_entity, "boundary" ))
@@ -1553,13 +1482,17 @@ void Model::Load()
 			 
 	  blockgroup.CalcSize();
 			 
-	  double epsilon = 0.01;	      
-	  Size bgsize = blockgroup.GetSize();
-			 
-	  AddBlockRect(blockgroup.minx,blockgroup.miny, epsilon, bgsize.y, bgsize.z );	      
-	  AddBlockRect(blockgroup.minx,blockgroup.miny, bgsize.x, epsilon, bgsize.z );	      
-	  AddBlockRect(blockgroup.minx,blockgroup.maxy-epsilon, bgsize.x, epsilon, bgsize.z );	      
-	  AddBlockRect(blockgroup.maxx-epsilon,blockgroup.miny, epsilon, bgsize.y, bgsize.z );	      
+	  const double epsilon = 0.01;	      
+	  const bounds3d_t b = blockgroup.BoundingBox();
+	  
+	  const Size size( b.x.max - b.x.min, 
+			   b.y.max - b.y.min, 
+			   b.z.max - b.z.min );
+	  
+	  AddBlockRect(b.x.min, b.y.min, epsilon, size.y, size.z );	      
+	  AddBlockRect(b.x.min, b.y.min, size.x, epsilon, size.z );	      
+	  AddBlockRect(b.x.min, b.y.max-epsilon, size.x, epsilon, size.z );	      
+	  AddBlockRect(b.x.max-epsilon, b.y.min, epsilon, size.y, size.z );	      
 	}     
     }	  
   
@@ -1618,9 +1551,11 @@ void Model::Load()
   // we may well have changed blocks or geometry
   blockgroup.CalcSize();
   
+  // remove and re-add to both layers
   UnMapWithChildren(0);
-  UnMapWithChildren(1);
   MapWithChildren(0);
+
+  UnMapWithChildren(1);
   MapWithChildren(1);
   
   if( this->debug )
@@ -1687,8 +1622,13 @@ void Model::LoadControllerModule( const char* lib )
 
   lt_dlsetsearchpath( FileManager::stagePath().c_str() );
 
+  //printf( "STAGEPATH: %s\n",  FileManager::stagePath().c_str());
+  //  printf( "ltdl search path: %s\n", lt_dlgetsearchpath() );
+        
   // PLUGIN_PATH now defined in config.h
   lt_dladdsearchdir( PLUGIN_PATH );
+
+  //printf( "ltdl search path: %s\n", lt_dlgetsearchpath() );
 
   lt_dlhandle handle = NULL;
   
@@ -1703,7 +1643,7 @@ void Model::LoadControllerModule( const char* lib )
       model_callback_t initfunc = (model_callback_t)lt_dlsym( handle, "Init" );
       if( initfunc  == NULL )
 	{
-	  printf( "Libtool error: %s. Something is wrong with your plugin. Quitting\n",
+	  printf( "(Libtool error: %s.) Something is wrong with your plugin.\n",
 		  lt_dlerror() ); // report the error from libtool
 	  puts( "libtool error #1" );
 	  fflush( stdout );
@@ -1714,10 +1654,13 @@ void Model::LoadControllerModule( const char* lib )
     }
   else
     {
-      printf( "Libtool error: %s. Can't open your plugin controller. Quitting\n",
+      printf( "(Libtool error: %s.) Can't open your plugin.\n",
 	      lt_dlerror() ); // report the error from libtool
 		
-      PRINT_ERR1( "Failed to open \"%s\". Check that it can be found by searching the directories in your STAGEPATH environment variable, or the current directory if STAGEPATH is not set.]\n", lib );
+      PRINT_ERR1( "Failed to open \"%s\". Check that it can be found by searching the directories in your STAGEPATH environment variable, or the current directory if STAGEPATH is not set.]\n", libname );
+            
+        printf( "ctrl \"%s\" STAGEPATH \"%s\"\n", libname, PLUGIN_PATH ); 
+            
       puts( "libtool error #2" );
       fflush( stdout );
       exit(-1);

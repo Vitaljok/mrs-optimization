@@ -55,23 +55,22 @@ void InterfaceBlobfinder::Publish( void )
 
   ModelBlobfinder* blobmod = (ModelBlobfinder*)this->mod;
   
-  uint32_t bcount = 0;
-  const ModelBlobfinder::Blob* blobs = blobmod->GetBlobs( &bcount );
-  
-  if ( bcount > 0 )
+  const std::vector<Stg::ModelBlobfinder::Blob>& blobs = blobmod->GetBlobs();
+
+  if ( blobs.size() > 0 )
   {
 	  // and set the image width * height
 	  bfd.width = blobmod->scan_width;
 	  bfd.height = blobmod->scan_height;
-	  bfd.blobs_count = bcount;
+	  bfd.blobs_count = blobs.size();
 
-	  bfd.blobs = new player_blobfinder_blob_t[ bcount ];
+	  bfd.blobs = new player_blobfinder_blob_t[ blobs.size() ];
 
 	  // now run through the blobs, packing them into the player buffer
 	  // counting the number of blobs in each channel and making entries
 	  // in the acts header
 	  unsigned int b;
-	  for( b=0; b<bcount; b++ )
+	  for( b=0; b<blobs.size(); b++ )
 		{
 		  // useful debug - leave in
 		/*
@@ -83,25 +82,24 @@ void InterfaceBlobfinder::Publish( void )
 		<< " color: " << hex << blobs[b].color << dec
 		<< endl;
 		  */
-
-			int dx = blobs[b].right - blobs[b].left;
-			int dy = blobs[b].top - blobs[b].bottom;
-
+		  
+		  int dx = blobs[b].right - blobs[b].left;
+		  int dy = blobs[b].top - blobs[b].bottom;
+		  
 		  bfd.blobs[b].x      = blobs[b].left + dx/2;
 		  bfd.blobs[b].y      = blobs[b].bottom + dy/2;
-
+		  
 		  bfd.blobs[b].left   = blobs[b].left;
 		  bfd.blobs[b].right  = blobs[b].right;
 		  bfd.blobs[b].top    = blobs[b].top;
 		  bfd.blobs[b].bottom = blobs[b].bottom;
-
+		  
 		  bfd.blobs[b].color = 
-			 ((uint8_t)(blobs[b].color.r*255.0) << 16) +
-			 ((uint8_t)(blobs[b].color.g*255.0) << 8) +
-			 ((uint8_t)(blobs[b].color.b*255.0));
-			 
-		  bfd.blobs[b].area  = dx * dy;
-
+		    ((uint8_t)(blobs[b].color.r*255.0) << 16) +
+		    ((uint8_t)(blobs[b].color.g*255.0) << 8) +
+		    ((uint8_t)(blobs[b].color.b*255.0));
+		  
+		  bfd.blobs[b].area  = dx * dy;		  
 		  bfd.blobs[b].range = blobs[b].range;
 		}
   }

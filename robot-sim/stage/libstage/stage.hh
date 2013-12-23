@@ -87,7 +87,7 @@ namespace Stg
   typedef Model* (*creator_t)( World*, Model*, const std::string& type );
   
   /** Initialize the Stage library. Stage will parse the argument
-      array looking for parameters in the conventnioal way. */
+      array looking for parameters in the conventional way. */
   void Init( int* argc, char** argv[] );
 
   /** returns true iff Stg::Init() has been called. */
@@ -240,8 +240,7 @@ namespace Stg
     Size& Load( Worldfile* wf, int section, const char* keyword );
     void Save( Worldfile* wf, int section, const char* keyword ) const;
 	 
-    void Zero()
-    { x=y=z=0.0; }
+    void Zero() { x=y=z=0.0; }
   };
   
   /** Specify a 3 axis position, in x, y and heading. */
@@ -314,9 +313,11 @@ namespace Stg
     }	
 	 
     // a < b iff a is closer to the origin than b
-    bool operator<( const Pose& other ) const
+    bool operator<( const Pose& p ) const
     {
-      return( hypot( y, x ) < hypot( other.y, other.x ));
+	  //return( hypot( y, x ) < hypot( otHer.y, other.x ));
+	 // just compare the squared values to avoid the sqrt()
+      return( (y*y+x*x) < (p.y*p.y + p.x*p.x ));
     }
 	 
     bool operator==( const Pose& other ) const
@@ -333,13 +334,27 @@ namespace Stg
 	       y!=other.y || 
 	       z!=other.z || 
 	       a!=other.a );
-    }
-	 
-    meters_t Distance2D( const Pose& other ) const
-    {
-      return hypot( x-other.x, y-other.y );
-    }
+    }	 
 
+	   meters_t Distance( const Pose& other ) const
+	   {
+	     return hypot( x-other.x, y-other.y );
+	   }
+  };
+  
+
+  class RaytraceResult
+  {
+  public:
+    Pose pose;
+    Model* mod;
+    Color color;
+    meters_t range;
+
+    RaytraceResult() : pose(), mod(NULL), color(), range(0.0) {}
+    RaytraceResult( const Pose& pose, Model* mod, const Color& color, const meters_t range) 
+       : pose(pose), mod(mod), color(color), range(range) {}
+    
   };
   
   
@@ -363,18 +378,18 @@ namespace Stg
     Velocity()
     { /*empty*/ }		 
     
+    
+    Velocity& Load( Worldfile* wf, int section, const char* keyword )
+    {
+       Pose::Load( wf, section, keyword );
+       return *this;
+    }
+    
     /** Print velocity in human-readable format on stdout, with a
 	prefix string 
 	
 	@param prefix Character string to prepend to output, or NULL.
     */
-    
-    Velocity& Load( Worldfile* wf, int section, const char* keyword )
-    {
-      Pose::Load( wf, section, keyword );
-      return *this;
-    }
-    
     virtual void Print( const char* prefix ) const
     {
       if( prefix )
@@ -476,6 +491,17 @@ namespace Stg
 	
     bool operator+=( const point_t& other ) 
     { return ((x += other.x) && (y += other.y) ); }  
+
+    /** required to put these in sorted containers like std::map */
+    bool operator<( const point_t& other ) const
+    {
+      if( x < other.x ) return true;
+      if( other.x < x ) return false;
+      return y < other.y;
+    }
+		
+    bool operator==( const point_t& other ) const
+    { return ((x == other.x) && (y == other.y) ); }
   };
   
   /** Define a point in 3d space */
@@ -590,13 +616,12 @@ namespace Stg
     Size size;
   } rotrect_t; // rotated rectangle
   
-  /** load the image file [filename] and convert it to an array of
-      rectangles, filling in the number of rects, width and
-      height. The vector [rects] is populated with rectangles.
-  */
-  int rotrects_from_image_file( const std::string& filename, 
-				std::vector<rotrect_t>& rects );
-  
+  /** load the image file [filename] and convert it to a vector of polygons 
+   */
+  int polys_from_image_file( const std::string& filename, 
+			     std::vector<std::vector<point_t> >& polys );
+
+
   /** matching function should return true iff the candidate block is
       stops the ray, false if the block transmits the ray
   */
@@ -735,23 +760,8 @@ namespace Stg
       return( it == props.end() ? NULL : it->second );
     }
   };
-
-  /** raytrace sample
-   */
-  class RaytraceResult
-  {
-  public:
-    Pose pose; ///< location and direction of the ray origin
-    meters_t range; ///< range to beam hit in meters
-    Model* mod; ///< the model struck by this beam
-    Color color; ///< the color struck by this beam
-	 
-    RaytraceResult() : pose(), range(0), mod(NULL), color() {}
-    RaytraceResult( const Pose& pose, 
-		    meters_t range ) 
-      : pose(pose), range(range), mod(NULL), color() {}	 
-  };
 	
+
   class Ray
   {
   public:
@@ -767,7 +777,7 @@ namespace Stg
     meters_t range;
     ray_test_func_t func;
     const void* arg;
-    bool ztest;		
+    bool ztest;		    
   };
 		
 
@@ -882,10 +892,10 @@ namespace Stg
 
     double ppm; ///< the resolution of the world model in pixels per meter   
     bool quit; ///< quit this world ASAP  
-	 
     bool show_clock; ///< iff true, print the sim time on stdout
     unsigned int show_clock_interval; ///< updates between clock outputs
 		
+    //--- thread sync ----
     pthread_mutex_t sync_mutex; ///< protect the worker thread management stuff
     unsigned int threads_working; ///< the number of worker threads not yet finished
     pthread_cond_t threads_start_cond; ///< signalled to unblock worker threads
@@ -906,8 +916,6 @@ namespace Stg
     std::list<float*> ray_list;///< List of rays traced for debug visualization
     usec_t sim_time; ///< the current sim time in this world in microseconds
     std::map<point_int_t,SuperRegion*> superregions;
-	 
-    std::vector< std::vector<Model*> > update_lists;  
 	 
     uint64_t updates; ///< the number of simulated time steps executed so far
     Worldfile* wf; ///< If set, points to the worldfile used to create this world
@@ -958,15 +966,16 @@ namespace Stg
     virtual std::string ClockString( void ) const;
 		
     Model* CreateModel( Model* parent, const std::string& typestr );	 
-    void LoadModel( Worldfile* wf, int entity );
-    void LoadBlock( Worldfile* wf, int entity );
+
+    void LoadModel(      Worldfile* wf, int entity );
+    void LoadBlock(      Worldfile* wf, int entity );
     void LoadBlockGroup( Worldfile* wf, int entity );
-    
-    void LoadSensor( Worldfile* wf, int entity );
+    void LoadSensor(     Worldfile* wf, int entity );
 
     virtual Model* RecentlySelectedModel() const { return NULL; }
-		
-    /** call Cell::AddBlock(block) for each cell on the polygon */
+    
+    /** Add the block to every raytrace bitmap cell that intersects
+	the edges of the polygon.*/
     void MapPoly( const std::vector<point_int_t>& poly,
 		  Block* block,
 		  unsigned int layer );
@@ -974,13 +983,13 @@ namespace Stg
     SuperRegion* AddSuperRegion( const point_int_t& coord );
     SuperRegion* GetSuperRegion( const point_int_t& org );
     SuperRegion* GetSuperRegionCreate( const point_int_t& org );
-    //void ExpireSuperRegion( SuperRegion* sr );
 		
     /** convert a distance in meters to a distance in world occupancy
 	grid pixels */
     int32_t MetersToPixels( meters_t x ) const
     { return (int32_t)floor(x * ppm); };
-		
+    
+    /** Return the bitmap coordinates corresponding to the location in meters. */
     point_int_t MetersToPixels( const point_t& pt ) const
     { return point_int_t( MetersToPixels(pt.x), MetersToPixels(pt.y)); };
 		
@@ -997,24 +1006,22 @@ namespace Stg
 	 	
     /** trace a ray. */
     RaytraceResult Raytrace( const Ray& ray );
-
+    
     RaytraceResult Raytrace( const Pose& pose, 			 
 			     const meters_t range,
 			     const ray_test_func_t func,
 			     const Model* finder,
 			     const void* arg,
 			     const bool ztest );
-		
-    void Raytrace( const Pose &pose, 			 
+    
+    void Raytrace( const Pose &gpose, // global pose
 		   const meters_t range,
 		   const radians_t fov,
 		   const ray_test_func_t func,
-		   const Model* finder,
+		   const Model* model,			 
 		   const void* arg,
-		   RaytraceResult* samples,
-		   const uint32_t sample_count,
-		   const bool ztest );
-		
+		   const bool ztest,		      
+		   std::vector<RaytraceResult>& results );
 		
     /** Enlarge the bounding volume to include this point */
     inline void Extend( point3_t pt );
@@ -1194,6 +1201,7 @@ namespace Stg
 	
   };
   
+
   class Block
   {
     friend class BlockGroup;
@@ -1203,29 +1211,25 @@ namespace Stg
     friend class Canvas;
     friend class Cell;
   public:
-		
+	
     /** Block Constructor. A model's body is a list of these
 	blocks. The point data is copied, so pts can safely be freed
 	after constructing the block.*/
-    Block( Model* mod,  
+    Block( BlockGroup* group,
 	   const std::vector<point_t>& pts,
-	   meters_t zmin,
-	   meters_t zmax,
-	   Color color,
-	   bool inherit_color,
-	   bool wheel );
-		
+	   const Bounds& zrange );
+    
     /** A from-file  constructor */
-    Block(  Model* mod,  Worldfile* wf, int entity);
-		
+    Block( BlockGroup* group, Worldfile* wf, int entity);
+    
     ~Block();
-	 
+    
     /** render the block into the world's raytrace data structure */
     void Map( unsigned int layer ); 	 
-        
+    
     /** remove the block from the world's raytracing data structure */
     void UnMap( unsigned int layer );	 
-        
+    
     /** draw the block in OpenGL as a solid single color */    
     void DrawSolid(bool topview);
 
@@ -1259,44 +1263,24 @@ namespace Stg
     Model* TestCollision(); 
 
     void Load( Worldfile* wf, int entity );  
-    Model* GetModel(){ return mod; };  
-    const Color& GetColor();		
+    
     void Rasterize( uint8_t* data, 
 		    unsigned int width, unsigned int height,		
 		    meters_t cellwidth, meters_t cellheight );
-		
+    
+    BlockGroup* group; ///< The BlockGroup to which this Block belongs.
   private:
-    Model* mod; ///< model to which this block belongs
-    std::vector<point_t> mpts; ///< cache of this->pts in model coordindates
-    size_t pt_count; ///< the number of points	 
-    std::vector<point_t> pts; ///< points defining a polygonx	 
-    Size size;	 
-    Bounds local_z; ///<  z extent in local coords
-    Color color;
-    bool inherit_color;
-    bool wheel;
+    std::vector<point_t> pts; ///< points defining a polygon.
+    Bounds local_z; ///<  z extent in local coords.
+    Bounds global_z; ///< z extent in global coordinates.
+		
+    /** record the cells into which this block has been rendered so we
+	can remove them very quickly. One vector for each of the two
+	bitmap layers.*/  
+    std::vector<Cell*> rendered_cells[2];
 
     void DrawTop();
     void DrawSides();
-	 
-    /** z extent in global coordinates */
-    Bounds global_z;	 
-    bool mapped;
-		
-    /** record the list entries for the cells where this block is rendered */
-    std::vector< std::list<Block*>::iterator > list_entries;
-		
-    /** record the cells into which this block has been rendered so we can 
-	remove them very quickly. */  
-    std::vector<Cell*> rendered_cells[2];
-		
-    /** find the position of a block's point in model coordinates
-	(m) */
-    point_t BlockPointToModelMeters( const point_t& bpt );
-	
-    /** invalidate the cache of points in model coordinates */
-    void InvalidateModelPointCache();
-		
   };
 
 	
@@ -1304,31 +1288,19 @@ namespace Stg
   {
     friend class Model;
     friend class Block;
-		
+    friend class World;
+    friend class SuperRegion;
+
   private:
-    int displaylist;
-		
-    void BuildDisplayList( Model* mod );
-		
-    std::vector<Block*> blocks;
-    Size size;
-    point3_t offset;
-    meters_t minx, maxx, miny, maxy;
-		
-  public:
-    BlockGroup();
-    ~BlockGroup();
-		
-    uint32_t GetCount(){ return blocks.size(); };
-    const Size& GetSize(){ return size; };
-    const point3_t& GetOffset(){ return offset; };
-		
-    /** Establish the min and max of all the blocks, so we can scale this
-	group later. */
-    void CalcSize();
-	 
-    void AppendBlock( Block* block );
-    void CallDisplayList( Model* mod );
+    std::vector<Block> blocks; ///< Contains the blocks in this group.
+    int displaylist; ///< OpenGL displaylist that renders this blockgroup.
+
+  public:    Model& mod;
+
+  private:
+    void AppendBlock( const Block& block );
+
+    void CalcSize();	 
     void Clear() ; /** deletes all blocks from the group */
 	 
     void AppendTouchingModels( std::set<Model*>& touchers );
@@ -1337,28 +1309,47 @@ namespace Stg
 	with a block in this group, or NULL, if none are detected. */
     Model* TestCollision();
  
+    /** Renders all blocks into the bitmap at the indicated layer.*/
     void Map( unsigned int layer );
+    /** Removes all blocks from the bitmap at the indicated layer.*/
     void UnMap( unsigned int layer );
 		
+    /** Interpret the bitmap file as a set of rectangles and add them
+	as blocks to this group.*/
+    void LoadBitmap( const std::string& bitmapfile, Worldfile *wf );
+
+    /** Add a new block decribed by a worldfile entry. */
+    void LoadBlock( Worldfile* wf, int entity );
+    
+    /** Render the blockgroup as a bitmap image. */
+    void Rasterize( uint8_t* data, 
+		    unsigned int width, unsigned int height,
+		    meters_t cellwidth, meters_t cellheight );	 
+
     /** Draw the block in OpenGL as a solid single color. */
     void DrawSolid( const Geom &geom); 
 
-    /** Draw the projection of the block onto the z=0 plane. */
+    /** Re-create the display list for drawing this blockgroup. This
+	is required whenever a member block or the owning model
+	changes its appearance.*/
+    void BuildDisplayList();
+
+    /** Draw the blockgroup from the cached displaylist. */
+    void CallDisplayList();
+
+  public:
+    BlockGroup( Model& mod );
+    ~BlockGroup();
+    
+    uint32_t GetCount() const { return blocks.size(); };
+    const Block& GetBlock( unsigned int index ) const { return blocks[index]; }; 
+    Block& GetBlockMutable( unsigned int index ) { return blocks[index]; }; 
+
+    /** Return the extremal points of all member blocks in all three axes. */
+    bounds3d_t BoundingBox() const;
+
+    /** Draw the projection of the block group onto the z=0 plane. */
     void DrawFootPrint( const Geom &geom);
-
-    void LoadBitmap( Model* mod, const std::string& bitmapfile, Worldfile *wf );
-    void LoadBlock( Model* mod, Worldfile* wf, int entity );
-	 
-    void Rasterize( uint8_t* data, 
-		    unsigned int width, unsigned int height,
-		    meters_t cellwidth, meters_t cellheight );
-	 
-    void InvalidateModelPointCache()
-    {
-      FOR_EACH( it, blocks )
-	(*it)->InvalidateModelPointCache();
-    }
-
   };
 
   class Camera 
@@ -1503,7 +1494,7 @@ namespace Stg
     friend class Option;
 
   private:
-
+      
     Canvas* canvas;
     std::vector<Option*> drawOptions;
     FileManager* fileMan; ///< Used to load and save worldfiles
@@ -1754,7 +1745,7 @@ namespace Stg
     friend class ModelFiducial;
 		
   private:
-    /** the number of models instatiated - used to assign unique IDs */
+    /** the number of models instatiated - used to assign unique sequential IDs */
     static uint32_t count;
     static std::map<id_t,Model*> modelsbyid;
 
@@ -1771,8 +1762,6 @@ namespace Stg
     bool alwayson;
 
     BlockGroup blockgroup;
-    /**  OpenGL display list identifier for the blockgroup */
-    int blocks_dl;
 
     /** Iff true, 4 thin blocks are automatically added to the model,
 	forming a solid boundary around the bounding box of the
@@ -1901,8 +1890,6 @@ namespace Stg
     uint32_t id;	
     usec_t interval; ///< time between updates in usec	 
     usec_t interval_energy; ///< time between updates of powerpack in usec
-    //    usec_t interval_pose; ///< time between updates of pose due to velocity in usec
-
     usec_t last_update; ///< time of last update in us  
     bool log_state; ///< iff true, model state is logged
     meters_t map_resolution;
@@ -2116,37 +2103,36 @@ namespace Stg
 			     const meters_t range, 
 			     const ray_test_func_t func,
 			     const void* arg,
-			     const bool ztest = true );
-  
+			     const bool ztest )
+    {
+      return world->Raytrace( LocalToGlobal(pose),
+			      range,
+			      func,
+			      this,
+			      arg,
+			      ztest );
+    }
+    
     /** raytraces multiple rays around the point and heading identified
 	by pose, in local coords */
     void Raytrace( const Pose &pose,
-		   const meters_t range, 
-		   const radians_t fov, 
-		   const ray_test_func_t func,
-		   const void* arg,
-		   RaytraceResult* samples,
-		   const uint32_t sample_count,
-		   const bool ztest = true  );
-  
-    RaytraceResult Raytrace( const radians_t bearing, 			 
-			     const meters_t range,
-			     const ray_test_func_t func,
-			     const void* arg,
-			     const bool ztest = true );
-  
-    void Raytrace( const radians_t bearing, 			 
-		   const meters_t range,
-		   const radians_t fov,
-		   const ray_test_func_t func,
-		   const void* arg,
-		   RaytraceResult* samples,
-		   const uint32_t sample_count,
-		   const bool ztest = true );
-  
-    virtual void Startup();
-    virtual void Shutdown();
-    virtual void Update();
+     		   const meters_t range, 
+     		   const radians_t fov, 
+     		   const ray_test_func_t func,
+     		   const void* arg,
+     		   const bool ztest,
+		       std::vector<RaytraceResult>& results )
+    {
+      return world->Raytrace( LocalToGlobal(pose),
+			      range,
+			      fov,
+			      func,
+			      this,
+			      arg,
+			      ztest,      
+			      results );
+    }
+      
     virtual void UpdateCharge();
 		
     static int UpdateWrapper( Model* mod, void* arg ){ mod->Update(); return 0; }
@@ -2217,7 +2203,7 @@ namespace Stg
 		
     /** Alternate constructor that creates dummy models with only a pose */
 	 Model() 
-		: mapped(false), alwayson(false), blocks_dl(0),
+	   : mapped(false), alwayson(false), blockgroup(*this),
 		  boundary(false), data_fresh(false), disabled(true), friction(0), has_default_block(false), log_state(false), map_resolution(0), mass(0), parent(NULL), rebuild_displaylist(false), stack_children(true), stall(false), subs(0), thread_safe(false),trail_index(0), event_queue_num(0), used(false), watts(0), watts_give(0),watts_take(0),wf(NULL), wf_entity(0), world(NULL)
 	 {}
 		
@@ -2287,7 +2273,7 @@ namespace Stg
 
     /** Add a block to this model centered at [x,y] with extent [dx, dy,
 	dz] */
-    Block*	AddBlockRect( meters_t x, meters_t y, 
+    void	AddBlockRect( meters_t x, meters_t y, 
 			      meters_t dx, meters_t dy, 
 			      meters_t dz );
 		
@@ -2315,12 +2301,6 @@ namespace Stg
     /** get the pose of a model in the global CS */
     Pose GetGlobalPose() const;
 	
-    /** get the velocity of a model in the global CS */
-    Velocity GetGlobalVelocity()  const;
-	
-    /* set the velocity of a model in the global coordinate system */
-    void SetGlobalVelocity( const Velocity& gvel );
-	
     /** subscribe to a model's data */
     void Subscribe();
 	
@@ -2330,12 +2310,6 @@ namespace Stg
     /** set the pose of model in global coordinates */
     void SetGlobalPose(  const Pose& gpose );
 	
-    /** Enable update of model pose according to velocity state */
-    //    void VelocityEnable();
-
-    /** Disable update of model pose according to velocity state */
-    //void VelocityDisable();
-
     /** set a model's pose in its parent's coordinate system */
     void SetPose(  const Pose& pose );
 	
@@ -2465,20 +2439,14 @@ namespace Stg
 
     static std::map< std::string, creator_t> name_map;	 
 
-    // 		class Neighbors
-    // 		{
-    // 			Model *left, *right, *up, *down;
-    // 		public:
-    // 			Neighbors() : left(NULL), right(NULL), up(NULL), down(NULL) {}
-    // 		} nbors; // instance
-
-	 						
+  protected:
+    virtual void Startup();
+    virtual void Shutdown();
+    virtual void Update();	 						
   };
 
 
   // BLOBFINDER MODEL --------------------------------------------------------
-
-
   /// %ModelBlobfinder class
   class ModelBlobfinder : public Model
   {
@@ -2492,10 +2460,9 @@ namespace Stg
       meters_t range;
     };
 
+    /** Visualize blobinder data in the GUI. */
     class Vis : public Visualizer 
     {
-    private:
-      //static Option showArea;
     public:
       Vis( World* world );
       virtual ~Vis( void ){}
@@ -2503,20 +2470,24 @@ namespace Stg
     } vis;
 
   private:
+    /** Vector of blobs detected in the field of view. Use GetBlobs()
+	or GetBlobsMutable() to acess the vector. */
     std::vector<Blob> blobs;
-    std::vector<Color> colors;
 
-    static Option showBlobData;
+    /** The sensor detects model blocks of each of these colors. Use
+	AddColor() and RemoveColor()
+	to add and remove colors at run time.*/
+    std::vector<Color> colors;
 
     // predicate for ray tracing
     static bool BlockMatcher( Block* testblock, Model* finder );
 
   public:
-    radians_t fov;
-    radians_t pan;
-    meters_t range;
-    unsigned int scan_height;
-    unsigned int scan_width;
+    radians_t fov; ///< Horizontal field of view in radians, in the range 0 to pi.
+    radians_t pan; ///< Horizontal pan angle in radians, in the range -pi to +pi.
+    meters_t range; ///< Maximum distance at which blobs are detected (a little artificial, but setting this small saves computation  time.
+    unsigned int scan_height; ///< Height of the input image in pixels.
+    unsigned int scan_width; ///< Width of the input image in pixels.
 	 
     // constructor
     ModelBlobfinder( World* world,
@@ -2530,13 +2501,15 @@ namespace Stg
     virtual void Update();
     virtual void Load();
 		
-    Blob* GetBlobs( unsigned int* count )
-    { 
-      if( count ) *count = blobs.size();
-      return &blobs[0];
-    }
+    /** Returns a non-mutable const reference to the detected blob
+	data. Use this if you don't need to modify the model's
+	internal data, e.g. if you want to copy it into a new
+	vector.*/
+    const std::vector<Blob>& GetBlobs() const { return blobs; }
 
-    std::vector<Blob> GetBlobs() const { return blobs; }
+    /** Returns a mutable reference to the model's internal detected
+	blob data. Use this with caution, if at all. */
+    std::vector<Blob>& GetBlobsMutable() { return blobs; }
 
     /** Start finding blobs with this color.*/
     void AddColor( Color col );
@@ -2750,11 +2723,9 @@ namespace Stg
   {
   public:
   public:
-    ModelRanger( World* world, Model* parent,
-		 const std::string& type );
+    ModelRanger( World* world, Model* parent, const std::string& type );
     virtual ~ModelRanger();
 		
-    virtual void Load();
     virtual void Print( char* prefix ) const;
 		
     class Vis : public Visualizer 
@@ -2779,7 +2750,7 @@ namespace Stg
       Bounds range;
       radians_t fov;
       unsigned int sample_count;
-      Color col;
+      Color color;
 			
       std::vector<meters_t> ranges;
       std::vector<double> intensities;
@@ -2790,7 +2761,7 @@ namespace Stg
 		 range( 0.0, 5.0 ),
 		 fov( 0.1 ), 
 		 sample_count(1),
-		 col( 0,1,0,0.3 ),
+		 color( Color(0,0,1,0.15)),
 		 ranges(),
 		 intensities(),
 		 bearings()
@@ -2929,6 +2900,7 @@ namespace Stg
   class ModelPosition : public Model
   {
     friend class Canvas;
+    friend class World;
 
   public:
     /** Define a position  control method */
@@ -2967,7 +2939,6 @@ namespace Stg
     /** Set the min and max velocity in all 4 DOF */
     Bounds velocity_bounds[4];
 
-  public:
     // constructor
     ModelPosition( World* world,
 		   Model* parent,
@@ -2975,16 +2946,14 @@ namespace Stg
     // destructor
     ~ModelPosition();
 
-    virtual void Move();
-    virtual void Startup();
-    virtual void Shutdown();
-    virtual void Update();
-    virtual void Load();
-
     /** Get (a copy of) the model's velocity in its local reference
 	frame. */
     Velocity GetVelocity() const { return velocity; }
     void SetVelocity( const Velocity& val );
+    /** get the velocity of a model in the global CS */
+    Velocity GetGlobalVelocity()  const;
+    /* set the velocity of a model in the global coordinate system */
+    void SetGlobalVelocity( const Velocity& gvel );
 
     /** Specify a point in space. Arrays of Waypoints can be attached to
 	Models and visualized. */
@@ -3046,6 +3015,13 @@ namespace Stg
     Pose est_pose; ///< position estimate in local coordinates
     Pose est_pose_error; ///< estimated error in position estimate
     Pose est_origin; ///< global origin of the local coordinate system
+
+  protected:
+    virtual void Move();
+    virtual void Startup();
+    virtual void Shutdown();
+    virtual void Update();
+    virtual void Load();
   };
 
 

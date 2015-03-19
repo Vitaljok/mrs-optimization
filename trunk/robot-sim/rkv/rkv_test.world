@@ -16,7 +16,7 @@ window (
 #robot
 define robot position (
   stack_children 0
-  size [0.500 0.500 0.300]
+  size [ 0.500 0.500 0.300]
   
   blobfinder (
     colors_count 2
@@ -34,21 +34,21 @@ define robot position (
   )
   
   gripper (
-    size [0.300 0.500 0.500]
-    pose [0.400 0.000 0.000 0.000 ]
-    paddle_size [ 0.900 0.100 0.400 ]
+    size [ 0.300 0.500 0.350]
+    pose [ 0.400 0.000 0.000 0.000 ]
+    paddle_size [ 0.900 0.100 0.700 ]
   )
 )
 
 robot (
-  pose [0.000 0.000 0.000 0.000]
+  pose [ 0.000 0.000 0.000 0.000]
   name "rob1"
 )
 
 #object
 model (
-  pose [2.000 1.000 0.000 0.000]
-  size [0.100 0.100 0.800]
+  pose [ 2.000 1.000 0.000 0.000]
+  size [ 0.100 0.100 0.800]
   color "green"
   gripper_return 1
   fiducial_return 10

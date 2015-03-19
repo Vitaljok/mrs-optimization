@@ -93,10 +93,10 @@ public class DefaultRobot implements Runnable {
 
                     pos.setSpeed(speed, dir);
 
-                    Thread.yield();
-                    Thread.sleep(50);
-
                 }
+
+                Thread.yield();
+                Thread.sleep(50);
 
             }
         } catch (InterruptedException ex) {

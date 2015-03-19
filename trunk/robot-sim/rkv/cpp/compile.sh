@@ -1,0 +1,1 @@
+g++ -o rkv `pkg-config --cflags playerc++` rkv_test.cc `pkg-config --libs playerc++`

@@ -19,7 +19,6 @@ public class Main {
         
         for (int i = 0; i < 7; i++) {
             new Thread(new FollowerRobot("localhost", 6665+i)).start();
-
         }
     }
 

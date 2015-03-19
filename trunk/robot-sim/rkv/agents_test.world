@@ -1,0 +1,167 @@
+
+resolution 0.02
+interval_sim 100
+
+window (
+  size [ 870 840 ]
+  scale 20.000
+  center [ 0.000 0.000 ]
+  rotate [ 0.000 0.000 ]
+  
+  show_data 1
+  show_flags 1
+  show_footprints 1
+)
+
+#map
+model (
+  color "gray30"
+
+  size [ 40.000 35.000 0.800]
+  pose [ 0.000 0.000 0.000 0.000]
+  bitmap "bitmaps/autolab.png"
+
+  boundary 0
+
+  gui_nose 0
+  gui_grid 0
+  gui_move 0
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  ranger_return 1.000
+)
+
+#base
+model (
+  size [ 4.000 2.000 0.010]
+  obstacle_return 0
+  color "gray70"
+  fiducial_return 1
+  pose [ 2.950 -16.100 0.000 0.000 ]
+)
+
+define zone model (
+  size [ 3.000 3.000 0.010]
+  obstacle_return 0
+)
+
+zone (
+  pose [ -18.050 8.450 0.000 0.000]
+  color_rgba [ 1.0 0.5 0.5 1.0]
+  fiducial_return 10
+)
+
+zone (
+  pose [ -18.050 1.450 0.000 0.000]
+  color_rgba [ 0.5 0.5 1.0 1.0]
+  fiducial_return 20
+)
+
+zone (
+  pose [ -18.050 -5.550 0.000 0.000]
+  color_rgba [ 0.5 1.0 0.5 1.0]
+  fiducial_return 30
+)
+
+define objBase model (
+  size [ 0.200 0.200 1.000 ]
+  gripper_return 1
+)
+
+define objRed objBase (
+  color "red"
+  fiducial_return 11
+)
+
+define objBlue objBase (
+  color "blue"
+  fiducial_return 21
+)
+
+define objGreen objBase (
+  color "green"
+  fiducial_return 31
+)
+
+objRed ( pose [ 4.600 2.100 0.000 0.000] )
+objRed ( pose [ 8.310 5.220 0.000 0.000] )
+objRed ( pose [ 4.910 5.710 0.000 0.000] )
+objRed ( pose [ 1.030 6.110 0.000 0.000] )
+objRed ( pose [ 8.700 1.970 0.000 0.000] )
+
+objBlue ( pose [ -1.530 16.150 0.000 0.000] )
+objBlue ( pose [ -3.910 12.410 0.000 0.000] )
+objBlue ( pose [ -1.690 14.220 0.000 0.000] )
+objBlue ( pose [ -3.990 14.770 0.000 0.000] )
+objBlue ( pose [ -6.370 16.310 0.000 0.000] )
+
+objGreen ( pose [ 6.240 14.950 0.000 0.000] )
+objGreen ( pose [ 5.270 9.970 0.000 0.000] )
+objGreen ( pose [ 7.540 12.200 0.000 0.000] )
+objGreen ( pose [ 2.490 13.370 0.000 0.000] )
+objGreen ( pose [ 1.680 16.230 0.000 0.000] )
+
+#robot
+define robot position (
+  stack_children 0
+  localization_origin [ 0 0 0 0 ]
+  
+  size [ 0.500 0.500 0.300]
+    
+  gripper (
+    size [ 0.400 0.500 0.500]
+    pose [ 0.450 0.000 0.000 0.000]
+    
+    paddle_size [ 0.900 0.100 0.300 ]
+    paddle_state [ "open" "down" ]
+    autosnatch 0
+  )
+  
+  ranger (
+    pose [ 0.000 0.000 0.200 0.000]
+    
+    sensor (
+      range [ 0.0 5.0]
+      fov 60.0
+      pose [ 0 0 0 60]
+    )
+    
+    sensor (
+      range [ 0.0 5.0]
+      fov 60.0
+      pose [ 0 0 0 30]
+    )
+    
+    sensor (
+      range [ 0.0 5.0]
+      fov 60.0
+      pose [ 0 0 0 0]
+    )
+    
+    sensor (
+      range [ 0.0 5.0]
+      fov 60.0
+      pose [ 0 0 0 -30]
+    )
+    
+    sensor (
+      range [ 0.0 5.0]
+      fov 60.0
+      pose [ 0 0 0 -60]
+    )
+  )
+  
+  fiducial (
+    range_min 0.0
+    range_max 8.0
+    range_max_id 5.0
+    fov 120    
+  )  
+)
+
+robot (
+  color "red"
+  name "rob1"
+  pose [ -18.200 15.750 0.000 -63.025]
+)

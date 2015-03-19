@@ -1,0 +1,77 @@
+
+resolution 0.02
+interval_sim 100
+
+window (
+  size [ 870 840 ]
+  scale 20.000
+  center [ 0.000 0.000 ]
+  rotate [ 0.000 0.000 ]
+  
+  show_data 1
+  show_flags 1
+  show_footprints 1
+)
+
+#map
+model (
+  color "gray30"
+
+  size [ 40.000 35.000 0.800]
+  pose [ 0.000 0.000 0.000 0.000]
+  bitmap "bitmaps/autolab.png"
+
+  boundary 0
+
+  gui_nose 0
+  gui_grid 0
+  gui_move 0
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  ranger_return 1.000
+)
+
+#base
+model (
+  size [ 4.000 2.000 0.010]
+  obstacle_return 0
+  color "gray70"
+  fiducial_return 1
+  pose [ 2.950 -16.100 0.000 0.000 ]
+)
+
+#robot
+define robot position (
+  stack_children 0
+  
+  size [ 0.500 0.500 0.300]
+    
+  block (
+    points 6
+    point[0] [-1.0 -1.0 ]
+    point[1] [ 0.3 -1.0 ]
+    point[2] [ 1.0 -0.25]
+    point[3] [ 1.0  0.25]
+    point[4] [ 0.3  1.0 ]
+    point[5] [-1.0  1.0 ]
+    z [0 1]
+  )
+  
+  ranger (
+    pose [ 0.000 0.000 0.200 0.000]
+    
+    sensor (
+      range [ 0.0 10.0]
+      fov 120.0      
+      samples 120
+    )
+  )
+
+)
+
+robot (
+  color "red"
+  name "rob1"
+  pose [ -18.200 15.750 0.000 -63.025]
+)

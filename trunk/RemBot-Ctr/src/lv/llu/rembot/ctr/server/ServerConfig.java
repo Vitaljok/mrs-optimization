@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import lv.llu.rembot.ctr.player.PlayerConfig;
+import lv.llu.rembot.ctr.player.PlayerConfigImpl;
 import lv.llu.rembot.ctr.utils.Debug;
 
 /**
@@ -44,7 +44,7 @@ public final class ServerConfig {
     static private final ServerConfig INSTANCE;
     @XmlElement
     private Boolean autoStartPlayer;
-    private List<PlayerConfig> playerConfig = new ArrayList<>();
+    private List<PlayerConfigImpl> playerConfig = new ArrayList<>();
     @XmlElement
     private Boolean autoStartVLan;
     private List<String> vLanParams = new ArrayList<>();
@@ -59,7 +59,7 @@ public final class ServerConfig {
     private void initDefaultInstance() {
         ServerConfig config = getInstance();
         config.autoStartPlayer = true;
-        config.playerConfig.add(PlayerConfig.getDefaultCorobotConfig());
+        config.playerConfig.add(PlayerConfigImpl.getDefaultCorobotConfig());
         config.autoStartVLan = false;
         config.rmiRegistryPort = 36667;
         config.rmiBindName = "lv/llu/RemBotService";
@@ -114,7 +114,7 @@ public final class ServerConfig {
         this.autoStartPlayer = autoStartPlayer;
     }
 
-    public List<PlayerConfig> getPlayerConfig() {
+    public List<PlayerConfigImpl> getPlayerConfig() {
         return playerConfig;
     }
 

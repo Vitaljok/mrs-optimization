@@ -19,8 +19,6 @@ package lv.llu.rembot.ctr.player;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import lv.llu.rembot.ctr.utils.Debug;
 
@@ -28,20 +26,23 @@ import lv.llu.rembot.ctr.utils.Debug;
  *
  * @author Vitaljok
  */
-public class PlayerConfig {
+public abstract class PlayerConfig {
 
     String name;
     String description;
-    List<PlayerDriver> drivers = new ArrayList<>();
+
+    public PlayerConfig() {
+    }
 
     public PlayerConfig(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public PlayerConfig() {
+    public PlayerConfig(String name) {
+        this.name = name;
     }
-
+    
     public String getName() {
         return name;
     }
@@ -58,28 +59,17 @@ public class PlayerConfig {
         this.description = description;
     }
 
-    public List<PlayerDriver> getDrivers() {
-        return drivers;
-    }
+    abstract public String getConfigText();
+    
+    //public static PlayerConfig getDefaultConfig();
 
     public void writeToFile(String fileName) {
         try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
-            for (PlayerDriver driver : drivers) {
-                out.write(driver.toString());
-                out.newLine();
-            }
-            
+
+            out.write(this.getConfigText());
             out.flush();
         } catch (IOException ex) {
             Debug.log.log(Level.SEVERE, "Error writing Player config to file", ex);
         }
-    }
-    
-    public static PlayerConfig getDefaultCorobotConfig() {        
-        PlayerConfig config = new PlayerConfig("Corobot (default)", "Default Player config used on Corobot.");
-        config.getDrivers().add(new PlayerDriver("dummy driver"));
-        
-        
-        return config;
     }
 }

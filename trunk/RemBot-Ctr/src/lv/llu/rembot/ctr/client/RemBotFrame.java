@@ -16,20 +16,26 @@
  */
 package lv.llu.rembot.ctr.client;
 
-import java.awt.Color;
 import javax.swing.ImageIcon;
+import javax.swing.JRadioButton;
 
 /**
  *
  * @author Vitaljok
  */
 public class RemBotFrame extends javax.swing.JFrame {
+    
+    private Boolean isConnected = false;
+    private Short ping = 0;
 
     /**
      * Creates new form RemBotFrame
      */
     public RemBotFrame() {
-        initComponents();
+        initComponents();               
+        
+        jRadioButtonPing.setSelectedIcon(new ImageIcon("icon_green.png"));
+        jRadioButtonPing.setIcon(new ImageIcon("icon_red.png"));
     }
 
     /**
@@ -41,13 +47,17 @@ public class RemBotFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButtonConnect = new javax.swing.JButton();
+        jPanelMain = new javax.swing.JPanel();
         jComboBoxHost = new javax.swing.JComboBox();
-        jSeparator1 = new javax.swing.JSeparator();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jLabel1 = new javax.swing.JLabel();
+        jButtonConnect = new javax.swing.JButton();
+        jRadioButtonPing = new javax.swing.JRadioButton();
+        jTabbedPane = new javax.swing.JTabbedPane();
+        playerManagerJPanel = new lv.llu.rembot.ctr.client.PlayerManagerJPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jComboBoxHost.setEditable(true);
+        jComboBoxHost.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "192.168.30.10:36667", "192.168.30.20:36667", "192.168.30.30:36667" }));
 
         jButtonConnect.setText("Connect");
         jButtonConnect.setFocusable(false);
@@ -59,57 +69,71 @@ public class RemBotFrame extends javax.swing.JFrame {
             }
         });
 
-        jComboBoxHost.setEditable(true);
-        jComboBoxHost.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "192.168.30.10:36667", "192.168.30.20:36667", "192.168.30.30:36667" }));
+        jRadioButtonPing.setFocusPainted(false);
+        jRadioButtonPing.setFocusable(false);
+        jRadioButtonPing.setRequestFocusEnabled(false);
+        jRadioButtonPing.setRolloverEnabled(false);
+        jRadioButtonPing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonPingActionPerformed(evt);
+            }
+        });
 
-        jRadioButton1.setText("jRadioButton1");
-        jRadioButton1.setEnabled(false);
-        jRadioButton1.setFocusPainted(false);
-        jRadioButton1.setFocusable(false);
-        jRadioButton1.setRequestFocusEnabled(false);
-        jRadioButton1.setRolloverEnabled(false);
+        javax.swing.GroupLayout jPanelMainLayout = new javax.swing.GroupLayout(jPanelMain);
+        jPanelMain.setLayout(jPanelMainLayout);
+        jPanelMainLayout.setHorizontalGroup(
+            jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelMainLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jComboBoxHost, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButtonPing)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanelMainLayout.setVerticalGroup(
+            jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelMainLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jComboBoxHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonConnect)
+                    .addComponent(jRadioButtonPing))
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
 
-        jLabel1.setText("jLabel1");
+        jTabbedPane.addTab("Player configuration", playerManagerJPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jComboBoxHost, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonConnect)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(259, Short.MAX_VALUE))
-            .addComponent(jSeparator1)
+            .addComponent(jPanelMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jComboBoxHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonConnect)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jLabel1))
+                .addComponent(jPanelMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 562, Short.MAX_VALUE))
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
-        //this.jRadioButton1.setIcon(UIManager.getIcon("RadioButton1.icon"));
+        this.isConnected = true;     
         
-        jRadioButton1.setIcon(new ImageIcon("icon_green.png"));
-        jRadioButton1.setSelectedIcon(new ImageIcon("icon_red.png"));
+        this.jTabbedPane.addTab("my panel tab", new ImageIcon("icon_blue.png"), new PlayerManagerJPanel(), "my tip");
     }//GEN-LAST:event_jButtonConnectActionPerformed
+
+    private void jRadioButtonPingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonPingActionPerformed
+        JRadioButton btn = (JRadioButton) evt.getSource();
+        
+        btn.getModel().setSelected(this.isConnected);
+    }//GEN-LAST:event_jRadioButtonPingActionPerformed
 
     /**
      * @param args the command line arguments
@@ -148,8 +172,9 @@ public class RemBotFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonConnect;
     private javax.swing.JComboBox jComboBoxHost;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPanel jPanelMain;
+    private javax.swing.JRadioButton jRadioButtonPing;
+    private javax.swing.JTabbedPane jTabbedPane;
+    private lv.llu.rembot.ctr.client.PlayerManagerJPanel playerManagerJPanel;
     // End of variables declaration//GEN-END:variables
 }

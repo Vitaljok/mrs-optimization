@@ -16,22 +16,18 @@ public class FollowerRobot extends DefaultRobot {
 
     BlobfinderInterface blob;
 
-
     public FollowerRobot(String host, Integer port) {
         super(host, port);
 
         blob = client.requestInterfaceBlobfinder(0,
-            PlayerConstants.PLAYER_OPEN_MODE);
+                PlayerConstants.PLAYER_OPEN_MODE);
     }
 
     @Override
     public void calculate() {
-        if (blob.isDataReady()) {
-
-            if (blob.getData().getBlobs_count() > 0){
-                follow();
-            }
-
+        if (blob.isDataReady()
+                && blob.getData().getBlobs_count() > 0) {
+            follow();
         } else {
             wander();
         }
@@ -40,6 +36,6 @@ public class FollowerRobot extends DefaultRobot {
     private void follow() {
         PlayerBlobfinderBlob b = blob.getData().getBlobs()[0];
         speed = 2.0;
-        dir = - (b.getX() - 160.0) / 320;
+        dir = -(b.getX() - 160.0) / 320;
     }
 }

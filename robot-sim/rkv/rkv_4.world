@@ -7,7 +7,7 @@ window (
   scale 25.000
   center [ 0   0 ]
   rotate [ 0  0 ]
-  			
+        
   show_data 1
   show_flags 1
   show_footprints 1
@@ -17,8 +17,8 @@ window (
 model (
   color "gray30"
 
-  size [30.000 20.000 0.800]
-  pose [0 0 0 0]
+  size [ 30.000 20.000 0.800]
+  pose [ 0 0 0 0]
   bitmap "bitmaps/simple_room.png"
 
   boundary 0
@@ -29,38 +29,38 @@ model (
   gui_outline 0
   gripper_return 0
   fiducial_return 0
-  ranger_return 1.000
+  ranger_return 1
 )
 
 #base
 model (
-  size [4.000 2.000 0.010]
+  size [ 4.000 2.000 0.010]
   obstacle_return 0
   color "gray70"
   fiducial_return 1
-  pose [0 -9.000 0 0 ]
+  pose [ 0 -9.000 0 0 ]
 )
 
 define zone model (
-  size [3.000 3.000 0.010]
+  size [ 3.000 3.000 0.010]
   obstacle_return 0
 )
 
 zone (
-  pose [11.000 7.000 0 0]
-  color_rgba [1.0 0.5 0.5 1.0]
+  pose [ 11.000 7.000 0 0]
+  color_rgba [ 1.0 0.5 0.5 1.0]
   fiducial_return 10
 )
 
 zone (
-  pose [11.000 0 0 0]
-  color_rgba [0.5 0.5 1.0 1.0]
+  pose [ 11.000 0 0 0]
+  color_rgba [ 0.5 0.5 1.0 1.0]
   fiducial_return 20
 )
 
 zone (
-  pose [11.000 -7.000 0 0]
-  color_rgba [0.5 1.0 0.5 1.0]
+  pose [ 11.000 -7.000 0 0]
+  color_rgba [ 0.5 1.0 0.5 1.0]
   fiducial_return 30
 )
 
@@ -84,33 +84,33 @@ define objGreen objBase (
   fiducial_return 31
 )
 
-objRed ( pose [-9.600 0.600 0 0] )
-objRed ( pose [-8.040 0.720 0 0] )
-objRed ( pose [-8.240 -1.240 0 0] )
-objRed ( pose [-10.120 -1.640 0 0] )
-objRed ( pose [-6.200 -0.880 0 0] )
+objRed ( pose [ -9.600 0.600 0 0] )
+objRed ( pose [ -8.040 0.720 0 0] )
+objRed ( pose [ -8.240 -1.240 0 0] )
+objRed ( pose [ -10.120 -1.640 0 0] )
+objRed ( pose [ -6.200 -0.880 0 0] )
 
-objBlue ( pose [-7.880 -5.400 0 0] )
-objBlue ( pose [-8.360 -6.840 0 0] )
-objBlue ( pose [-6.240 -6.480 0 0] )
-objBlue ( pose [-9.640 -5.480 0 0] )
-objBlue ( pose [-7.120 -4.640 0 0] )
+objBlue ( pose [ -7.880 -5.400 0 0] )
+objBlue ( pose [ -8.360 -6.840 0 0] )
+objBlue ( pose [ -6.240 -6.480 0 0] )
+objBlue ( pose [ -9.640 -5.480 0 0] )
+objBlue ( pose [ -7.120 -4.640 0 0] )
 
-objGreen ( pose [-9.960 5.800 0 0] )
-objGreen ( pose [-9.880 7.120 0 0] )
-objGreen ( pose [-11.560 6.200 0 0] )
-objGreen ( pose [-10.760 4.520 0 0] )
-objGreen ( pose [-8.920 5.280 0 0] )
+objGreen ( pose [ -9.960 5.800 0 0] )
+objGreen ( pose [ -9.880 7.120 0 0] )
+objGreen ( pose [ -11.560 6.200 0 0] )
+objGreen ( pose [ -10.760 4.520 0 0] )
+objGreen ( pose [ -8.920 5.280 0 0] )
 
 #robot
 define robot position (
   stack_children 0
   
-  size [0.500 0.500 0.300]
+  size [ 0.500 0.500 0.300]
     
   gripper (
-    size [0.400 0.500 0.500]
-    pose [0.450 0 0 0]
+    size [ 0.400 0.500 0.500]
+    pose [ 0.450 0 0 0]
     
     paddle_size [ 0.900 0.100 0.300 ]
     paddle_state [ "open" "down" ]
@@ -118,46 +118,45 @@ define robot position (
   )
   
   ranger (
-    pose [0 0 0.200 0]
+    pose [ 0 0 0.200 0]
     
     sensor (
-      range [0.0 5.0]
+      range [ 0.0 5.0]
       fov 60.0
-      pose [0 0 0 60]
+      pose [ 0 0 0 60]
     )
     
     sensor (
-      range [0.0 5.0]
+      range [ 0.0 5.0]
       fov 60.0
-      pose [0 0 0 30]
+      pose [ 0 0 0 30]
     )
     
     sensor (
-      range [0.0 5.0]
+      range [ 0.0 5.0]
       fov 60.0
-      pose [0 0 0 0]
+      pose [ 0 0 0 0]
     )
     
     sensor (
-      range [0.0 5.0]
+      range [ 0.0 5.0]
       fov 60.0
-      pose [0 0 0 -30]
+      pose [ 0 0 0 -30]
     )
     
     sensor (
-      range [0.0 5.0]
+      range [ 0.0 5.0]
       fov 60.0
-      pose [0 0 0 -60]
+      pose [ 0 0 0 -60]
     )
   )
   
   fiducial (
     range_min 0.0
-    range_max 5.0
+    range_max 8.0
     range_max_id 5.0
-    fov 120
-  )
-  
+    fov 120    
+  )  
 )
 
 robot (

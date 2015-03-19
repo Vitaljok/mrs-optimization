@@ -44,6 +44,20 @@ public class PlayerDriverItem {
         this.values.addAll(Arrays.asList(values));
     }
 
+    public List<String> getValues() {
+        return values;
+    }
+    
+    public Boolean getIsList() {
+        return isList;
+    }
+
+    public void setIsList(Boolean isList) {
+        this.isList = isList;
+    }
+
+    
+    
     @Override
     public String toString() {
         if (isList) {

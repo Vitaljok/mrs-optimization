@@ -4,7 +4,6 @@
  */
 package rkv_3;
 
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaclient3.PlayerClient;
@@ -43,7 +42,7 @@ public class Robot implements Runnable {
             while (true) {
 
                 //TODO: implement reinforcement
-                // 1. + when correct dirrection (raunded)
+                // 1. + when correct dirrection (rounded)
                 // 2. + when current state is better then previous (unstalled, moved from obstacle...)
                 // 3.
                 if (bumper.isDataReady() && pos.isDataReady()) {
@@ -60,28 +59,28 @@ public class Robot implements Runnable {
                     } else if (min < 0.5) {
                         System.out.println("Negative reinforcement: " + min);
                         selector.learn(-0.8);
-                    } else {
-                        System.out.println("Positive reinforcement");
-                        selector.learn(0.01);
-                    }
 //                    } else {
-//                        if (distSteps < 0) {
-//                            Double d = Math.hypot(pos.getX() - 8, pos.getY() - 8);
-//
-//                            if (d < dist) {
-//                                System.out.println("Positive reinforcement: dirrection");
-//                                selector.learn(0.05);
-//                            } else {
-//                                System.out.println("Negative reinforcement: dirrection");
-//                                selector.learn(-0.9);
-//                            }
-//
-//                            dist = d;
-//                            distSteps = 20;
-//                        }
-//
-//                        distSteps--;
+//                        System.out.println("Positive reinforcement");
+//                        selector.learn(0.01);
 //                    }
+                    } else {
+                        if (distSteps < 0) {
+                            Double d = Math.hypot(pos.getX() - 8, pos.getY() - 8);
+
+                            if (d < dist) {
+                                System.out.println("Positive reinforcement: dirrection");
+                                selector.learn(0.05);
+                            } else {
+                                System.out.println("Negative reinforcement: dirrection");
+                                selector.learn(-0.9);
+                            }
+
+                            dist = d;
+                            distSteps = 20;
+                        }
+
+                        distSteps--;
+                    }
                 }
 
                 if (ranger.isDataReady()) {
